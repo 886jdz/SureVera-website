@@ -516,25 +516,35 @@
 
     /* ── RESPONSIVE ── */
     @media (max-width: 768px) {
-      .hero { padding: 7rem 1.25rem 5rem; }
-      .hero-inner { grid-template-columns: 1fr; text-align: center; }
+      .hero { padding: 6rem 1.25rem 0; }
+      .hero-inner { grid-template-columns: 1fr; text-align: center; padding-bottom: 2rem; }
       .hero p { margin: 0 auto 2rem; }
-      .hero-buttons { justify-content: center; }
-      .hero-phone { margin-top: 2rem; }
-      .phone-frame { width: 220px; height: 440px; }
+      .hero-buttons { justify-content: center; flex-wrap: wrap; }
+      .hero-phone { margin-top: 1.5rem; display: flex; justify-content: center; }
+      .hero-phone > div { width: 280px !important; height: 380px !important; border-radius: 24px 24px 0 0 !important; margin-bottom: -60px !important; }
       .stats-inner { grid-template-columns: repeat(3, 1fr); gap: 1rem; }
       .stat-number { font-size: 1.75rem; }
-      .features-grid { grid-template-columns: 1fr; gap: 1.25rem; }
-      .screenshots-scroll { grid-template-columns: repeat(2, 1fr); }
+      .feature-card { flex: 0 1 100% !important; min-width: 0 !important; }
+      .screenshots-scroll { flex-wrap: wrap; }
+      .screenshot-slot { flex: 0 1 45% !important; min-width: 140px !important; }
       .grade-pills { gap: 0.75rem; }
       .grade-pill { padding: 0.5rem 1rem; font-size: 0.85rem; }
       .nav-links a:not(.nav-cta) { display: none; }
+      .cities-grid { gap: 0.4rem; }
+      .city-tag { font-size: 0.75rem; padding: 0.4rem 0.75rem; }
     }
 
     @media (max-width: 480px) {
       .hero h1 { font-size: 2rem; }
-      .store-btn { padding: 0.7rem 1.25rem; }
-      .screenshots-scroll { grid-template-columns: 1fr 1fr; gap: 1rem; }
+      .hero-badge { font-size: 0.7rem; }
+      .store-btn { padding: 0.6rem 1rem; font-size: 0.85rem; }
+      .store-btn-label strong { font-size: 0.9rem; }
+      .hero-phone > div { width: 240px !important; height: 340px !important; }
+      .screenshot-slot { flex: 0 1 100% !important; max-width: 280px; }
+      .section-title { font-size: 1.5rem; }
+      .problem h2 { font-size: 1.4rem; }
+      .problem p { font-size: 0.95rem; }
+      .footer-links { flex-wrap: wrap; gap: 1rem; }
     }
 
     /* ── ANIMATIONS ── */
