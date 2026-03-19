@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SureBite — Be Sure Before You Bite</title>
+  <meta name="description" content="SureBite shows you real restaurant health inspection grades before you eat. Search 90+ cities across the US. Download free on iOS and Android.">
+  <meta property="og:title" content="SureBite — Be Sure Before You Bite">
+  <meta property="og:description" content="Real restaurant health inspection grades, right on your phone. Search 90+ US cities.">
+  <meta property="og:image" content="logo.png">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://surebiteapp.com">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --navy: #1B3A6B;
+      --navy-dark: #0D1B2E;
+      --orange: #E8612A;
+      --orange-hover: #D4541F;
+      --white: #FFFFFF;
+      --gray-50: #F8FAFC;
+      --gray-100: #F1F5F9;
+      --gray-200: #E2E8F0;
+      --gray-400: #94A3B8;
+      --gray-500: #64748B;
+      --gray-600: #475569;
+      --gray-700: #334155;
+      --gray-800: #1E293B;
+      --green: #16A34A;
+      --amber: #B45309;
+      --red: #B91C1C;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: var(--gray-800);
+      background: var(--white);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--gray-200);
+      transition: box-shadow 0.3s;
+    }
+    nav.scrolled { box-shadow: 0 2px 20px rgba(0,0,0,0.08); }
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo { height: 36px; }
+    .nav-links { display: flex; gap: 2rem; align-items: center; }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--gray-600);
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--navy); }
+    .nav-cta {
+      background: var(--orange) !important;
+      color: var(--white) !important;
+      padding: 0.5rem 1.25rem;
+      border-radius: 8px;
+      font-weight: 600 !important;
+      transition: background 0.2s !important;
+    }
+    .nav-cta:hover { background: var(--orange-hover) !important; }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 8rem 1.5rem 0;
+      background: linear-gradient(168deg, var(--navy-dark) 0%, var(--navy) 100%);
+      color: var(--white);
+      overflow: hidden;
+      position: relative;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      right: 0;
+      height: 100px;
+      background: var(--white);
+      clip-path: ellipse(55% 100% at 50% 100%);
+      z-index: 20;
+    }
+    .hero-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: start;
+      padding-bottom: 5rem;
+    }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      padding: 0.35rem 1rem;
+      border-radius: 100px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 1.25rem;
+      color: rgba(255,255,255,0.9);
+    }
+    .hero h1 {
+      font-size: clamp(2.25rem, 5vw, 3.5rem);
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 1.25rem;
+    }
+    .hero h1 span { color: var(--orange); }
+    .hero p {
+      font-size: 1.15rem;
+      color: rgba(255,255,255,0.8);
+      max-width: 500px;
+      margin-bottom: 2rem;
+      line-height: 1.7;
+    }
+    .hero-buttons { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .store-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.85rem 1.75rem;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .store-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    }
+    .store-btn svg { width: 22px; height: 22px; flex-shrink: 0; }
+    .store-btn-apple {
+      background: var(--white);
+      color: var(--navy-dark);
+    }
+    .store-btn-google {
+      background: rgba(255,255,255,0.12);
+      border: 1.5px solid rgba(255,255,255,0.3);
+      color: var(--white);
+    }
+    .store-btn-label small {
+      display: block;
+      font-size: 0.65rem;
+      font-weight: 400;
+      opacity: 0.7;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .store-btn-label strong {
+      display: block;
+      font-size: 1rem;
+      line-height: 1.2;
+    }
+
+    /* Phone mockup area */
+    .hero-phone {
+      display: flex;
+      justify-content: center;
+      position: relative;
+    }
+    .phone-frame {
+      width: 280px;
+      height: 560px;
+      background: var(--gray-800);
+      border-radius: 36px;
+      border: 4px solid var(--gray-700);
+      overflow: hidden;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.4);
+      position: relative;
+    }
+    .phone-notch {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 28px;
+      background: var(--gray-800);
+      border-radius: 0 0 18px 18px;
+      z-index: 2;
+    }
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, var(--navy) 0%, var(--navy-dark) 40%, var(--gray-800) 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      padding: 2rem;
+    }
+    .phone-screen .placeholder-text {
+      color: rgba(255,255,255,0.5);
+      font-size: 0.85rem;
+      text-align: center;
+    }
+    .phone-screen img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* ── STATS BAR ── */
+    .stats {
+      padding: 3rem 1.5rem;
+      background: var(--white);
+      position: relative;
+      z-index: 2;
+    }
+    .stats-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      text-align: center;
+    }
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--navy);
+    }
+    .stat-label {
+      font-size: 0.9rem;
+      color: var(--gray-500);
+      margin-top: 0.25rem;
+    }
+
+    /* ── PROBLEM SECTION ── */
+    .problem {
+      padding: 5rem 1.5rem;
+      background: var(--gray-50);
+    }
+    .problem-inner {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .problem h2 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 1.5rem;
+    }
+    .problem p {
+      font-size: 1.1rem;
+      color: var(--gray-600);
+      line-height: 1.8;
+    }
+    .problem .highlight {
+      color: var(--red);
+      font-weight: 600;
+    }
+
+    /* ── FEATURES ── */
+    .features {
+      padding: 5rem 1.5rem;
+      background: var(--white);
+    }
+    .features-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .section-label {
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--orange);
+      margin-bottom: 0.75rem;
+    }
+    .section-title {
+      text-align: center;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 3.5rem;
+    }
+    .features-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 2.5rem;
+    }
+    .feature-card {
+      flex: 0 1 calc(33.333% - 2.5rem);
+      min-width: 260px;
+    }
+    .feature-card {
+      text-align: center;
+      padding: 2rem 1.5rem;
+      border-radius: 16px;
+      background: var(--gray-50);
+      border: 1px solid var(--gray-100);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.06);
+    }
+    .feature-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 1.25rem;
+    }
+    .feature-icon.blue { background: #DBEAFE; }
+    .feature-icon.green { background: #DCFCE7; }
+    .feature-icon.amber { background: #FEF3C7; }
+    .feature-icon.red { background: #FEE2E2; }
+    .feature-icon.purple { background: #EDE9FE; }
+    .feature-icon.orange { background: #FFEDD5; }
+    .feature-card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--gray-800);
+      margin-bottom: 0.5rem;
+    }
+    .feature-card p {
+      font-size: 0.9rem;
+      color: var(--gray-500);
+      line-height: 1.6;
+    }
+
+    /* ── SCREENSHOTS ── */
+    .screenshots {
+      padding: 5rem 1.5rem;
+      background: var(--gray-50);
+    }
+    .screenshots-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .screenshots-scroll {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+    .screenshot-slot {
+      flex: 0 1 280px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s;
+    }
+    .screenshot-slot:hover { transform: scale(1.02); }
+    .screenshot-slot img {
+      width: 100%;
+      height: auto;
+      border-radius: 20px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+    }
+
+    /* ── GRADES EXPLAINER ── */
+    .grades {
+      padding: 5rem 1.5rem;
+      background: var(--white);
+    }
+    .grades-inner {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .grade-pills {
+      display: flex;
+      justify-content: center;
+      gap: 1.25rem;
+      margin-top: 2.5rem;
+      flex-wrap: wrap;
+    }
+    .grade-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+    .grade-pill .letter {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--white);
+    }
+    .grade-a { background: #F0FDF4; }
+    .grade-a .letter { background: var(--green); }
+    .grade-a .label { color: var(--green); }
+    .grade-b { background: #FEFCE8; }
+    .grade-b .letter { background: var(--amber); }
+    .grade-b .label { color: var(--amber); }
+    .grade-c { background: #FFF7ED; }
+    .grade-c .letter { background: #C2410C; }
+    .grade-c .label { color: #C2410C; }
+    .grade-f { background: #FEF2F2; }
+    .grade-f .letter { background: var(--red); }
+    .grade-f .label { color: var(--red); }
+
+    /* ── CITIES ── */
+    .cities {
+      padding: 5rem 1.5rem;
+      background: var(--gray-50);
+    }
+    .cities-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .cities-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.6rem;
+      margin-top: 2rem;
+    }
+    .city-tag {
+      padding: 0.5rem 1rem;
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: 100px;
+      font-size: 0.85rem;
+      color: var(--gray-700);
+      font-weight: 500;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .city-tag:hover {
+      border-color: var(--navy);
+      color: var(--navy);
+    }
+    .cities-more {
+      margin-top: 1.5rem;
+      font-size: 0.9rem;
+      color: var(--gray-500);
+    }
+
+    /* ── CTA ── */
+    .cta {
+      padding: 5rem 1.5rem;
+      background: linear-gradient(168deg, var(--navy-dark) 0%, var(--navy) 100%);
+      color: var(--white);
+      text-align: center;
+    }
+    .cta-inner { max-width: 600px; margin: 0 auto; }
+    .cta h2 {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+    }
+    .cta p {
+      font-size: 1.05rem;
+      color: rgba(255,255,255,0.75);
+      margin-bottom: 2rem;
+    }
+    .cta .hero-buttons { justify-content: center; }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 2.5rem 1.5rem;
+      background: var(--navy-dark);
+      color: rgba(255,255,255,0.5);
+      text-align: center;
+      font-size: 0.85rem;
+    }
+    footer a {
+      color: rgba(255,255,255,0.6);
+      text-decoration: none;
+    }
+    footer a:hover { color: var(--white); }
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .hero { padding: 7rem 1.25rem 5rem; }
+      .hero-inner { grid-template-columns: 1fr; text-align: center; }
+      .hero p { margin: 0 auto 2rem; }
+      .hero-buttons { justify-content: center; }
+      .hero-phone { margin-top: 2rem; }
+      .phone-frame { width: 220px; height: 440px; }
+      .stats-inner { grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+      .stat-number { font-size: 1.75rem; }
+      .features-grid { grid-template-columns: 1fr; gap: 1.25rem; }
+      .screenshots-scroll { grid-template-columns: repeat(2, 1fr); }
+      .grade-pills { gap: 0.75rem; }
+      .grade-pill { padding: 0.5rem 1rem; font-size: 0.85rem; }
+      .nav-links a:not(.nav-cta) { display: none; }
+    }
+
+    @media (max-width: 480px) {
+      .hero h1 { font-size: 2rem; }
+      .store-btn { padding: 0.7rem 1.25rem; }
+      .screenshots-scroll { grid-template-columns: 1fr 1fr; gap: 1rem; }
+    }
+
+    /* ── ANIMATIONS ── */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="navbar">
+    <div class="nav-inner">
+      <img src="surebite-header-navy-logo.png" alt="SureBite" class="nav-logo">
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#screenshots">Screenshots</a>
+        <a href="#cities">Cities</a>
+        <a href="#download" class="nav-cta">Download</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div>
+        <div class="hero-badge">Real Health Inspection Data</div>
+        <h1>Be <span>Sure</span> Before<br>You <span>Bite.</span></h1>
+        <p>SureBite shows you real restaurant health inspection grades from official government sources — so you can eat out with confidence. No account required. No personal data collected. Ever.</p>
+        <div class="hero-buttons">
+          <a href="#download" class="store-btn store-btn-apple">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+            <div class="store-btn-label">
+              <small>Download on the</small>
+              <strong>App Store</strong>
+            </div>
+          </a>
+          <a href="#download" class="store-btn store-btn-google">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.18 23.72c-.36-.18-.63-.46-.81-.82-.18-.36-.27-.75-.27-1.18V2.28c0-.43.09-.82.27-1.18.18-.36.45-.64.81-.82l9.98 11.72-9.98 11.72zm1.7 1.04L16.33 14.3l-2.78-3.27-8.67 13.73zm14.82-8.48l-3.62-2.08-3.07 3.6 3.07 3.6 3.62-2.08c.53-.3.93-.66 1.19-1.07.26-.41.39-.88.39-1.41 0-.53-.13-1-.39-1.42-.26-.41-.66-.77-1.19-1.07V16.28zM4.88.24L13.55 13.97l2.78-3.27L4.88.24z"/></svg>
+            <div class="store-btn-label">
+              <small>Get it on</small>
+              <strong>Google Play</strong>
+            </div>
+          </a>
+        </div>
+      </div>
+      <div class="hero-phone">
+        <div style="width: 500px; height: 620px; border-radius: 36px 36px 0 0; overflow: hidden; box-shadow: 0 30px 70px rgba(0,0,0,0.5); position: relative; z-index: 5; margin-bottom: -120px;">
+          <img src="screenshot-1 - main.png" alt="SureBite app — search restaurants by city and see health grades" style="width: 100%; height: auto; display: block;">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section class="stats fade-in">
+    <div class="stats-inner">
+      <div>
+        <div class="stat-number">90+</div>
+        <div class="stat-label">Cities Covered</div>
+      </div>
+      <div>
+        <div class="stat-number">1M+</div>
+        <div class="stat-label">Inspection Records</div>
+      </div>
+      <div>
+        <div class="stat-number">100%</div>
+        <div class="stat-label">Official Gov Data</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROBLEM -->
+  <section class="problem fade-in">
+    <div class="problem-inner">
+      <h2>Why SureBite?</h2>
+      <p>
+        The CDC estimates <span class="highlight">48 million Americans</span> — 1 in 6 — get a foodborne illness every year,
+        resulting in <span class="highlight">128,000 hospitalizations</span> and <span class="highlight">3,000 deaths</span>.
+        The majority of outbreaks are linked to restaurant meals. Health inspection results are public record,
+        but they're buried across hundreds of government websites. SureBite puts them in the palm of your hand.
+      </p>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features" id="features">
+    <div class="features-inner">
+      <div class="section-label">Features</div>
+      <h2 class="section-title">Everything you need to dine safely</h2>
+      <div class="features-grid">
+        <div class="feature-card fade-in">
+          <div class="feature-icon blue">
+            <svg width="24" height="24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          </div>
+          <h3>Search Restaurants</h3>
+          <p>Find restaurants by city, ZIP code, or use your GPS location to discover what's nearby.</p>
+        </div>
+        <div class="feature-card fade-in">
+          <div class="feature-icon green">
+            <svg width="24" height="24" fill="none" stroke="#16A34A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><rect x="3" y="3" width="18" height="18" rx="3"/></svg>
+          </div>
+          <h3>Health Grades</h3>
+          <p>See letter grades (A through F) based on real, official government health inspection data.</p>
+        </div>
+        <div class="feature-card fade-in">
+          <div class="feature-icon amber">
+            <svg width="24" height="24" fill="none" stroke="#B45309" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          </div>
+          <h3>Save Favorites</h3>
+          <p>Bookmark restaurants you love and access them instantly — no account required.</p>
+        </div>
+        <div class="feature-card fade-in">
+          <div class="feature-icon red">
+            <svg width="24" height="24" fill="none" stroke="#DC2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          </div>
+          <h3>Grade Alerts</h3>
+          <p>Follow restaurants and get notified when their health inspection grade changes.</p>
+        </div>
+        <div class="feature-card fade-in">
+          <div class="feature-icon purple">
+            <svg width="24" height="24" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          </div>
+          <h3>Inspection Details</h3>
+          <p>Dive into full inspection reports — see violations, scores, and inspector notes.</p>
+        </div>
+        <div class="feature-card fade-in">
+          <div class="feature-icon orange">
+            <svg width="24" height="24" fill="none" stroke="#E8612A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg>
+          </div>
+          <h3>Filter & Sort</h3>
+          <p>Filter by grade, cuisine, and distance. Sort by health score, name, or proximity.</p>
+        </div>
+        <div class="feature-card fade-in">
+          <div class="feature-icon green">
+            <svg width="24" height="24" fill="none" stroke="#16A34A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          </div>
+          <h3>Zero Personal Data</h3>
+          <p>No account, no email, no tracking, no ads. Your favorites stay on your device. We never collect or sell personal information.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCREENSHOTS -->
+  <section class="screenshots" id="screenshots">
+    <div class="screenshots-inner">
+      <div class="section-label">See it in action</div>
+      <h2 class="section-title">A look inside SureBite</h2>
+      <div class="screenshots-scroll">
+        <div class="screenshot-slot">
+          <img src="screenshot-1 - main.png" alt="Search results in Austin, TX">
+        </div>
+        <div class="screenshot-slot">
+          <img src="screenshot-4 - Restaurant details screen.png" alt="Restaurant detail with health grade">
+        </div>
+        <div class="screenshot-slot">
+          <img src="screenshot-5 - Restaurant Inspection Notes screen.png" alt="Inspection notes and findings">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GRADES EXPLAINER -->
+  <section class="grades fade-in">
+    <div class="grades-inner">
+      <div class="section-label">Health Grades</div>
+      <h2 class="section-title">Simple letter grades you can trust</h2>
+      <p style="color: var(--gray-500); max-width: 600px; margin: -2rem auto 0;">
+        We translate complex inspection data into easy-to-understand letter grades sourced directly from city and county health departments.
+      </p>
+      <div class="grade-pills">
+        <div class="grade-pill grade-a">
+          <div class="letter">A</div>
+          <div class="label">90 &ndash; 100</div>
+        </div>
+        <div class="grade-pill grade-b">
+          <div class="letter">B</div>
+          <div class="label">80 &ndash; 89</div>
+        </div>
+        <div class="grade-pill grade-c">
+          <div class="letter">C</div>
+          <div class="label">70 &ndash; 79</div>
+        </div>
+        <div class="grade-pill grade-f">
+          <div class="letter">F</div>
+          <div class="label">Below 70</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CITIES -->
+  <section class="cities" id="cities">
+    <div class="cities-inner fade-in">
+      <div class="section-label">Coverage</div>
+      <h2 class="section-title">Available in 90+ cities and growing</h2>
+      <div class="cities-grid">
+        <span class="city-tag">New York City</span>
+        <span class="city-tag">Los Angeles</span>
+        <span class="city-tag">Chicago</span>
+        <span class="city-tag">Las Vegas</span>
+        <span class="city-tag">Miami</span>
+        <span class="city-tag">Tampa</span>
+        <span class="city-tag">Orlando</span>
+        <span class="city-tag">Seattle</span>
+        <span class="city-tag">Austin</span>
+        <span class="city-tag">San Antonio</span>
+        <span class="city-tag">San Francisco</span>
+        <span class="city-tag">Raleigh</span>
+        <span class="city-tag">Louisville</span>
+        <span class="city-tag">Anchorage</span>
+        <span class="city-tag">Honolulu</span>
+        <span class="city-tag">Nashville</span>
+        <span class="city-tag">Charlotte</span>
+        <span class="city-tag">Portland</span>
+        <span class="city-tag">Denver</span>
+        <span class="city-tag">Dallas</span>
+        <span class="city-tag">Fort Worth</span>
+        <span class="city-tag">Philadelphia</span>
+        <span class="city-tag">Columbus</span>
+        <span class="city-tag">Memphis</span>
+        <span class="city-tag">Albuquerque</span>
+        <span class="city-tag">Oakland</span>
+      </div>
+      <p class="cities-more">And more cities added regularly.</p>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta" id="download">
+    <div class="cta-inner">
+      <h2>Ready to eat smarter?</h2>
+      <p>Download SureBite for free and check the health grade before your next meal.</p>
+      <div class="hero-buttons">
+        <a href="#" class="store-btn store-btn-apple" onclick="alert('Coming soon to the App Store!'); return false;">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+          <div class="store-btn-label">
+            <small>Download on the</small>
+            <strong>App Store</strong>
+          </div>
+        </a>
+        <a href="#" class="store-btn store-btn-google" onclick="alert('Coming soon to Google Play!'); return false;">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.18 23.72c-.36-.18-.63-.46-.81-.82-.18-.36-.27-.75-.27-1.18V2.28c0-.43.09-.82.27-1.18.18-.36.45-.64.81-.82l9.98 11.72-9.98 11.72zm1.7 1.04L16.33 14.3l-2.78-3.27-8.67 13.73zm14.82-8.48l-3.62-2.08-3.07 3.6 3.07 3.6 3.62-2.08c.53-.3.93-.66 1.19-1.07.26-.41.39-.88.39-1.41 0-.53-.13-1-.39-1.42-.26-.41-.66-.77-1.19-1.07V16.28zM4.88.24L13.55 13.97l2.78-3.27L4.88.24z"/></svg>
+          <div class="store-btn-label">
+            <small>Get it on</small>
+            <strong>Google Play</strong>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-links">
+      <a href="mailto:support@surebiteapp.com">Contact</a>
+      <a href="#features">Features</a>
+      <a href="#cities">Cities</a>
+      <a href="privacy-policy.html">Privacy Policy</a>
+      <a href="terms-of-service.html">Terms of Service</a>
+    </div>
+    <p>&copy; 2025 SureBite. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // Navbar scroll shadow
+    const nav = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 10);
+    });
+
+    // Fade-in on scroll
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+  </script>
+
+</body>
+</html>

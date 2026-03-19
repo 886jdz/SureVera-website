@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terms of Service — SureBite</title>
+  <meta name="description" content="Terms of Service for SureBite, the restaurant health inspection grade app.">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --navy: #1B3A6B;
+      --navy-dark: #0D1B2E;
+      --white: #FFFFFF;
+      --gray-50: #F8FAFC;
+      --gray-100: #F1F5F9;
+      --gray-200: #E2E8F0;
+      --gray-400: #94A3B8;
+      --gray-500: #64748B;
+      --gray-600: #475569;
+      --gray-700: #334155;
+      --gray-800: #1E293B;
+      --orange: #E8612A;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: var(--gray-800);
+      background: var(--white);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      text-align: center;
+      padding: 3rem 1.5rem 2rem;
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    .header img {
+      height: 40px;
+      width: auto;
+      margin-bottom: 1rem;
+    }
+
+    .header h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--navy);
+      margin-bottom: 0.5rem;
+    }
+
+    .header .updated {
+      font-size: 0.9rem;
+      color: var(--gray-500);
+    }
+
+    /* ── CONTENT ── */
+    .content {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 4rem;
+    }
+
+    h2 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin-top: 2.5rem;
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 2px solid var(--gray-100);
+    }
+
+    h2:first-of-type {
+      margin-top: 0;
+    }
+
+    p {
+      margin-bottom: 1rem;
+      color: var(--gray-700);
+      font-size: 0.95rem;
+    }
+
+    ul, ol {
+      margin-bottom: 1rem;
+      padding-left: 1.5rem;
+    }
+
+    li {
+      margin-bottom: 0.5rem;
+      color: var(--gray-700);
+      font-size: 0.95rem;
+    }
+
+    strong {
+      color: var(--gray-800);
+      font-weight: 600;
+    }
+
+    a {
+      color: var(--navy);
+      text-decoration: underline;
+    }
+
+    a:hover {
+      color: var(--orange);
+    }
+
+    .section-number {
+      display: inline-block;
+      background: var(--gray-100);
+      color: var(--navy);
+      font-weight: 700;
+      font-size: 0.8rem;
+      width: 28px;
+      height: 28px;
+      line-height: 28px;
+      text-align: center;
+      border-radius: 6px;
+      margin-right: 0.5rem;
+      vertical-align: middle;
+    }
+
+    .important-notice {
+      background: var(--gray-50);
+      border-left: 4px solid var(--navy);
+      border-radius: 0 8px 8px 0;
+      padding: 1.25rem 1.5rem;
+      margin: 1.25rem 0;
+    }
+
+    .important-notice p {
+      margin-bottom: 0.5rem;
+    }
+
+    .important-notice p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* ── FOOTER ── */
+    .footer {
+      text-align: center;
+      padding: 2rem 1.5rem;
+      border-top: 1px solid var(--gray-200);
+      color: var(--gray-500);
+      font-size: 0.85rem;
+    }
+
+    .footer a {
+      color: var(--gray-500);
+    }
+
+    .footer a:hover {
+      color: var(--navy);
+    }
+
+    /* ── TOC ── */
+    .toc {
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: 10px;
+      padding: 1.5rem 2rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .toc h3 {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--gray-500);
+      margin-bottom: 0.75rem;
+    }
+
+    .toc ol {
+      padding-left: 1.25rem;
+      margin-bottom: 0;
+    }
+
+    .toc li {
+      margin-bottom: 0.35rem;
+      font-size: 0.9rem;
+    }
+
+    .toc a {
+      text-decoration: none;
+      color: var(--navy);
+    }
+
+    .toc a:hover {
+      text-decoration: underline;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 600px) {
+      .header h1 { font-size: 1.5rem; }
+      .content { padding: 1.5rem 1rem 3rem; }
+      h2 { font-size: 1.15rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- BACK NAV -->
+  <div style="max-width:800px;margin:0 auto;padding:1.5rem 2rem 0;">
+    <a href="index.html" style="display:inline-flex;align-items:center;gap:0.4rem;text-decoration:none;color:#1B3A6B;font-size:0.85rem;font-weight:600;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      Back to SureBite
+    </a>
+  </div>
+
+  <div class="header">
+    <img src="surebite-header-navy-logo.png" alt="SureBite Logo">
+    <h1>Terms of Service</h1>
+    <p class="updated">Last Updated: March 2026</p>
+  </div>
+
+  <div class="content">
+
+    <div class="toc">
+      <h3>Table of Contents</h3>
+      <ol>
+        <li><a href="#acceptance">Acceptance of Terms</a></li>
+        <li><a href="#description">Description of Service</a></li>
+        <li><a href="#data-accuracy">Data Accuracy and Disclaimers</a></li>
+        <li><a href="#intellectual-property">Intellectual Property</a></li>
+        <li><a href="#user-conduct">User Conduct</a></li>
+        <li><a href="#subscriptions">Subscriptions and Payments</a></li>
+        <li><a href="#push-notifications">Push Notifications</a></li>
+        <li><a href="#limitation-of-liability">Limitation of Liability</a></li>
+        <li><a href="#indemnification">Indemnification</a></li>
+        <li><a href="#termination">Termination</a></li>
+        <li><a href="#governing-law">Governing Law</a></li>
+        <li><a href="#changes">Changes to Terms</a></li>
+        <li><a href="#contact">Contact Us</a></li>
+      </ol>
+    </div>
+
+    <!-- 1. Acceptance of Terms -->
+    <h2 id="acceptance"><span class="section-number">1</span> Acceptance of Terms</h2>
+    <p>By downloading, installing, accessing, or using the SureBite mobile application ("App") or any related services (collectively, the "Service"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, you must not use the Service.</p>
+    <p>These Terms constitute a legally binding agreement between you ("User," "you," or "your") and SureBite ("we," "us," or "our"). Your continued use of the Service following any modifications to these Terms constitutes your acceptance of such changes.</p>
+
+    <!-- 2. Description of Service -->
+    <h2 id="description"><span class="section-number">2</span> Description of Service</h2>
+    <p>SureBite is a mobile application available on iOS and Android that provides access to publicly available restaurant health inspection data from official government sources across 90+ cities in the United States.</p>
+    <p>The Service operates by:</p>
+    <ul>
+      <li>Aggregating restaurant health inspection records published by city and county health departments</li>
+      <li>Matching restaurants to their corresponding inspection records using automated name-matching technology</li>
+      <li>Displaying letter grades (A, B, C, or F) and inspection details based on official government data</li>
+      <li>Providing optional push notifications when a restaurant's health inspection grade changes</li>
+    </ul>
+    <p>SureBite does not require user accounts. Certain features may be available through optional paid subscriptions.</p>
+
+    <!-- 3. Data Accuracy and Disclaimers -->
+    <h2 id="data-accuracy"><span class="section-number">3</span> Data Accuracy and Disclaimers</h2>
+
+    <div class="important-notice">
+      <p><strong>Please read this section carefully.</strong> It describes the nature and limitations of the data displayed in SureBite.</p>
+    </div>
+
+    <p><strong>Source of Data.</strong> All health inspection data displayed in SureBite is sourced from official city and county health department public records. SureBite does not conduct restaurant inspections, create its own ratings, or generate opinions about any establishment. The grades and inspection details shown in the App reflect findings made by government health inspectors, not assessments or judgments made by SureBite.</p>
+
+    <p><strong>Government Grading.</strong> Where available, health inspection grades and numeric scores are taken directly from official government records. SureBite uses the following grade scale: A (score of 90 or above), B (80-89), C (70-79), and F (below 70). These grades reflect the scoring systems used by the relevant health departments.</p>
+
+    <p><strong>Estimated Scores.</strong> In jurisdictions where health departments do not publish numeric scores, SureBite provides estimated comparable scores based on the official inspection findings (such as the number and severity of violations documented). These estimated scores are clearly labeled as estimates within the App. Estimated scores represent SureBite's best effort to translate official inspection findings into a comparable numeric format and should be understood as approximations, not official government scores.</p>
+
+    <p><strong>Automated Restaurant Matching.</strong> SureBite uses automated fuzzy name-matching technology to match restaurants listed in public databases (such as OpenStreetMap) to their corresponding health inspection records. While we employ confidence thresholds and multiple verification techniques to ensure accuracy, this automated process may occasionally result in:</p>
+    <ul>
+      <li>Incorrect matches, where a restaurant is associated with another establishment's inspection record</li>
+      <li>Missing matches, where a restaurant's inspection data exists but is not linked to the correct listing</li>
+      <li>Partial matches, where a restaurant with multiple locations is matched to the wrong branch's inspection</li>
+    </ul>
+    <p>SureBite displays a confidence level for each match. Only matches meeting a minimum confidence threshold are shown to users. However, no automated matching system is perfect, and users should be aware of this limitation.</p>
+
+    <p><strong>Data Freshness.</strong> The timeliness of inspection data depends entirely on each health department's publishing schedule. There may be a delay of days, weeks, or longer between the date an inspection is conducted and the date it appears in SureBite. Recently inspected restaurants may display outdated grades until the health department publishes updated records and SureBite processes the new data. SureBite updates its data on a regular schedule but cannot guarantee real-time accuracy.</p>
+
+    <p><strong>Completeness.</strong> SureBite does not claim to display data for every restaurant in every covered city. Coverage depends on the availability of public inspection records, the completeness of restaurant listings in public databases, and the ability of our matching system to link the two. Some restaurants may not appear in the App, and some may appear without inspection data.</p>
+
+    <p><strong>No Warranty of Accuracy.</strong> SureBite makes no warranty, express or implied, that the data displayed in the App is complete, current, accurate, or error-free. We provide the data on an "as is" basis. Government records themselves may contain errors, and the process of aggregating, parsing, and matching this data may introduce additional inaccuracies.</p>
+
+    <p><strong>Not a Substitute for Professional Judgment.</strong> The information provided by SureBite is for general informational purposes only. Users should not rely solely on SureBite when making dining decisions, particularly if they have food allergies, compromised immune systems, or other health concerns that make food safety especially important. SureBite is not a substitute for your own judgment or for consulting official health department records directly.</p>
+
+    <p><strong>Reporting Errors.</strong> If you believe that a restaurant's inspection data, grade, or matching is incorrect, please contact us at <a href="mailto:support@surebiteapp.com">support@surebiteapp.com</a>. We investigate all reports and make corrections where appropriate, but we cannot guarantee resolution of every reported issue.</p>
+
+    <!-- 4. Intellectual Property -->
+    <h2 id="intellectual-property"><span class="section-number">4</span> Intellectual Property</h2>
+    <p>The SureBite application, including its design, user interface, branding, logos, and proprietary algorithms, is owned by SureBite and is protected by applicable intellectual property laws. All rights not expressly granted in these Terms are reserved.</p>
+    <p>Health inspection data displayed in the App is derived from public government records and is not owned by SureBite. SureBite's compilation, organization, and presentation of this data, however, is proprietary.</p>
+    <p>You may not copy, modify, distribute, sell, lease, reverse engineer, decompile, or create derivative works of the App or any part of the Service without our prior written consent.</p>
+
+    <!-- 5. User Conduct -->
+    <h2 id="user-conduct"><span class="section-number">5</span> User Conduct</h2>
+    <p>By using the Service, you agree that you will not:</p>
+    <ul>
+      <li>Use any automated means, including bots, scrapers, or crawlers, to access, collect, or extract data from the Service</li>
+      <li>Reverse engineer, decompile, disassemble, or otherwise attempt to discover the source code or underlying algorithms of the App</li>
+      <li>Attempt to circumvent, disable, or interfere with any security features of the Service</li>
+      <li>Use the Service to harass, defame, threaten, or intimidate any restaurant, business, or individual</li>
+      <li>Use the data obtained through the Service to create a competing product or service</li>
+      <li>Misrepresent SureBite's data or grades as your own ratings, reviews, or opinions</li>
+      <li>Use the Service in any manner that violates applicable laws or regulations</li>
+      <li>Share or redistribute data from the Service in bulk or in any commercial capacity without prior written consent</li>
+    </ul>
+    <p>We reserve the right to suspend or terminate access to the Service for any user who violates these conduct requirements.</p>
+
+    <!-- 6. Subscriptions and Payments -->
+    <h2 id="subscriptions"><span class="section-number">6</span> Subscriptions and Payments</h2>
+    <p>SureBite offers a free 3-day trial so you can explore the app. After the trial period ends, a paid subscription is required to continue using the app.</p>
+    <p>Subscriptions are offered through and managed by the Apple App Store (for iOS) and Google Play Store (for Android). Payment processing is handled by RevenueCat and the respective app store platforms. By subscribing, you also agree to the applicable terms of Apple, Google, and RevenueCat.</p>
+    <p>Subscription pricing, billing periods, and available plans are displayed within the App at the time of purchase. Prices may change, but any price change will not affect your current billing period.</p>
+    <p>Refunds for subscriptions are governed by Apple's and Google's respective refund policies. SureBite does not directly process payments or issue refunds. To request a refund, please contact Apple or Google through their standard support channels.</p>
+    <p>You may cancel your subscription at any time through your device's app store settings. Cancellation takes effect at the end of the current billing period.</p>
+
+    <!-- 7. Push Notifications -->
+    <h2 id="push-notifications"><span class="section-number">7</span> Push Notifications</h2>
+    <p>SureBite offers optional push notifications to alert you when a restaurant you follow receives a new health inspection grade. These notifications are delivered anonymously using your device's push notification token; no personal account or identifying information is required.</p>
+    <p>You can opt out of push notifications at any time by:</p>
+    <ul>
+      <li>Unfollowing individual restaurants within the App</li>
+      <li>Disabling SureBite notifications in your device's system settings</li>
+    </ul>
+    <p>SureBite is not responsible for delays, failures, or errors in the delivery of push notifications. Notification delivery depends on third-party services (Apple Push Notification Service, Firebase Cloud Messaging, and Expo) and your device's network connectivity. We do not guarantee that notifications will be delivered in a timely manner, or at all.</p>
+    <p>Grade-change notifications are informational only and should not be relied upon as the sole means of monitoring a restaurant's health inspection status.</p>
+
+    <!-- 8. Limitation of Liability -->
+    <h2 id="limitation-of-liability"><span class="section-number">8</span> Limitation of Liability</h2>
+
+    <div class="important-notice">
+      <p><strong>This section limits SureBite's liability. Please read it carefully.</strong></p>
+    </div>
+
+    <p><strong>As-Is Basis.</strong> THE SERVICE IS PROVIDED ON AN "AS IS" AND "AS AVAILABLE" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, ACCURACY, AND NON-INFRINGEMENT. SUREBITE DOES NOT WARRANT THAT THE SERVICE WILL BE UNINTERRUPTED, SECURE, OR ERROR-FREE.</p>
+
+    <p><strong>No Liability for Data Accuracy.</strong> SureBite is not responsible for the accuracy, completeness, or timeliness of health inspection data published by government health departments. We aggregate and display publicly available data but do not verify or independently confirm the findings of government inspectors. Any errors in the underlying government data are beyond our control.</p>
+
+    <p><strong>No Liability for Matching Errors.</strong> SureBite is not liable for any damages arising from incorrect automated matches between restaurants and inspection records, including but not limited to cases where a restaurant is associated with another establishment's inspection data.</p>
+
+    <p><strong>No Liability for Business Impact.</strong> SureBite displays public government records. SureBite is not liable for any business impact, loss of revenue, loss of customers, reputational harm, or other damages experienced by any restaurant, food establishment, or business as a result of the display of publicly available health inspection data in the App. Health inspection records are public information published by government agencies, and SureBite's role is limited to making this existing public data more accessible.</p>
+
+    <p><strong>No Liability for User Decisions.</strong> SureBite is not liable for any personal injury, illness, or other damages arising from a user's decision to dine or not dine at any establishment based on information displayed in the App. Users assume all risk associated with their dining decisions.</p>
+
+    <p><strong>No Liability for Third-Party Services.</strong> SureBite relies on third-party services including, but not limited to, Apple, Google, RevenueCat, Expo, and various government data providers. SureBite is not liable for any failures, outages, or errors caused by these third-party services.</p>
+
+    <p><strong>Cap on Liability.</strong> TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT SHALL SUREBITE, ITS OFFICERS, DIRECTORS, EMPLOYEES, OR AGENTS BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING BUT NOT LIMITED TO LOSS OF PROFITS, LOSS OF DATA, LOSS OF GOODWILL, OR BUSINESS INTERRUPTION, ARISING OUT OF OR IN CONNECTION WITH YOUR USE OF OR INABILITY TO USE THE SERVICE, REGARDLESS OF THE THEORY OF LIABILITY (CONTRACT, TORT, STRICT LIABILITY, OR OTHERWISE), EVEN IF SUREBITE HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.</p>
+
+    <p>IN NO EVENT SHALL SUREBITE'S TOTAL AGGREGATE LIABILITY ARISING OUT OF OR IN CONNECTION WITH THESE TERMS OR YOUR USE OF THE SERVICE EXCEED THE TOTAL AMOUNT YOU HAVE PAID TO SUREBITE FOR THE SERVICE IN THE TWELVE (12) MONTHS IMMEDIATELY PRECEDING THE EVENT GIVING RISE TO THE CLAIM.</p>
+
+    <!-- 9. Indemnification -->
+    <h2 id="indemnification"><span class="section-number">9</span> Indemnification</h2>
+    <p>You agree to defend, indemnify, and hold harmless SureBite, its officers, directors, employees, agents, and affiliates from and against any and all claims, damages, losses, liabilities, costs, and expenses (including reasonable attorneys' fees) arising out of or in connection with:</p>
+    <ul>
+      <li>Your use of or access to the Service</li>
+      <li>Your violation of these Terms</li>
+      <li>Your violation of any applicable law or regulation</li>
+      <li>Your violation of any third party's rights, including intellectual property or privacy rights</li>
+      <li>Any claim that your use of the Service caused damage to a third party</li>
+    </ul>
+    <p>This indemnification obligation shall survive the termination of these Terms and your use of the Service.</p>
+
+    <!-- 10. Termination -->
+    <h2 id="termination"><span class="section-number">10</span> Termination</h2>
+    <p>SureBite reserves the right to suspend or terminate your access to the Service at any time, with or without cause and with or without notice. Reasons for termination may include, but are not limited to, violations of these Terms, abusive use of the Service, or conduct that we determine to be harmful to the Service or other users.</p>
+    <p>Upon termination, your right to use the Service will immediately cease. Any provisions of these Terms that by their nature should survive termination shall continue in full force and effect, including but not limited to Sections 3 (Data Accuracy and Disclaimers), 4 (Intellectual Property), 8 (Limitation of Liability), 9 (Indemnification), and 11 (Governing Law).</p>
+
+    <!-- 11. Governing Law -->
+    <h2 id="governing-law"><span class="section-number">11</span> Governing Law</h2>
+    <p>These Terms shall be governed by and construed in accordance with the laws of the State of Texas, without regard to its conflict of law provisions.</p>
+    <p>Any dispute arising out of or relating to these Terms or the Service shall be subject to the exclusive jurisdiction of the state and federal courts located in the State of Texas. You consent to the personal jurisdiction of such courts and waive any objection to the exercise of jurisdiction over the parties by such courts.</p>
+
+    <!-- 12. Changes to Terms -->
+    <h2 id="changes"><span class="section-number">12</span> Changes to Terms</h2>
+    <p>We reserve the right to modify these Terms at any time. When we make changes, we will update the "Last Updated" date at the top of this page. We may also notify you of material changes through the App or by other reasonable means.</p>
+    <p>Your continued use of the Service after the posting of revised Terms constitutes your acceptance of the changes. If you do not agree to the revised Terms, you must stop using the Service.</p>
+    <p>We encourage you to review these Terms periodically to stay informed about our terms and conditions.</p>
+
+    <!-- 13. Contact Us -->
+    <h2 id="contact"><span class="section-number">13</span> Contact Us</h2>
+    <p>If you have any questions, concerns, or requests regarding these Terms of Service, please contact us:</p>
+    <ul>
+      <li><strong>Email:</strong> <a href="mailto:support@surebiteapp.com">support@surebiteapp.com</a></li>
+      <li><strong>Website:</strong> <a href="https://surebiteapp.com">surebiteapp.com</a></li>
+    </ul>
+
+  </div>
+
+  <div class="footer">
+    <p>&copy; 2026 SureBite. All rights reserved. | <a href="https://surebiteapp.com">surebiteapp.com</a></p>
+  </div>
+
+  <script src="dark-mode.js"></script>
+</body>
+</html>
