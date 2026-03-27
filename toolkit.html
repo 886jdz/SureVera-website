@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SureVera — Toolkit</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #F0F3F8;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      color: #1E293B;
+    }
+
+    .toolbar {
+      width: 100%;
+      background: linear-gradient(135deg, #0D1B2E 0%, #1B3A6B 100%);
+      padding: 1.5rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+    }
+    .toolbar img { height: 36px; }
+    .toolbar .divider {
+      width: 1px;
+      height: 28px;
+      background: rgba(255,255,255,0.2);
+    }
+    .toolbar .tool-label {
+      font-size: 1rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.7);
+      letter-spacing: -0.01em;
+    }
+
+    .page {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 3rem 2rem 4rem;
+    }
+
+    .hero-text {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    .hero-text h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #1B3A6B;
+      margin-bottom: 0.5rem;
+    }
+    .hero-text p {
+      font-size: 1rem;
+      color: #64748B;
+    }
+
+    .category {
+      margin-bottom: 2.5rem;
+    }
+    .category-header {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #E8612A;
+      margin-bottom: 1rem;
+      padding-left: 0.25rem;
+    }
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .tool-card {
+      background: #FFF;
+      border-radius: 16px;
+      padding: 2rem;
+      border: 1px solid #E2E8F0;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .tool-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+    }
+
+    .tool-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+    .tool-icon.navy { background: #DBEAFE; }
+    .tool-icon.orange { background: #FFEDD5; }
+    .tool-icon.green { background: #DCFCE7; }
+    .tool-icon.purple { background: #EDE9FE; }
+    .tool-icon.amber { background: #FEF3C7; }
+    .tool-icon.red { background: #FEE2E2; }
+
+    .tool-card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #1E293B;
+    }
+    .tool-card p {
+      font-size: 0.85rem;
+      color: #64748B;
+      line-height: 1.6;
+      flex-grow: 1;
+    }
+    .tool-card .open-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #E8612A;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 2rem;
+      font-size: 0.75rem;
+      color: #94A3B8;
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="toolbar">
+    <img src="surevera-header-white-logo.png" alt="SureVera">
+    <div class="divider"></div>
+    <span class="tool-label">Toolkit</span>
+  </div>
+
+  <div class="page">
+    <div class="hero-text">
+      <h1>SureVera Toolkit</h1>
+      <p>Everything you need to market, manage, and grow SureVera — 100% offline.</p>
+    </div>
+
+    <!-- MARKETING -->
+    <div class="category">
+      <div class="category-header">Marketing</div>
+      <div class="tools-grid">
+        <a href="mockup-tool.html" class="tool-card"><div class="tool-icon navy"><svg width="24" height="24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12" y2="18"/></svg></div><h3>Phone Mockups</h3><p>Wrap screenshots in realistic phone frames — iPhone, Samsung, Pixel, and more.</p><span class="open-label">Open &rarr;</span></a>
+        <a href="screenshot-builder.html" class="tool-card"><div class="tool-icon orange"><svg width="24" height="24" fill="none" stroke="#E8612A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div><h3>App Store Screenshots</h3><p>Create store listing screenshots with headlines and branded backgrounds.</p><span class="open-label">Open &rarr;</span></a>
+        <a href="social-templates.html" class="tool-card"><div class="tool-icon purple"><svg width="24" height="24" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M4 4h16a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><h3>Social Media Templates</h3><p>Instagram, Facebook, Twitter/X, and LinkedIn posts with your branding.</p><span class="open-label">Open &rarr;</span></a>
+        <a href="banner-creator.html" class="tool-card"><div class="tool-icon green"><svg width="24" height="24" fill="none" stroke="#16A34A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="10" rx="2"/><line x1="12" y1="17" x2="12" y2="21"/><line x1="8" y1="21" x2="16" y2="21"/></svg></div><h3>Banner Ads</h3><p>Web banner ads in all standard IAB sizes — leaderboard, rectangle, skyscraper.</p><span class="open-label">Open &rarr;</span></a>
+        <a href="qr-generator.html" class="tool-card"><div class="tool-icon amber"><svg width="24" height="24" fill="none" stroke="#B45309" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="3" height="3"/></svg></div><h3>QR Codes</h3><p>Branded QR codes for app store links, website, and print materials.</p><span class="open-label">Open &rarr;</span></a>
+        <a href="city-cards.html" class="tool-card"><div class="tool-icon green"><svg width="24" height="24" fill="none" stroke="#16A34A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div><h3>City Announcement Cards</h3><p>"Now Available in..." social graphics for new city launches.</p><span class="open-label">Open &rarr;</span></a>
+        <a href="review-cards.html" class="tool-card"><div class="tool-icon purple"><svg width="24" height="24" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div><h3>Review Cards</h3><p>Turn user reviews into branded social graphics with star ratings.</p><span class="open-label">Open &rarr;</span></a>
+      </div>
+    </div>
+
+    <!-- CONTENT & GROWTH -->
+    <div class="category">
+      <div class="category-header">Content & Growth</div>
+      <div class="tools-grid">
+        <a href="content-calendar.html" class="tool-card"><div class="tool-icon purple"><svg width="24" height="24" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><h3>Content Calendar</h3><p>Plan and schedule social posts, city launches, and feature announcements.</p><span class="open-label">Open &rarr;</span></a>
+        <a href="store-listing.html" class="tool-card"><div class="tool-icon amber"><svg width="24" height="24" fill="none" stroke="#B45309" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><path d="M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg></div><h3>Store Listing Helper</h3><p>App Store and Play Store descriptions with character counters and keywords.</p><span class="open-label">Open &rarr;</span></a>
+        <a href="release-notes.html" class="tool-card"><div class="tool-icon navy"><svg width="24" height="24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><h3>Release Notes</h3><p>Write "What's New" text for app updates with templates and history.</p><span class="open-label">Open &rarr;</span></a>
+        <a href="competitor-board.html" class="tool-card"><div class="tool-icon red"><svg width="24" height="24" fill="none" stroke="#DC2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg></div><h3>Competitor Board</h3><p>Track competing apps — features, pricing, ratings, and your advantages.</p><span class="open-label">Open &rarr;</span></a>
+        <a href="revenue-calculator.html" class="tool-card"><div class="tool-icon green"><svg width="24" height="24" fill="none" stroke="#16A34A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V7m0 10v1"/><circle cx="12" cy="12" r="10"/></svg></div><h3>Revenue Calculator</h3><p>Project monthly and annual revenue with growth, churn, and milestones.</p><span class="open-label">Open &rarr;</span></a>
+      </div>
+    </div>
+
+    <!-- OPERATIONS -->
+    <div class="category">
+      <div class="category-header">Operations</div>
+      <div class="tools-grid">
+        <a href="launch-checklist.html" class="tool-card"><div class="tool-icon orange"><svg width="24" height="24" fill="none" stroke="#E8612A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><h3>Launch Checklist</h3><p>Interactive checklist for App Store, Play Store, RevenueCat, and server setup.</p><span class="open-label">Open &rarr;</span></a>
+        <a href="city-planner.html" class="tool-card"><div class="tool-icon green"><svg width="24" height="24" fill="none" stroke="#16A34A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div><h3>City Planner</h3><p>Track city expansion — data sources, status, priority, and population.</p><span class="open-label">Open &rarr;</span></a>
+        <a href="city-data.html" class="tool-card"><div class="tool-icon blue"><svg width="24" height="24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"/></svg></div><h3>City Data Sources</h3><p>Research database of how every major US city publishes health inspection data.</p><span class="open-label">Open &rarr;</span></a>
+        <a href="outreach-toolkit.html" class="tool-card"><div class="tool-icon orange"><svg width="24" height="24" fill="none" stroke="#E8612A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg></div><h3>Outreach Toolkit</h3><p>Email templates, partnership pitch, and guides for health department outreach.</p><span class="open-label">Open &rarr;</span></a>
+        <a href="outreach-tracker.html" class="tool-card"><div class="tool-icon green"><svg width="24" height="24" fill="none" stroke="#16A34A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg></div><h3>Outreach Tracker</h3><p>Track health department contacts, follow-ups, and response status with CSV export.</p><span class="open-label">Open &rarr;</span></a>
+        <a href="infrastructure.html" class="tool-card"><div class="tool-icon blue"><svg width="24" height="24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/></svg></div><h3>Infrastructure</h3><p>Interactive architecture diagram — click any component to drill down into details.</p><span class="open-label">Open &rarr;</span></a>
+        <a href="incident-log.html" class="tool-card"><div class="tool-icon red"><svg width="24" height="24" fill="none" stroke="#DC2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg></div><h3>Incident Log</h3><p>Track outages, API issues, and data problems with severity and resolution.</p><span class="open-label">Open &rarr;</span></a>
+        <a href="dev-log.html" class="tool-card"><div class="tool-icon purple"><svg width="24" height="24" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg></div><h3>Dev Log</h3><p>Daily development updates -- track progress, decisions, and changes across the entire project.</p><span class="open-label">Open &rarr;</span></a>
+      </div>
+    </div>
+
+    <!-- SUPPORT -->
+    <div class="category">
+      <div class="category-header">Support</div>
+      <div class="tools-grid">
+        <a href="faq-builder.html" class="tool-card"><div class="tool-icon amber"><svg width="24" height="24" fill="none" stroke="#B45309" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><h3>FAQ Builder</h3><p>Create and manage FAQs with live preview for app, website, and plain text.</p><span class="open-label">Open &rarr;</span></a>
+        <a href="canned-responses.html" class="tool-card"><div class="tool-icon navy"><svg width="24" height="24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg></div><h3>Support Templates</h3><p>Pre-written email responses for data accuracy, billing, privacy, and complaints.</p><span class="open-label">Open &rarr;</span></a>
+      </div>
+    </div>
+
+    <!-- BRAND & LEGAL -->
+    <div class="category">
+      <div class="category-header">Brand & Legal</div>
+      <div class="tools-grid">
+        <a href="brand-kit.html" class="tool-card"><div class="tool-icon red"><svg width="24" height="24" fill="none" stroke="#DC2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div><h3>Brand Kit</h3><p>Colors, logos, typography, and grade styles in one reference page.</p><span class="open-label">Open &rarr;</span></a>
+        <a href="press-kit.html" class="tool-card"><div class="tool-icon navy"><svg width="24" height="24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2"/></svg></div><h3>Press Kit</h3><p>Media page with app overview, logos, stats, and copy-paste boilerplate.</p><span class="open-label">Open &rarr;</span></a>
+        <a href="legal-reference.html" class="tool-card"><div class="tool-icon purple"><svg width="24" height="24" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M12 12v10"/></svg></div><h3>Legal Reference</h3><p>Case law, statutes, and legal protections for publishing public health data.</p><span class="open-label">Open &rarr;</span></a>
+        <a href="links.html" class="tool-card"><div class="tool-icon orange"><svg width="24" height="24" fill="none" stroke="#E8612A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg></div><h3>Link in Bio</h3><p>Linktree-style page for Instagram and TikTok bio with download links.</p><span class="open-label">Open &rarr;</span></a>
+      </div>
+    </div>
+
+    <!-- EXTERNAL -->
+    <div class="category">
+      <div class="category-header">External</div>
+      <div class="tools-grid">
+        <a href="https://surebite-api-production-fb8f.up.railway.app/admin" target="_blank" rel="noopener noreferrer" class="tool-card"><div class="tool-icon red"><svg width="24" height="24" fill="none" stroke="#DC2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="4" rx="1"/><rect x="4" y="12" width="8" height="8" rx="1"/><rect x="16" y="12" width="4" height="8" rx="1"/></svg></div><h3>Admin Dashboard</h3><p>Server admin — provider health, cron jobs, audits, and data management.</p><span class="open-label">Open (external) &rarr;</span></a>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">SureVera Toolkit — runs entirely in your browser, nothing leaves your Mac</div>
+
+<script src="dark-mode.js"></script>
+<script src="toolkit-nav.js"></script>
+</body>
+</html>

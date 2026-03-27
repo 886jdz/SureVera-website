@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SureVera — Incident Log</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #F1F5F9;
+      color: #1E293B;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Toolbar */
+    .toolbar {
+      background: linear-gradient(135deg, #0D1B2E 0%, #1B3A6B 100%);
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .toolbar img { height: 32px; }
+    .toolbar .divider { width: 1px; height: 24px; background: rgba(255,255,255,0.2); }
+    .toolbar .tool-label { font-size: 0.85rem; font-weight: 500; color: rgba(255,255,255,0.6); }
+
+    /* Container */
+    .container { max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem 1rem; }
+
+    /* Stats Bar */
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .stat-card {
+      background: #fff;
+      border: 1px solid #E2E8F0;
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+    .stat-card .stat-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #64748B;
+      margin-bottom: 0.25rem;
+    }
+    .stat-card .stat-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #1B3A6B;
+    }
+    .stat-card .stat-value.open-count { color: #DC2626; }
+
+    /* Controls Bar */
+    .controls-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    .controls-bar .search-box {
+      flex: 1;
+      min-width: 200px;
+      padding: 0.6rem 1rem 0.6rem 2.4rem;
+      border: 1px solid #CBD5E1;
+      border-radius: 10px;
+      font-size: 0.875rem;
+      font-family: inherit;
+      background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E") 0.75rem center no-repeat;
+      transition: border-color 0.2s;
+    }
+    .controls-bar .search-box:focus { outline: none; border-color: #1B3A6B; }
+
+    .filter-select {
+      padding: 0.6rem 0.85rem;
+      border: 1px solid #CBD5E1;
+      border-radius: 10px;
+      font-size: 0.8rem;
+      font-family: inherit;
+      background: #fff;
+      color: #334155;
+      cursor: pointer;
+    }
+    .filter-select:focus { outline: none; border-color: #1B3A6B; }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.6rem 1.1rem;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-primary {
+      background: #E8612A;
+      color: #fff;
+    }
+    .btn-primary:hover { background: #D4551F; }
+    .btn-secondary {
+      background: #1B3A6B;
+      color: #fff;
+    }
+    .btn-secondary:hover { background: #153058; }
+    .btn-outline {
+      background: #fff;
+      color: #1B3A6B;
+      border: 1px solid #CBD5E1;
+    }
+    .btn-outline:hover { background: #F1F5F9; }
+    .btn-sm { padding: 0.35rem 0.7rem; font-size: 0.75rem; border-radius: 8px; }
+    .btn-danger { background: #FEE2E2; color: #DC2626; }
+    .btn-danger:hover { background: #FECACA; }
+
+    /* View Toggle */
+    .view-toggle {
+      display: flex;
+      background: #fff;
+      border: 1px solid #CBD5E1;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .view-toggle button {
+      padding: 0.55rem 1rem;
+      border: none;
+      background: transparent;
+      font-family: inherit;
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: #64748B;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .view-toggle button.active {
+      background: #1B3A6B;
+      color: #fff;
+    }
+
+    /* Incident Cards */
+    .incident-list { display: flex; flex-direction: column; gap: 0.75rem; }
+
+    .incident-card {
+      background: #fff;
+      border: 1px solid #E2E8F0;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+      transition: box-shadow 0.15s;
+    }
+    .incident-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+
+    .incident-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1rem 1.25rem;
+      cursor: pointer;
+      user-select: none;
+    }
+    .incident-header:hover { background: #F8FAFC; }
+
+    .severity-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .severity-dot.critical { background: #DC2626; }
+    .severity-dot.major { background: #E8612A; }
+    .severity-dot.minor { background: #F59E0B; }
+    .severity-dot.info { background: #3B82F6; }
+
+    .severity-badge {
+      display: inline-flex;
+      padding: 0.2rem 0.55rem;
+      border-radius: 6px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      flex-shrink: 0;
+    }
+    .severity-badge.critical { background: #FEE2E2; color: #DC2626; }
+    .severity-badge.major { background: #FFF2E8; color: #E8612A; }
+    .severity-badge.minor { background: #FEF3C7; color: #B45309; }
+    .severity-badge.info { background: #DBEAFE; color: #2563EB; }
+
+    .status-badge {
+      display: inline-flex;
+      padding: 0.2rem 0.55rem;
+      border-radius: 6px;
+      font-size: 0.68rem;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    .status-badge.open { background: #FEE2E2; color: #DC2626; }
+    .status-badge.investigating { background: #FEF3C7; color: #B45309; }
+    .status-badge.resolved { background: #DCFCE7; color: #16A34A; }
+
+    .incident-title-area {
+      flex: 1;
+      min-width: 0;
+    }
+    .incident-title-area h3 {
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: #1E293B;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .incident-meta {
+      font-size: 0.75rem;
+      color: #94A3B8;
+      margin-top: 0.15rem;
+    }
+
+    .expand-icon {
+      color: #94A3B8;
+      transition: transform 0.2s;
+      flex-shrink: 0;
+      font-size: 0.85rem;
+    }
+    .incident-card.expanded .expand-icon { transform: rotate(180deg); }
+
+    .incident-details {
+      display: none;
+      padding: 0 1.25rem 1.25rem;
+      border-top: 1px solid #F1F5F9;
+    }
+    .incident-card.expanded .incident-details { display: block; }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .detail-item label {
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #94A3B8;
+      margin-bottom: 0.2rem;
+    }
+    .detail-item p {
+      font-size: 0.85rem;
+      color: #334155;
+    }
+    .detail-item.full { grid-column: 1 / -1; }
+    .detail-item.full p {
+      white-space: pre-wrap;
+      line-height: 1.5;
+    }
+
+    .incident-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid #F1F5F9;
+    }
+
+    /* Timeline View */
+    .timeline-view { display: none; }
+    .timeline-view.active { display: block; }
+    .incident-list-view.active { display: flex; }
+    .incident-list-view { display: none; }
+
+    .timeline-item {
+      display: flex;
+      gap: 1rem;
+      padding: 0.75rem 0;
+      position: relative;
+    }
+    .timeline-item:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 4.5px;
+      top: 2rem;
+      bottom: 0;
+      width: 2px;
+      background: #E2E8F0;
+    }
+    .timeline-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      margin-top: 0.35rem;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+    }
+    .timeline-dot.critical { background: #DC2626; }
+    .timeline-dot.major { background: #E8612A; }
+    .timeline-dot.minor { background: #F59E0B; }
+    .timeline-dot.info { background: #3B82F6; }
+
+    .timeline-content h4 {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #1E293B;
+    }
+    .timeline-content .tl-meta {
+      font-size: 0.75rem;
+      color: #94A3B8;
+      margin-top: 0.1rem;
+    }
+    .timeline-content .tl-desc {
+      font-size: 0.82rem;
+      color: #64748B;
+      margin-top: 0.3rem;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(13, 27, 46, 0.5);
+      z-index: 200;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 3rem 1rem;
+      overflow-y: auto;
+    }
+    .modal-overlay.active { display: flex; }
+
+    .modal {
+      background: #fff;
+      border-radius: 18px;
+      width: 100%;
+      max-width: 620px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+      animation: slideUp 0.25s ease;
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.5rem 1.75rem 1rem;
+      border-bottom: 1px solid #F1F5F9;
+    }
+    .modal-header h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #1B3A6B;
+    }
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.3rem;
+      color: #94A3B8;
+      cursor: pointer;
+      padding: 0.25rem;
+      line-height: 1;
+    }
+    .modal-close:hover { color: #475569; }
+
+    .modal-body {
+      padding: 1.25rem 1.75rem 1.75rem;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .form-group { margin-bottom: 1rem; }
+    .form-group label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: 0.35rem;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.6rem 0.85rem;
+      border: 1px solid #CBD5E1;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-family: inherit;
+      color: #1E293B;
+      transition: border-color 0.15s;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #1B3A6B;
+    }
+    .form-group textarea { resize: vertical; min-height: 70px; }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid #F1F5F9;
+      margin-top: 0.5rem;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: #94A3B8;
+    }
+    .empty-state .empty-icon { font-size: 2.5rem; margin-bottom: 1rem; opacity: 0.5; }
+    .empty-state h3 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #64748B;
+      margin-bottom: 0.5rem;
+    }
+    .empty-state p { font-size: 0.85rem; }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 2.5rem 1rem;
+      font-size: 0.78rem;
+      color: #94A3B8;
+    }
+
+    /* Dark mode overrides */
+    body.dark-mode, [data-theme="dark"],
+    [data-theme="dark"] { background: #0F172A; color: #E2E8F0; }
+    body.dark-mode, [data-theme="dark"],
+    [data-theme="dark"] .stat-card,
+    body.dark-mode, [data-theme="dark"],
+    [data-theme="dark"] .incident-card,
+    body.dark-mode, [data-theme="dark"],
+    [data-theme="dark"] .modal { background: #1E293B; border-color: #334155; }
+    body.dark-mode, [data-theme="dark"],
+    [data-theme="dark"] .stat-card .stat-label { color: #94A3B8; }
+    body.dark-mode, [data-theme="dark"],
+    [data-theme="dark"] .stat-card .stat-value { color: #93C5FD; }
+    body.dark-mode, [data-theme="dark"],
+    [data-theme="dark"] .incident-header:hover { background: #253449; }
+    body.dark-mode, [data-theme="dark"],
+    [data-theme="dark"] .incident-details { border-color: #334155; }
+    body.dark-mode, [data-theme="dark"],
+    [data-theme="dark"] .incident-title-area h3 { color: #F1F5F9; }
+    body.dark-mode, [data-theme="dark"],
+    [data-theme="dark"] .detail-item p { color: #CBD5E1; }
+    body.dark-mode, [data-theme="dark"],
+    [data-theme="dark"] .timeline-content h4 { color: #F1F5F9; }
+    body.dark-mode, [data-theme="dark"],
+    [data-theme="dark"] .timeline-content .tl-desc { color: #94A3B8; }
+    body.dark-mode, [data-theme="dark"],
+    [data-theme="dark"] .timeline-item:not(:last-child)::after { background: #334155; }
+    body.dark-mode, [data-theme="dark"],
+    [data-theme="dark"] .search-box,
+    body.dark-mode, [data-theme="dark"],
+    [data-theme="dark"] .filter-select { background: #1E293B; border-color: #334155; color: #E2E8F0; }
+    body.dark-mode, [data-theme="dark"],
+    [data-theme="dark"] .btn-outline { background: #1E293B; border-color: #334155; color: #93C5FD; }
+    body.dark-mode, [data-theme="dark"],
+    [data-theme="dark"] .form-group input,
+    body.dark-mode, [data-theme="dark"],
+    [data-theme="dark"] .form-group select,
+    body.dark-mode, [data-theme="dark"],
+    [data-theme="dark"] .form-group textarea { background: #0F172A; border-color: #334155; color: #E2E8F0; }
+    body.dark-mode, [data-theme="dark"],
+    [data-theme="dark"] .modal-header { border-color: #334155; }
+    body.dark-mode, [data-theme="dark"],
+    [data-theme="dark"] .modal-header h2 { color: #93C5FD; }
+    body.dark-mode, [data-theme="dark"],
+    [data-theme="dark"] .modal-actions { border-color: #334155; }
+    body.dark-mode, [data-theme="dark"],
+    [data-theme="dark"] .incident-actions { border-color: #334155; }
+
+    @media (max-width: 640px) {
+      .container { padding: 1.25rem 1rem 1rem; }
+      .stats-bar { grid-template-columns: 1fr 1fr; }
+      .controls-bar { flex-direction: column; }
+      .controls-bar .search-box { width: 100%; }
+      .form-row { grid-template-columns: 1fr; }
+      .detail-grid { grid-template-columns: 1fr; }
+      .incident-header { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="toolbar">
+    <img src="surevera-header-white-logo.png" alt="SureVera">
+    <div class="divider"></div>
+    <span class="tool-label">Incident Log</span>
+  </div>
+
+  <div class="container">
+
+    <!-- Stats -->
+    <div class="stats-bar">
+      <div class="stat-card">
+        <div class="stat-label">Total Incidents</div>
+        <div class="stat-value" id="statTotal">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Open</div>
+        <div class="stat-value open-count" id="statOpen">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Avg Resolution</div>
+        <div class="stat-value" id="statAvgRes">--</div>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls-bar">
+      <input type="text" class="search-box" id="searchBox" placeholder="Search incidents...">
+      <select class="filter-select" id="filterSeverity">
+        <option value="">All Severities</option>
+        <option value="critical">Critical</option>
+        <option value="major">Major</option>
+        <option value="minor">Minor</option>
+        <option value="info">Info</option>
+      </select>
+      <select class="filter-select" id="filterCategory">
+        <option value="">All Categories</option>
+        <option value="API Outage">API Outage</option>
+        <option value="Data Issue">Data Issue</option>
+        <option value="Provider Down">Provider Down</option>
+        <option value="Cron Failure">Cron Failure</option>
+        <option value="App Bug">App Bug</option>
+        <option value="Server Error">Server Error</option>
+        <option value="Other">Other</option>
+      </select>
+      <select class="filter-select" id="filterStatus">
+        <option value="">All Statuses</option>
+        <option value="open">Open</option>
+        <option value="investigating">Investigating</option>
+        <option value="resolved">Resolved</option>
+      </select>
+      <div class="view-toggle">
+        <button class="active" id="btnCardView" onclick="setView('cards')">Cards</button>
+        <button id="btnTimelineView" onclick="setView('timeline')">Timeline</button>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div style="display:flex; gap:0.75rem; margin-bottom:1.5rem; flex-wrap:wrap;">
+      <button class="btn btn-primary" onclick="openModal()">+ Log New Incident</button>
+      <button class="btn btn-outline" onclick="exportCSV()">Export CSV</button>
+    </div>
+
+    <!-- Card List -->
+    <div class="incident-list incident-list-view active" id="incidentList"></div>
+
+    <!-- Timeline -->
+    <div class="timeline-view" id="timelineView"></div>
+
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="modalTitle">Log New Incident</h2>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="editId">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Date / Time</label>
+            <input type="datetime-local" id="fDate">
+          </div>
+          <div class="form-group">
+            <label>Severity</label>
+            <select id="fSeverity">
+              <option value="critical">Critical</option>
+              <option value="major">Major</option>
+              <option value="minor" selected>Minor</option>
+              <option value="info">Info</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Category</label>
+            <select id="fCategory">
+              <option>API Outage</option>
+              <option>Data Issue</option>
+              <option>Provider Down</option>
+              <option>Cron Failure</option>
+              <option>App Bug</option>
+              <option>Server Error</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Status</label>
+            <select id="fStatus">
+              <option value="open">Open</option>
+              <option value="investigating">Investigating</option>
+              <option value="resolved">Resolved</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Title</label>
+          <input type="text" id="fTitle" placeholder="Short description of the incident">
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="fDescription" rows="3" placeholder="What happened?"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Impact</label>
+          <textarea id="fImpact" rows="2" placeholder="Who/what was affected?"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Resolution</label>
+          <textarea id="fResolution" rows="2" placeholder="What was done to fix it?"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Duration (optional)</label>
+          <input type="text" id="fDuration" placeholder="e.g. 45 minutes, 2 hours">
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+          <button class="btn btn-primary" onclick="saveIncident()">Save Incident</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">SureVera Incident Log — runs entirely in your browser</div>
+
+  <script>
+    const STORAGE_KEY = 'surevera_incident_log';
+    let currentView = 'cards';
+
+    function loadIncidents() {
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+      catch { return []; }
+    }
+
+    function saveIncidents(data) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+
+    function genId() {
+      return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+    }
+
+    function fmtDate(iso) {
+      const d = new Date(iso);
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) +
+        ' at ' + d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+    }
+
+    function nowLocal() {
+      const d = new Date();
+      d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+      return d.toISOString().slice(0, 16);
+    }
+
+    // Filters
+    function getFiltered() {
+      const incidents = loadIncidents();
+      const q = document.getElementById('searchBox').value.toLowerCase().trim();
+      const sev = document.getElementById('filterSeverity').value;
+      const cat = document.getElementById('filterCategory').value;
+      const sta = document.getElementById('filterStatus').value;
+
+      return incidents.filter(i => {
+        if (sev && i.severity !== sev) return false;
+        if (cat && i.category !== cat) return false;
+        if (sta && i.status !== sta) return false;
+        if (q) {
+          const haystack = [i.title, i.description, i.impact, i.resolution, i.category].join(' ').toLowerCase();
+          if (!haystack.includes(q)) return false;
+        }
+        return true;
+      }).sort((a, b) => new Date(b.date) - new Date(a.date));
+    }
+
+    // Stats
+    function updateStats() {
+      const all = loadIncidents();
+      document.getElementById('statTotal').textContent = all.length;
+      const openCount = all.filter(i => i.status !== 'resolved').length;
+      document.getElementById('statOpen').textContent = openCount;
+
+      const resolved = all.filter(i => i.status === 'resolved' && i.duration);
+      if (resolved.length === 0) {
+        document.getElementById('statAvgRes').textContent = '--';
+      } else {
+        // parse durations
+        let totalMin = 0, count = 0;
+        resolved.forEach(i => {
+          const m = parseDurationToMin(i.duration);
+          if (m > 0) { totalMin += m; count++; }
+        });
+        if (count === 0) {
+          document.getElementById('statAvgRes').textContent = '--';
+        } else {
+          const avg = totalMin / count;
+          document.getElementById('statAvgRes').textContent = avg < 60 ? Math.round(avg) + 'm' : (avg / 60).toFixed(1) + 'h';
+        }
+      }
+    }
+
+    function parseDurationToMin(s) {
+      if (!s) return 0;
+      s = s.toLowerCase().trim();
+      let total = 0;
+      const h = s.match(/([\d.]+)\s*h/);
+      const m = s.match(/([\d.]+)\s*m/);
+      if (h) total += parseFloat(h[1]) * 60;
+      if (m) total += parseFloat(m[1]);
+      if (!h && !m) {
+        const n = parseFloat(s);
+        if (!isNaN(n)) total = n;
+      }
+      return total;
+    }
+
+    // Render
+    function render() {
+      const items = getFiltered();
+      updateStats();
+      renderCards(items);
+      renderTimeline(items);
+    }
+
+    function renderCards(items) {
+      const el = document.getElementById('incidentList');
+      if (items.length === 0) {
+        el.innerHTML = '<div class="empty-state"><div class="empty-icon">&#128203;</div><h3>No incidents found</h3><p>Click "Log New Incident" to create your first entry.</p></div>';
+        return;
+      }
+      el.innerHTML = items.map(i => `
+        <div class="incident-card" id="card-${i.id}">
+          <div class="incident-header" onclick="toggleCard('${i.id}')">
+            <span class="severity-badge ${i.severity}">${i.severity}</span>
+            <div class="incident-title-area">
+              <h3>${esc(i.title)}</h3>
+              <div class="incident-meta">${fmtDate(i.date)} &middot; ${esc(i.category)}</div>
+            </div>
+            <span class="status-badge ${i.status}">${i.status}</span>
+            <span class="expand-icon">&#9662;</span>
+          </div>
+          <div class="incident-details">
+            <div class="detail-grid">
+              <div class="detail-item"><label>Category</label><p>${esc(i.category)}</p></div>
+              <div class="detail-item"><label>Duration</label><p>${esc(i.duration || 'N/A')}</p></div>
+              <div class="detail-item full"><label>Description</label><p>${esc(i.description || 'No description provided.')}</p></div>
+              <div class="detail-item full"><label>Impact</label><p>${esc(i.impact || 'Not specified.')}</p></div>
+              <div class="detail-item full"><label>Resolution</label><p>${esc(i.resolution || 'Not yet resolved.')}</p></div>
+            </div>
+            <div class="incident-actions">
+              <button class="btn btn-sm btn-outline" onclick="editIncident('${i.id}')">Edit</button>
+              <button class="btn btn-sm btn-danger" onclick="deleteIncident('${i.id}')">Delete</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderTimeline(items) {
+      const el = document.getElementById('timelineView');
+      if (items.length === 0) {
+        el.innerHTML = '<div class="empty-state"><div class="empty-icon">&#128203;</div><h3>No incidents</h3></div>';
+        return;
+      }
+      el.innerHTML = items.map(i => `
+        <div class="timeline-item">
+          <div class="timeline-dot ${i.severity}"></div>
+          <div class="timeline-content">
+            <h4>${esc(i.title)}</h4>
+            <div class="tl-meta">${fmtDate(i.date)} &middot; <span class="severity-badge ${i.severity}" style="font-size:0.62rem;">${i.severity}</span> &middot; <span class="status-badge ${i.status}" style="font-size:0.62rem;">${i.status}</span></div>
+            ${i.description ? `<div class="tl-desc">${esc(i.description.slice(0, 120))}${i.description.length > 120 ? '...' : ''}</div>` : ''}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function esc(s) {
+      if (!s) return '';
+      const d = document.createElement('div');
+      d.textContent = s;
+      return d.innerHTML;
+    }
+
+    // View toggle
+    function setView(v) {
+      currentView = v;
+      document.getElementById('btnCardView').classList.toggle('active', v === 'cards');
+      document.getElementById('btnTimelineView').classList.toggle('active', v === 'timeline');
+      document.getElementById('incidentList').classList.toggle('active', v === 'cards');
+      document.getElementById('timelineView').classList.toggle('active', v === 'timeline');
+    }
+
+    // Card expand
+    function toggleCard(id) {
+      const card = document.getElementById('card-' + id);
+      if (card) card.classList.toggle('expanded');
+    }
+
+    // Modal
+    function openModal(id) {
+      const overlay = document.getElementById('modalOverlay');
+      overlay.classList.add('active');
+      if (id) {
+        const inc = loadIncidents().find(i => i.id === id);
+        if (!inc) return;
+        document.getElementById('modalTitle').textContent = 'Edit Incident';
+        document.getElementById('editId').value = id;
+        document.getElementById('fDate').value = inc.date;
+        document.getElementById('fSeverity').value = inc.severity;
+        document.getElementById('fCategory').value = inc.category;
+        document.getElementById('fStatus').value = inc.status;
+        document.getElementById('fTitle').value = inc.title;
+        document.getElementById('fDescription').value = inc.description || '';
+        document.getElementById('fImpact').value = inc.impact || '';
+        document.getElementById('fResolution').value = inc.resolution || '';
+        document.getElementById('fDuration').value = inc.duration || '';
+      } else {
+        document.getElementById('modalTitle').textContent = 'Log New Incident';
+        document.getElementById('editId').value = '';
+        document.getElementById('fDate').value = nowLocal();
+        document.getElementById('fSeverity').value = 'minor';
+        document.getElementById('fCategory').value = 'API Outage';
+        document.getElementById('fStatus').value = 'open';
+        document.getElementById('fTitle').value = '';
+        document.getElementById('fDescription').value = '';
+        document.getElementById('fImpact').value = '';
+        document.getElementById('fResolution').value = '';
+        document.getElementById('fDuration').value = '';
+      }
+    }
+
+    function closeModal() {
+      document.getElementById('modalOverlay').classList.remove('active');
+    }
+
+    function saveIncident() {
+      const title = document.getElementById('fTitle').value.trim();
+      if (!title) { alert('Please enter a title.'); return; }
+
+      const editId = document.getElementById('editId').value;
+      const incident = {
+        id: editId || genId(),
+        date: document.getElementById('fDate').value,
+        severity: document.getElementById('fSeverity').value,
+        category: document.getElementById('fCategory').value,
+        status: document.getElementById('fStatus').value,
+        title: title,
+        description: document.getElementById('fDescription').value.trim(),
+        impact: document.getElementById('fImpact').value.trim(),
+        resolution: document.getElementById('fResolution').value.trim(),
+        duration: document.getElementById('fDuration').value.trim()
+      };
+
+      const incidents = loadIncidents();
+      if (editId) {
+        const idx = incidents.findIndex(i => i.id === editId);
+        if (idx !== -1) incidents[idx] = incident;
+      } else {
+        incidents.push(incident);
+      }
+      saveIncidents(incidents);
+      closeModal();
+      render();
+    }
+
+    function editIncident(id) {
+      openModal(id);
+    }
+
+    function deleteIncident(id) {
+      if (!confirm('Delete this incident?')) return;
+      const incidents = loadIncidents().filter(i => i.id !== id);
+      saveIncidents(incidents);
+      render();
+    }
+
+    // Export CSV
+    function exportCSV() {
+      const items = getFiltered();
+      if (items.length === 0) { alert('No incidents to export.'); return; }
+      const headers = ['Date', 'Severity', 'Category', 'Status', 'Title', 'Description', 'Impact', 'Resolution', 'Duration'];
+      const rows = items.map(i => [
+        i.date, i.severity, i.category, i.status,
+        csvEsc(i.title), csvEsc(i.description), csvEsc(i.impact), csvEsc(i.resolution), csvEsc(i.duration)
+      ]);
+      let csv = headers.join(',') + '\n' + rows.map(r => r.join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'surevera-incidents-' + new Date().toISOString().slice(0, 10) + '.csv';
+      a.click();
+    }
+
+    function csvEsc(s) {
+      if (!s) return '';
+      if (s.includes(',') || s.includes('"') || s.includes('\n')) {
+        return '"' + s.replace(/"/g, '""') + '"';
+      }
+      return s;
+    }
+
+    // Event listeners
+    document.getElementById('searchBox').addEventListener('input', render);
+    document.getElementById('filterSeverity').addEventListener('change', render);
+    document.getElementById('filterCategory').addEventListener('change', render);
+    document.getElementById('filterStatus').addEventListener('change', render);
+
+    // Keyboard shortcut
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeModal();
+    });
+
+    // Init
+    render();
+  </script>
+  <script src="dark-mode.js"></script>
+  <script src="toolkit-nav.js"></script>
+</body>
+</html>

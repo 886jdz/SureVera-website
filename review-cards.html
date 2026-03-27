@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SureVera — Review Cards</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #F0F3F8;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #1E293B;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .toolbar {
+      width: 100%;
+      background: linear-gradient(135deg, #0D1B2E 0%, #1B3A6B 100%);
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+    }
+    .toolbar img { height: 32px; }
+    .toolbar .divider {
+      width: 1px;
+      height: 24px;
+      background: rgba(255,255,255,0.2);
+    }
+    .toolbar .tool-label {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: rgba(255,255,255,0.6);
+    }
+
+    .page {
+      padding: 2rem;
+      width: 100%;
+      max-width: 1300px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 2rem;
+      width: 100%;
+      align-items: start;
+    }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+
+    /* Controls panel */
+    .controls-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .card {
+      background: #FFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 12px;
+      padding: 1.25rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+
+    .card-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #64748B;
+      margin-bottom: 0.75rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: 0.35rem;
+    }
+
+    textarea {
+      width: 100%;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 8px;
+      padding: 0.75rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      resize: vertical;
+      min-height: 100px;
+      transition: border-color 0.2s;
+      color: #1E293B;
+    }
+    textarea:focus { outline: none; border-color: #1B3A6B; }
+
+    input[type="text"], select {
+      width: 100%;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 8px;
+      padding: 0.6rem 0.75rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      transition: border-color 0.2s;
+      color: #1E293B;
+      background: #FFF;
+    }
+    input[type="text"]:focus, select:focus { outline: none; border-color: #1B3A6B; }
+
+    .field-group { margin-bottom: 0.75rem; }
+    .field-group:last-child { margin-bottom: 0; }
+
+    /* Star rating */
+    .star-picker {
+      display: flex;
+      gap: 0.3rem;
+      margin-top: 0.25rem;
+    }
+    .star-picker .star {
+      font-size: 1.6rem;
+      cursor: pointer;
+      color: #CBD5E1;
+      transition: color 0.15s, transform 0.15s;
+      user-select: none;
+      line-height: 1;
+    }
+    .star-picker .star:hover { transform: scale(1.15); }
+    .star-picker .star.filled { color: #E8612A; }
+
+    /* Size cards */
+    .size-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+    }
+    .size-card {
+      background: #F8FAFC;
+      border: 2px solid #E2E8F0;
+      border-radius: 8px;
+      padding: 0.5rem 0.6rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+    .size-card:hover { border-color: #1B3A6B; background: #FFF; }
+    .size-card.active { border-color: #E8612A; background: #FFF7F3; }
+    .size-card .sz-name { font-size: 0.75rem; font-weight: 600; color: #1E293B; }
+    .size-card .sz-dim { font-size: 0.65rem; color: #94A3B8; margin-top: 0.15rem; }
+
+    /* Style cards */
+    .style-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+    }
+    .style-card {
+      border: 2px solid #E2E8F0;
+      border-radius: 8px;
+      padding: 0.5rem 0.6rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+    .style-card:hover { border-color: #1B3A6B; }
+    .style-card.active { border-color: #E8612A; }
+    .style-card.s-navy { background: #1B3A6B; color: #FFF; }
+    .style-card.s-white { background: #FFF; color: #1B3A6B; }
+    .style-card.s-gradient { background: linear-gradient(135deg, #0D1B2E 0%, #1B3A6B 100%); color: #FFF; }
+    .style-card.s-orange { background: #1B3A6B; color: #FFF; border-left: 4px solid #E8612A; }
+
+    /* Toggles */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+    }
+    .toggle-row + .toggle-row { border-top: 1px solid #F1F5F9; }
+    .toggle-label { font-size: 0.8rem; font-weight: 500; color: #475569; }
+    .toggle-switch {
+      width: 40px; height: 22px;
+      background: #CBD5E1;
+      border-radius: 11px;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+    .toggle-switch.on { background: #1B3A6B; }
+    .toggle-switch::after {
+      content: '';
+      position: absolute;
+      width: 18px; height: 18px;
+      background: #FFF;
+      border-radius: 50%;
+      top: 2px; left: 2px;
+      transition: transform 0.2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    }
+    .toggle-switch.on::after { transform: translateX(18px); }
+
+    /* Preview */
+    .preview-panel {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.25rem;
+    }
+    .preview-wrapper {
+      background: #FFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+    }
+    #previewCanvas {
+      max-width: 100%;
+      max-height: 600px;
+      border-radius: 6px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    }
+
+    .btn-download {
+      background: #1B3A6B;
+      color: #FFF;
+      border: none;
+      border-radius: 10px;
+      padding: 0.85rem 2.5rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .btn-download:hover { background: #0D1B2E; }
+    .btn-download:active { transform: scale(0.97); }
+
+    /* Sample reviews */
+    .samples-section {
+      width: 100%;
+      max-width: 1300px;
+      padding: 0 2rem;
+      margin-top: 2rem;
+    }
+    .samples-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #1E293B;
+      margin-bottom: 0.75rem;
+    }
+    .samples-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 0.75rem;
+    }
+    .sample-card {
+      background: #FFF;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 10px;
+      padding: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 0.82rem;
+      color: #475569;
+      line-height: 1.5;
+      position: relative;
+    }
+    .sample-card::before {
+      content: '\201C';
+      font-family: Georgia, serif;
+      font-size: 2rem;
+      color: #E8612A;
+      opacity: 0.3;
+      position: absolute;
+      top: 0.3rem;
+      left: 0.6rem;
+      line-height: 1;
+    }
+    .sample-card:hover {
+      border-color: #1B3A6B;
+      background: #F8FAFC;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .sample-card .sample-text { padding-left: 0.2rem; }
+
+    .footer {
+      margin-top: 3rem;
+      padding: 1.5rem;
+      text-align: center;
+      font-size: 0.75rem;
+      color: #94A3B8;
+    }
+  </style>
+</head>
+<body>
+
+<div class="toolbar">
+  <img src="surevera-header-white-logo.png" alt="SureVera" style="height:32px">
+  <div class="divider" style="width:1px;height:24px;background:rgba(255,255,255,0.2)"></div>
+  <span class="tool-label" style="font-size:0.85rem;font-weight:500;color:rgba(255,255,255,0.6)">Review Cards</span>
+</div>
+
+<div class="page">
+  <div class="layout">
+
+    <!-- Controls -->
+    <div class="controls-panel">
+
+      <div class="card">
+        <div class="card-title">Review Content</div>
+        <div class="field-group">
+          <label for="reviewText">Review Text</label>
+          <textarea id="reviewText" placeholder="Paste a user review here..."></textarea>
+        </div>
+        <div class="field-group">
+          <label for="reviewerName">Reviewer Name</label>
+          <input type="text" id="reviewerName" placeholder="App Store Review">
+        </div>
+        <div class="field-group">
+          <label>Star Rating</label>
+          <div class="star-picker" id="starPicker">
+            <span class="star filled" data-v="1">&#9733;</span>
+            <span class="star filled" data-v="2">&#9733;</span>
+            <span class="star filled" data-v="3">&#9733;</span>
+            <span class="star filled" data-v="4">&#9733;</span>
+            <span class="star filled" data-v="5">&#9733;</span>
+          </div>
+        </div>
+        <div class="field-group">
+          <label for="reviewSource">Review Source</label>
+          <select id="reviewSource">
+            <option value="App Store">App Store</option>
+            <option value="Google Play">Google Play</option>
+            <option value="Social Media">Social Media</option>
+            <option value="Direct Feedback">Direct Feedback</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Output Size</div>
+        <div class="size-grid">
+          <div class="size-card active" data-w="1080" data-h="1080" onclick="selectSize(this)">
+            <div class="sz-name">Instagram Post</div>
+            <div class="sz-dim">1080 &times; 1080</div>
+          </div>
+          <div class="size-card" data-w="1080" data-h="1920" onclick="selectSize(this)">
+            <div class="sz-name">Instagram Story</div>
+            <div class="sz-dim">1080 &times; 1920</div>
+          </div>
+          <div class="size-card" data-w="1200" data-h="630" onclick="selectSize(this)">
+            <div class="sz-name">Facebook Post</div>
+            <div class="sz-dim">1200 &times; 630</div>
+          </div>
+          <div class="size-card" data-w="1600" data-h="900" onclick="selectSize(this)">
+            <div class="sz-name">Twitter/X Post</div>
+            <div class="sz-dim">1600 &times; 900</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Card Style</div>
+        <div class="style-grid">
+          <div class="style-card s-navy active" data-style="navy" onclick="selectStyle(this)">Navy</div>
+          <div class="style-card s-white" data-style="white" onclick="selectStyle(this)">White</div>
+          <div class="style-card s-gradient" data-style="gradient" onclick="selectStyle(this)">Gradient</div>
+          <div class="style-card s-orange" data-style="orange" onclick="selectStyle(this)">Orange Accent</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Options</div>
+        <div class="toggle-row">
+          <span class="toggle-label">Show star rating</span>
+          <div class="toggle-switch on" id="togStars" onclick="toggleSwitch(this)"></div>
+        </div>
+        <div class="toggle-row">
+          <span class="toggle-label">Show SureVera logo</span>
+          <div class="toggle-switch on" id="togLogo" onclick="toggleSwitch(this)"></div>
+        </div>
+        <div class="toggle-row">
+          <span class="toggle-label">Show quotation marks</span>
+          <div class="toggle-switch on" id="togQuotes" onclick="toggleSwitch(this)"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Preview -->
+    <div class="preview-panel">
+      <div class="preview-wrapper">
+        <canvas id="previewCanvas" width="1080" height="1080"></canvas>
+      </div>
+      <button class="btn-download" onclick="downloadPNG()">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download PNG
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- Sample Reviews -->
+<div class="samples-section">
+  <div class="samples-title">Sample Reviews</div>
+  <div class="samples-grid">
+    <div class="sample-card" onclick="useSample(this)">
+      <div class="sample-text">This app is a game changer! I check every restaurant before I go now.</div>
+    </div>
+    <div class="sample-card" onclick="useSample(this)">
+      <div class="sample-text">Finally, an easy way to see health grades without digging through government websites.</div>
+    </div>
+    <div class="sample-card" onclick="useSample(this)">
+      <div class="sample-text">Love that I can get alerts when my favorite restaurant's grade changes.</div>
+    </div>
+    <div class="sample-card" onclick="useSample(this)">
+      <div class="sample-text">Used this in Vegas and avoided a restaurant with an F grade. Thank you SureVera!</div>
+    </div>
+    <div class="sample-card" onclick="useSample(this)">
+      <div class="sample-text">Simple, fast, and the data is real. This should be built into every maps app.</div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">SureVera Review Cards — runs entirely in your browser</div>
+
+<script>
+// State
+let rating = 5;
+let canvasW = 1080, canvasH = 1080;
+let cardStyle = 'navy';
+let showStars = true, showLogo = true, showQuotes = true;
+
+const canvas = document.getElementById('previewCanvas');
+const ctx = canvas.getContext('2d');
+
+// Load logo image
+const logoImg = new Image();
+let logoLoaded = false;
+logoImg.onload = () => { logoLoaded = true; render(); };
+logoImg.src = 'surevera-header-white-logo.png';
+
+// Also load a dark version for white cards (we'll tint it)
+// We'll draw the logo and tint via composite ops
+
+// Star picker
+document.getElementById('starPicker').addEventListener('click', e => {
+  const star = e.target.closest('.star');
+  if (!star) return;
+  rating = parseInt(star.dataset.v);
+  document.querySelectorAll('#starPicker .star').forEach(s => {
+    s.classList.toggle('filled', parseInt(s.dataset.v) <= rating);
+  });
+  render();
+});
+
+// Size selection
+function selectSize(el) {
+  document.querySelectorAll('.size-card').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  canvasW = parseInt(el.dataset.w);
+  canvasH = parseInt(el.dataset.h);
+  canvas.width = canvasW;
+  canvas.height = canvasH;
+  render();
+}
+
+// Style selection
+function selectStyle(el) {
+  document.querySelectorAll('.style-card').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  cardStyle = el.dataset.style;
+  render();
+}
+
+// Toggle switches
+function toggleSwitch(el) {
+  el.classList.toggle('on');
+  showStars = document.getElementById('togStars').classList.contains('on');
+  showLogo = document.getElementById('togLogo').classList.contains('on');
+  showQuotes = document.getElementById('togQuotes').classList.contains('on');
+  render();
+}
+
+// Sample reviews
+function useSample(el) {
+  const text = el.querySelector('.sample-text').textContent;
+  document.getElementById('reviewText').value = text;
+  render();
+}
+
+// Input listeners
+document.getElementById('reviewText').addEventListener('input', render);
+document.getElementById('reviewerName').addEventListener('input', render);
+document.getElementById('reviewSource').addEventListener('change', render);
+
+// Word-wrap helper
+function wrapText(ctx, text, maxWidth) {
+  const words = text.split(' ');
+  const lines = [];
+  let line = '';
+  for (const word of words) {
+    const test = line ? line + ' ' + word : word;
+    if (ctx.measureText(test).width > maxWidth && line) {
+      lines.push(line);
+      line = word;
+    } else {
+      line = test;
+    }
+  }
+  if (line) lines.push(line);
+  return lines;
+}
+
+// Main render
+function render() {
+  const reviewText = document.getElementById('reviewText').value || 'Paste a user review here...';
+  const reviewerName = document.getElementById('reviewerName').value || 'App Store Review';
+  const source = document.getElementById('reviewSource').value;
+
+  const w = canvasW;
+  const h = canvasH;
+  const scale = Math.min(w, h) / 1080; // base scale factor
+
+  // Background
+  if (cardStyle === 'navy') {
+    ctx.fillStyle = '#1B3A6B';
+    ctx.fillRect(0, 0, w, h);
+  } else if (cardStyle === 'white') {
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(0, 0, w, h);
+  } else if (cardStyle === 'gradient') {
+    const grad = ctx.createLinearGradient(0, 0, w, h);
+    grad.addColorStop(0, '#0D1B2E');
+    grad.addColorStop(1, '#1B3A6B');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, w, h);
+  } else if (cardStyle === 'orange') {
+    ctx.fillStyle = '#1B3A6B';
+    ctx.fillRect(0, 0, w, h);
+  }
+
+  const isDark = cardStyle !== 'white';
+  const textColor = isDark ? '#FFFFFF' : '#1B3A6B';
+  const subtextColor = isDark ? 'rgba(255,255,255,0.6)' : 'rgba(27,58,107,0.5)';
+  const pad = 80 * scale;
+
+  // Subtle decorative elements — corner accents
+  if (isDark) {
+    ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+    ctx.lineWidth = 2 * scale;
+    const cornerLen = 60 * scale;
+    // top-left
+    ctx.beginPath();
+    ctx.moveTo(pad * 0.6, pad * 0.6 + cornerLen);
+    ctx.lineTo(pad * 0.6, pad * 0.6);
+    ctx.lineTo(pad * 0.6 + cornerLen, pad * 0.6);
+    ctx.stroke();
+    // bottom-right
+    ctx.beginPath();
+    ctx.moveTo(w - pad * 0.6, h - pad * 0.6 - cornerLen);
+    ctx.lineTo(w - pad * 0.6, h - pad * 0.6);
+    ctx.lineTo(w - pad * 0.6 - cornerLen, h - pad * 0.6);
+    ctx.stroke();
+  }
+
+  // Calculate vertical layout
+  let contentParts = [];
+  let totalContentH = 0;
+
+  // Quotation marks height
+  const quoteSize = 120 * scale;
+  if (showQuotes) {
+    totalContentH += quoteSize * 0.6; // visual height of quote mark
+    totalContentH += 20 * scale; // gap after quotes
+  }
+
+  // Determine review font size based on text length, with overflow protection
+  const maxTextW = w - pad * 2;
+  let reviewFontSize;
+  const len = reviewText.length;
+  if (len < 40) reviewFontSize = 48 * scale;
+  else if (len < 80) reviewFontSize = 42 * scale;
+  else if (len < 120) reviewFontSize = 36 * scale;
+  else if (len < 200) reviewFontSize = 30 * scale;
+  else reviewFontSize = 24 * scale;
+
+  // Calculate non-text content height for overflow check
+  let fixedH = 0;
+  if (showQuotes) fixedH += (120 * scale) * 0.6 + 20 * scale;
+  if (showStars) fixedH += 30 * scale + 36 * scale;
+  fixedH += 30 * scale + (20 * scale) * 1.4; // attribution
+  if (showLogo) fixedH += 40 * scale + 28 * scale;
+  const maxTextH = h - fixedH - pad * 2; // leave padding top+bottom
+
+  // Shrink font if text block would overflow canvas
+  let lineHeight, reviewLines, reviewBlockH;
+  const minFontSize = 14 * scale;
+  while (reviewFontSize >= minFontSize) {
+    lineHeight = reviewFontSize * 1.55;
+    ctx.font = `500 ${reviewFontSize}px 'Inter', sans-serif`;
+    reviewLines = wrapText(ctx, reviewText, maxTextW);
+    reviewBlockH = reviewLines.length * lineHeight;
+    if (reviewBlockH <= maxTextH) break;
+    reviewFontSize -= 2 * scale;
+  }
+  // Final measure in case we exited at min
+  lineHeight = reviewFontSize * 1.55;
+  ctx.font = `500 ${reviewFontSize}px 'Inter', sans-serif`;
+  reviewLines = wrapText(ctx, reviewText, maxTextW);
+  reviewBlockH = reviewLines.length * lineHeight;
+  totalContentH += reviewBlockH;
+
+  // Stars height
+  const starSize = 36 * scale;
+  const starGap = 8 * scale;
+  if (showStars) {
+    totalContentH += 30 * scale; // gap before stars
+    totalContentH += starSize;
+  }
+
+  // Attribution height
+  const attrFontSize = 20 * scale;
+  totalContentH += 30 * scale; // gap
+  totalContentH += attrFontSize * 1.4;
+
+  // Logo height
+  const logoH = 28 * scale;
+  if (showLogo) {
+    totalContentH += 40 * scale; // gap
+    totalContentH += logoH;
+  }
+
+  // Center everything vertically
+  let curY = (h - totalContentH) / 2;
+
+  // Draw large quotation marks
+  if (showQuotes) {
+    const quoteColor = cardStyle === 'orange' ? '#E8612A' : (isDark ? 'rgba(255,255,255,0.08)' : 'rgba(27,58,107,0.07)');
+    ctx.font = `bold ${quoteSize}px Georgia, 'Times New Roman', serif`;
+    ctx.fillStyle = quoteColor;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    ctx.fillText('\u201C', w / 2, curY - quoteSize * 0.15);
+    curY += quoteSize * 0.6 + 20 * scale;
+  }
+
+  // Draw review text
+  ctx.font = `500 ${reviewFontSize}px 'Inter', sans-serif`;
+  ctx.fillStyle = textColor;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  for (let i = 0; i < reviewLines.length; i++) {
+    ctx.fillText(reviewLines[i], w / 2, curY + i * lineHeight);
+  }
+  curY += reviewBlockH;
+
+  // Draw stars
+  if (showStars) {
+    curY += 30 * scale;
+    const totalStarsW = 5 * starSize + 4 * starGap;
+    let starX = (w - totalStarsW) / 2;
+    for (let i = 1; i <= 5; i++) {
+      ctx.font = `${starSize}px sans-serif`;
+      ctx.fillStyle = i <= rating ? '#E8612A' : (isDark ? 'rgba(255,255,255,0.15)' : 'rgba(27,58,107,0.12)');
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'top';
+      ctx.fillText('\u2605', starX, curY);
+      starX += starSize + starGap;
+    }
+    curY += starSize;
+  }
+
+  // Draw attribution
+  curY += 30 * scale;
+  const attrText = '\u2014 ' + reviewerName + ', ' + source;
+  ctx.font = `500 ${attrFontSize}px 'Inter', sans-serif`;
+  ctx.fillStyle = subtextColor;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  ctx.fillText(attrText, w / 2, curY);
+  curY += attrFontSize * 1.4;
+
+  // Draw logo
+  if (showLogo && logoLoaded) {
+    curY += 40 * scale;
+    const logoAspect = logoImg.naturalWidth / logoImg.naturalHeight;
+    const drawLogoH = logoH;
+    const drawLogoW = drawLogoH * logoAspect;
+    const logoX = (w - drawLogoW) / 2;
+
+    if (!isDark) {
+      // For white background, draw logo with dark tint
+      // Create offscreen canvas to tint the logo
+      const offC = document.createElement('canvas');
+      offC.width = logoImg.naturalWidth;
+      offC.height = logoImg.naturalHeight;
+      const offCtx = offC.getContext('2d');
+      offCtx.drawImage(logoImg, 0, 0);
+      offCtx.globalCompositeOperation = 'source-in';
+      offCtx.fillStyle = '#1B3A6B';
+      offCtx.fillRect(0, 0, offC.width, offC.height);
+      ctx.drawImage(offC, logoX, curY, drawLogoW, drawLogoH);
+    } else {
+      ctx.globalAlpha = 0.7;
+      ctx.drawImage(logoImg, logoX, curY, drawLogoW, drawLogoH);
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  // Orange accent style — add decorative side bars
+  if (cardStyle === 'orange') {
+    const barW = 6 * scale;
+    ctx.fillStyle = '#E8612A';
+    ctx.fillRect(pad * 0.5, h * 0.15, barW, h * 0.7);
+    ctx.fillRect(w - pad * 0.5 - barW, h * 0.15, barW, h * 0.7);
+  }
+}
+
+// Download
+function downloadPNG() {
+  const link = document.createElement('a');
+  link.download = 'surevera-review-card.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
+
+// Initial render
+render();
+</script>
+<script src="dark-mode.js"></script>
+<script src="toolkit-nav.js"></script>
+</body>
+</html>

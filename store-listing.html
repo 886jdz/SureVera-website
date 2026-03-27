@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SureVera Store Listing Helper</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #F1F5F9;
+      color: #1E293B;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Toolbar */
+    .toolbar {
+      background: linear-gradient(135deg, #0D1B2E 0%, #1B3A6B 100%);
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .toolbar .divider { width: 1px; height: 24px; background: rgba(255,255,255,0.2); }
+    .toolbar .tool-label { font-size: 0.85rem; font-weight: 500; color: rgba(255,255,255,0.6); }
+
+    /* Layout */
+    .container { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem 1rem; }
+
+    .main-layout {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    @media (max-width: 860px) {
+      .main-layout { grid-template-columns: 1fr; }
+      .sidebar { order: -1; }
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+      margin-bottom: 2rem;
+    }
+    .tab-btn {
+      padding: 0.6rem 1.5rem;
+      border: 2px solid #CBD5E1;
+      border-radius: 999px;
+      background: #FFFFFF;
+      color: #64748B;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .tab-btn:hover {
+      border-color: #1B3A6B;
+      color: #1B3A6B;
+    }
+    .tab-btn.active {
+      background: #1B3A6B;
+      border-color: #1B3A6B;
+      color: #FFFFFF;
+    }
+
+    /* Cards */
+    .card {
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 16px;
+      padding: 2.25rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.03);
+    }
+
+    /* Form fields */
+    .field-group {
+      margin-bottom: 1.75rem;
+    }
+    .field-group:last-child {
+      margin-bottom: 0;
+    }
+    .field-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.4rem;
+    }
+    .field-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #1B3A6B;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .char-counter {
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: #94A3B8;
+      transition: color 0.2s;
+    }
+    .char-counter.warning { color: #E8612A; }
+    .char-counter.over { color: #DC2626; font-weight: 700; }
+
+    .field-input, .field-textarea {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      color: #1E293B;
+      background: #F8FAFC;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+    .field-input:focus, .field-textarea:focus {
+      border-color: #1B3A6B;
+      box-shadow: 0 0 0 3px rgba(27,58,107,0.08);
+      background: #FFFFFF;
+    }
+    .field-textarea {
+      resize: vertical;
+      min-height: 120px;
+      line-height: 1.6;
+    }
+    .field-textarea.large {
+      min-height: 260px;
+    }
+
+    .field-hint {
+      font-size: 0.78rem;
+      color: #94A3B8;
+      margin-top: 0.35rem;
+      line-height: 1.5;
+    }
+
+    .field-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.4rem;
+    }
+
+    /* Buttons */
+    .copy-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.35rem 0.75rem;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 8px;
+      background: #FFFFFF;
+      color: #64748B;
+      font-family: inherit;
+      font-size: 0.75rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .copy-btn:hover {
+      border-color: #1B3A6B;
+      color: #1B3A6B;
+      background: #F0F4FF;
+    }
+    .copy-btn.copied {
+      border-color: #16A34A;
+      color: #16A34A;
+      background: #F0FDF4;
+    }
+
+    .copy-all-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #E8612A 0%, #D4541F 100%);
+      color: #FFFFFF;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(232,97,42,0.25);
+    }
+    .copy-all-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(232,97,42,0.35);
+    }
+    .copy-all-btn.copied {
+      background: linear-gradient(135deg, #16A34A 0%, #15803D 100%);
+      box-shadow: 0 2px 8px rgba(22,163,74,0.25);
+    }
+
+    .actions-bar {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Sidebar */
+    .sidebar .card {
+      position: sticky;
+      top: 5.5rem;
+    }
+    .sidebar h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #1B3A6B;
+      margin-bottom: 0.75rem;
+    }
+    .sidebar p {
+      font-size: 0.8rem;
+      color: #64748B;
+      margin-bottom: 1rem;
+    }
+    .keyword-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+    .keyword-chip {
+      padding: 0.3rem 0.7rem;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 999px;
+      background: #F8FAFC;
+      color: #475569;
+      font-family: inherit;
+      font-size: 0.75rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .keyword-chip:hover {
+      border-color: #E8612A;
+      color: #E8612A;
+      background: #FFF7ED;
+    }
+    .keyword-chip.added {
+      border-color: #16A34A;
+      color: #16A34A;
+      background: #F0FDF4;
+    }
+
+    /* Description templates */
+    .desc-templates { margin-top: 2rem; }
+    .desc-templates h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #1B3A6B;
+      margin-bottom: 0.5rem;
+    }
+    .desc-templates p.hint {
+      font-size: 0.8rem;
+      color: #64748B;
+      margin-bottom: 1rem;
+    }
+    .desc-card {
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+      position: relative;
+    }
+    .desc-card-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #E8612A;
+      margin-bottom: 0.5rem;
+    }
+    .desc-card-text {
+      font-size: 0.82rem;
+      color: #334155;
+      line-height: 1.7;
+      white-space: pre-wrap;
+    }
+    .desc-card-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+    }
+    .desc-card-btn {
+      padding: 0.35rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid #E2E8F0;
+      background: #FFF;
+      color: #475569;
+    }
+    .desc-card-btn:hover { border-color: #1B3A6B; color: #1B3A6B; }
+    .desc-card-btn.primary { background: #1B3A6B; color: #FFF; border-color: #1B3A6B; }
+    .desc-card-btn.primary:hover { background: #15305A; }
+
+    /* Tab content */
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* Footer */
+    .footer {
+      margin-top: 3rem;
+      padding: 1.5rem;
+      text-align: center;
+      font-size: 0.75rem;
+      color: #94A3B8;
+    }
+
+    /* SVG icons inline */
+    .icon-copy { width: 14px; height: 14px; }
+  </style>
+</head>
+<body>
+
+  <div class="toolbar">
+    <img src="surevera-header-white-logo.png" alt="SureVera" style="height:32px">
+    <div class="divider" style="width:1px;height:24px;background:rgba(255,255,255,0.2)"></div>
+    <span class="tool-label" style="font-size:0.85rem;font-weight:500;color:rgba(255,255,255,0.6)">Store Listing Helper</span>
+  </div>
+
+  <div class="container">
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('apple')">Apple App Store</button>
+      <button class="tab-btn" onclick="switchTab('google')">Google Play Store</button>
+    </div>
+
+    <div class="main-layout">
+      <div class="forms-area">
+
+        <!-- ==================== APPLE APP STORE ==================== -->
+        <div id="tab-apple" class="tab-content active">
+          <div class="actions-bar">
+            <button class="copy-all-btn" onclick="copyAll('apple')">
+              <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+              Copy All Fields
+            </button>
+          </div>
+
+          <div class="card">
+            <!-- App Name -->
+            <div class="field-group">
+              <div class="field-header">
+                <label class="field-label">App Name</label>
+                <span class="char-counter" id="counter-apple-name">0 / 30</span>
+              </div>
+              <div style="display:flex;gap:0.5rem;align-items:start">
+                <input type="text" class="field-input" id="apple-name" maxlength="30" value="SureVera" oninput="updateCounter('apple-name', 30)" style="flex:1">
+                <button class="copy-btn" onclick="copyField('apple-name', this)">
+                  <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                  Copy
+                </button>
+              </div>
+              <div class="field-hint">Your app's display name on the App Store. Keep it memorable and searchable.</div>
+            </div>
+
+            <!-- Subtitle -->
+            <div class="field-group">
+              <div class="field-header">
+                <label class="field-label">Subtitle</label>
+                <span class="char-counter" id="counter-apple-subtitle">0 / 30</span>
+              </div>
+              <div style="display:flex;gap:0.5rem;align-items:start">
+                <input type="text" class="field-input" id="apple-subtitle" maxlength="30" value="Be Sure. Verify." oninput="updateCounter('apple-subtitle', 30)" style="flex:1">
+                <button class="copy-btn" onclick="copyField('apple-subtitle', this)">
+                  <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                  Copy
+                </button>
+              </div>
+              <div class="field-hint">Appears below your app name in search results. Use it to convey your value proposition.</div>
+            </div>
+
+            <!-- Keywords -->
+            <div class="field-group">
+              <div class="field-header">
+                <label class="field-label">Keywords</label>
+                <span class="char-counter" id="counter-apple-keywords">0 / 100</span>
+              </div>
+              <div style="display:flex;gap:0.5rem;align-items:start">
+                <input type="text" class="field-input" id="apple-keywords" maxlength="100" value="restaurant,health,inspection,food safety,grades,dining,hygiene" oninput="updateCounter('apple-keywords', 100)" style="flex:1">
+                <button class="copy-btn" onclick="copyField('apple-keywords', this)">
+                  <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                  Copy
+                </button>
+              </div>
+              <div class="field-hint">Comma-separated, no spaces after commas for maximum density. Not visible to users. Don't repeat words from your app name.</div>
+            </div>
+
+            <!-- Promotional Text -->
+            <div class="field-group">
+              <div class="field-header">
+                <label class="field-label">Promotional Text</label>
+                <span class="char-counter" id="counter-apple-promo">0 / 170</span>
+              </div>
+              <div style="display:flex;gap:0.5rem;align-items:start">
+                <textarea class="field-textarea" id="apple-promo" maxlength="170" oninput="updateCounter('apple-promo', 170)" style="flex:1;min-height:70px">Check restaurant health grades before you eat. Real inspection data from official government sources across 90+ US cities.</textarea>
+                <button class="copy-btn" onclick="copyField('apple-promo', this)" style="margin-top:0.25rem">
+                  <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                  Copy
+                </button>
+              </div>
+              <div class="field-hint">Can be updated without a new app version. Great for seasonal promotions or announcements.</div>
+            </div>
+
+            <!-- Description -->
+            <div class="field-group">
+              <div class="field-header">
+                <label class="field-label">Description</label>
+                <span class="char-counter" id="counter-apple-desc">0 / 4000</span>
+              </div>
+              <div style="display:flex;gap:0.5rem;align-items:start">
+                <textarea class="field-textarea large" id="apple-desc" maxlength="4000" oninput="updateCounter('apple-desc', 4000)" style="flex:1">Would you eat somewhere with a failing health inspection? Most people wouldn't -- but until now, that information was buried in government databases most diners never see.
+
+SureVera puts real restaurant health inspection grades at your fingertips. Search any restaurant and instantly see its official health grade -- sourced directly from city and county health departments.
+
+HOW IT WORKS
+Search for a restaurant or browse nearby places. SureVera matches each restaurant against official government inspection records and displays a clear letter grade (A, B, C, or F) so you know what you're walking into.
+
+KEY FEATURES
+
+- Real government data -- grades come directly from official health department inspection records, not user reviews
+- 90+ US cities covered -- from New York City and Los Angeles to Austin, Las Vegas, Anchorage, and more
+- Instant search -- find any restaurant by name or browse what's nearby using your location
+- Clear letter grades -- A, B, C, or F at a glance, no guesswork
+- Detailed inspection info -- tap any restaurant to see matched inspection details
+- Save favorites -- keep track of your go-to spots and monitor their grades
+- No account required -- start searching immediately, no sign-up or personal data collected
+
+WHY IT MATTERS
+The CDC estimates that 1 in 6 Americans gets sick from foodborne illness every year. Health inspections exist to protect you, but the results are often hard to find or understand. SureVera makes that information accessible and actionable.
+
+COVERED CITIES INCLUDE
+New York City, Los Angeles, San Francisco, Las Vegas, Austin, San Antonio, Houston, Dallas, Chicago, Seattle, Portland, Anchorage, Louisville, Memphis, Nashville, Denver, and many more -- with new cities added regularly.
+
+PRIVACY FIRST
+SureVera requires no account, no login, and collects no personal information. Your searches stay on your device.
+
+See beyond the menu. Eat with confidence.</textarea>
+                <button class="copy-btn" onclick="copyField('apple-desc', this)" style="margin-top:0.25rem">
+                  <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                  Copy
+                </button>
+              </div>
+              <div class="field-hint">First 1-3 lines are most important -- they show before "more" is tapped. Lead with your strongest hook.</div>
+            </div>
+
+            <!-- What's New -->
+            <div class="field-group">
+              <div class="field-header">
+                <label class="field-label">What's New</label>
+                <span class="char-counter" id="counter-apple-whatsnew">0 / 4000</span>
+              </div>
+              <div style="display:flex;gap:0.5rem;align-items:start">
+                <textarea class="field-textarea" id="apple-whatsnew" maxlength="4000" oninput="updateCounter('apple-whatsnew', 4000)" style="flex:1" placeholder="Describe what's new in this version..."></textarea>
+                <button class="copy-btn" onclick="copyField('apple-whatsnew', this)" style="margin-top:0.25rem">
+                  <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                  Copy
+                </button>
+              </div>
+              <div class="field-hint">Required with each new version. Bullet points work well. Keep it concise and user-focused.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== GOOGLE PLAY STORE ==================== -->
+        <div id="tab-google" class="tab-content">
+          <div class="actions-bar">
+            <button class="copy-all-btn" onclick="copyAll('google')">
+              <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+              Copy All Fields
+            </button>
+          </div>
+
+          <div class="card">
+            <!-- App Name -->
+            <div class="field-group">
+              <div class="field-header">
+                <label class="field-label">App Name</label>
+                <span class="char-counter" id="counter-google-name">0 / 30</span>
+              </div>
+              <div style="display:flex;gap:0.5rem;align-items:start">
+                <input type="text" class="field-input" id="google-name" maxlength="30" value="SureVera" oninput="updateCounter('google-name', 30)" style="flex:1">
+                <button class="copy-btn" onclick="copyField('google-name', this)">
+                  <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                  Copy
+                </button>
+              </div>
+              <div class="field-hint">Your app's title on Google Play. Should match your iOS name for brand consistency.</div>
+            </div>
+
+            <!-- Short Description -->
+            <div class="field-group">
+              <div class="field-header">
+                <label class="field-label">Short Description</label>
+                <span class="char-counter" id="counter-google-short">0 / 80</span>
+              </div>
+              <div style="display:flex;gap:0.5rem;align-items:start">
+                <textarea class="field-textarea" id="google-short" maxlength="80" oninput="updateCounter('google-short', 80)" style="flex:1;min-height:60px">Check restaurant health inspection grades before you eat. Real data, 90+ cities.</textarea>
+                <button class="copy-btn" onclick="copyField('google-short', this)" style="margin-top:0.25rem">
+                  <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                  Copy
+                </button>
+              </div>
+              <div class="field-hint">Shown prominently on your Play Store listing. Front-load your most important keywords.</div>
+            </div>
+
+            <!-- Full Description -->
+            <div class="field-group">
+              <div class="field-header">
+                <label class="field-label">Full Description</label>
+                <span class="char-counter" id="counter-google-desc">0 / 4000</span>
+              </div>
+              <div style="display:flex;gap:0.5rem;align-items:start">
+                <textarea class="field-textarea large" id="google-desc" maxlength="4000" oninput="updateCounter('google-desc', 4000)" style="flex:1">Would you eat somewhere with a failing health inspection? Most people wouldn't -- but until now, finding that information meant digging through government databases.
+
+SureVera gives you instant access to real restaurant health inspection grades, sourced directly from official city and county health departments across the US.
+
+HOW IT WORKS
+Search for any restaurant or browse nearby places. SureVera matches each restaurant against official government inspection records and shows you a clear letter grade: A, B, C, or F.
+
+FEATURES
+- Real government data -- grades come from official health department records, not user reviews
+- 90+ US cities covered -- New York, LA, Las Vegas, Austin, Seattle, and many more
+- Search by name or location -- find any restaurant instantly
+- Clear letter grades -- A, B, C, or F at a glance
+- Detailed inspection info -- see matched inspection details for every restaurant
+- Save your favorites -- track the places you love
+- No account needed -- search immediately with zero sign-up
+
+WHY SUREVERA?
+The CDC estimates 1 in 6 Americans gets sick from foodborne illness annually. Restaurant health inspections are public record, but they're buried in hard-to-navigate government sites. SureVera puts that data in your pocket in seconds.
+
+CITIES WE COVER
+New York City, Los Angeles, San Francisco, Las Vegas, Austin, San Antonio, Houston, Dallas, Chicago, Seattle, Portland, Anchorage, Louisville, Memphis, Nashville, Denver, and more added regularly.
+
+YOUR PRIVACY
+No account required. No login. No personal data collected. Your searches stay on your device.
+
+Download SureVera and see beyond the menu.</textarea>
+                <button class="copy-btn" onclick="copyField('google-desc', this)" style="margin-top:0.25rem">
+                  <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                  Copy
+                </button>
+              </div>
+              <div class="field-hint">Google Play indexes your full description for search. Include relevant keywords naturally throughout the text.</div>
+            </div>
+
+            <!-- Developer Name -->
+            <div class="field-group">
+              <div class="field-header">
+                <label class="field-label">Developer Name</label>
+              </div>
+              <div style="display:flex;gap:0.5rem;align-items:start">
+                <input type="text" class="field-input" id="google-developer" placeholder="Your developer or company name" style="flex:1">
+                <button class="copy-btn" onclick="copyField('google-developer', this)">
+                  <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                  Copy
+                </button>
+              </div>
+              <div class="field-hint">Displayed publicly on your store listing. Use your registered developer account name.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== SIDEBAR ==================== -->
+      <div class="sidebar">
+        <div class="card">
+          <h3>Keyword Suggestions</h3>
+          <p>Click a keyword to add it to your Apple keywords field.</p>
+          <div class="keyword-chips" id="keyword-chips">
+            <button class="keyword-chip" onclick="addKeyword(this)">restaurant</button>
+            <button class="keyword-chip" onclick="addKeyword(this)">health</button>
+            <button class="keyword-chip" onclick="addKeyword(this)">inspection</button>
+            <button class="keyword-chip" onclick="addKeyword(this)">food safety</button>
+            <button class="keyword-chip" onclick="addKeyword(this)">grades</button>
+            <button class="keyword-chip" onclick="addKeyword(this)">dining</button>
+            <button class="keyword-chip" onclick="addKeyword(this)">hygiene</button>
+            <button class="keyword-chip" onclick="addKeyword(this)">food</button>
+            <button class="keyword-chip" onclick="addKeyword(this)">clean</button>
+            <button class="keyword-chip" onclick="addKeyword(this)">sanitation</button>
+            <button class="keyword-chip" onclick="addKeyword(this)">score</button>
+            <button class="keyword-chip" onclick="addKeyword(this)">rating</button>
+            <button class="keyword-chip" onclick="addKeyword(this)">safe</button>
+            <button class="keyword-chip" onclick="addKeyword(this)">eat</button>
+            <button class="keyword-chip" onclick="addKeyword(this)">kitchen</button>
+            <button class="keyword-chip" onclick="addKeyword(this)">violation</button>
+            <button class="keyword-chip" onclick="addKeyword(this)">foodborne</button>
+            <button class="keyword-chip" onclick="addKeyword(this)">nearby</button>
+            <button class="keyword-chip" onclick="addKeyword(this)">local</button>
+            <button class="keyword-chip" onclick="addKeyword(this)">dine out</button>
+            <button class="keyword-chip" onclick="addKeyword(this)">takeout</button>
+            <button class="keyword-chip" onclick="addKeyword(this)">delivery</button>
+            <button class="keyword-chip" onclick="addKeyword(this)">health score</button>
+            <button class="keyword-chip" onclick="addKeyword(this)">permit</button>
+            <button class="keyword-chip" onclick="addKeyword(this)">public health</button>
+            <button class="keyword-chip" onclick="addKeyword(this)">food grade</button>
+            <button class="keyword-chip" onclick="addKeyword(this)">food inspection</button>
+            <button class="keyword-chip" onclick="addKeyword(this)">restaurant safety</button>
+            <button class="keyword-chip" onclick="addKeyword(this)">health department</button>
+            <button class="keyword-chip" onclick="addKeyword(this)">food poisoning</button>
+            <button class="keyword-chip" onclick="addKeyword(this)">restaurant reviews</button>
+            <button class="keyword-chip" onclick="addKeyword(this)">where to eat</button>
+            <button class="keyword-chip" onclick="addKeyword(this)">food hygiene rating</button>
+            <button class="keyword-chip" onclick="addKeyword(this)">restaurant finder</button>
+            <button class="keyword-chip" onclick="addKeyword(this)">food safety app</button>
+            <button class="keyword-chip" onclick="addKeyword(this)">dining guide</button>
+            <button class="keyword-chip" onclick="addKeyword(this)">travel food</button>
+            <button class="keyword-chip" onclick="addKeyword(this)">family dining</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Description Templates -->
+  <div style="max-width:900px;margin:0 auto;padding:0 2rem;">
+    <div class="desc-templates">
+      <h3>Full Description Templates</h3>
+      <p class="hint">Click "Use This" to paste into your active description field, or "Copy" to copy to clipboard.</p>
+
+      <div class="desc-card">
+        <div class="desc-card-label">Fear-Driven / Urgency</div>
+        <div class="desc-card-text" id="desc-1">48 million Americans get food poisoning every year. That's 1 in 6 people — and the CDC links the majority of outbreaks to restaurant meals.
+
+What if you could check a restaurant's health inspection grade before you sit down?
+
+SureVera puts real, official health department data in the palm of your hand. Search any restaurant by name, city, or ZIP code — or use GPS to see what's near you.
+
+&#9733; REAL GRADES FROM REAL INSPECTORS
+Every grade (A, B, C, or F) comes directly from city and county health department records — not user reviews, not opinions.
+
+&#9733; 90+ US CITIES AND GROWING
+New York City, Los Angeles, Chicago, Las Vegas, Miami, Seattle, Austin, Nashville, Denver, San Francisco, and more. New cities added regularly.
+
+&#9733; FULL INSPECTION DETAILS
+See violation reports, inspector findings, inspection dates, and score history — tap "View Full Inspection Report" to read the original source document.
+
+&#9733; SAVE & FOLLOW
+Bookmark restaurants you trust. Follow any restaurant to get a push notification the moment its health grade changes.
+
+&#9733; NO ACCOUNT REQUIRED
+SureVera works instantly. No sign-ups, no logins. Your favorites are stored privately on your device.
+
+You wouldn't eat at a restaurant with a roach problem. Now you don't have to.
+
+Download SureVera — Be Sure. Verify..</div>
+        <div class="desc-card-actions">
+          <button class="desc-card-btn primary" onclick="useDescription('desc-1')">Use This</button>
+          <button class="desc-card-btn" onclick="copyDescription('desc-1', this)">Copy</button>
+        </div>
+      </div>
+
+      <div class="desc-card">
+        <div class="desc-card-label">Feature-Focused / Clean</div>
+        <div class="desc-card-text" id="desc-2">SureVera gives you one thing no other restaurant app does: real health inspection grades from official government sources.
+
+Before you eat out, check the grade. It takes 3 seconds.
+
+HOW IT WORKS
+1. Search by city, ZIP code, or tap "Near Me" to use GPS
+2. See the health inspection grade (A, B, C, or F) for every restaurant
+3. Tap any restaurant for full inspection details, violations, and score history
+
+WHAT MAKES SUREVERA DIFFERENT
+&#8226; Official data — Grades come from city and county health departments, not crowdsourced reviews
+&#8226; 90+ cities — NYC, LA, Chicago, Las Vegas, Miami, Tampa, Orlando, Seattle, Austin, San Antonio, Raleigh, Louisville, Anchorage, Honolulu, and more
+&#8226; Filter & sort — By health grade, cuisine type, and distance
+&#8226; Save favorites — Bookmark restaurants you love
+&#8226; Grade change alerts — Follow restaurants and get notified if their score drops (or improves)
+&#8226; Full transparency — View the original inspection report directly from the health department
+&#8226; No account needed — Works instantly, no sign-up required
+
+SureVera is free to download. Be Sure. Verify..</div>
+        <div class="desc-card-actions">
+          <button class="desc-card-btn primary" onclick="useDescription('desc-2')">Use This</button>
+          <button class="desc-card-btn" onclick="copyDescription('desc-2', this)">Copy</button>
+        </div>
+      </div>
+
+      <div class="desc-card">
+        <div class="desc-card-label">Storytelling / Emotional</div>
+        <div class="desc-card-text" id="desc-3">You check reviews before you eat somewhere. You check the menu. You check the prices.
+
+But have you ever checked the health inspection grade?
+
+Restaurants are inspected regularly by local health departments. The results — including violations, scores, and letter grades — are public record. But finding them means digging through hundreds of different government websites, PDFs, and databases.
+
+SureVera changes that.
+
+We pull official health inspection data from 90+ cities across the US and put it all in one simple app. Search a restaurant, see its grade. That's it.
+
+&#9733; A grades mean excellent (90-100)
+&#9733; B grades mean good (80-89)
+&#9733; C grades mean fair (70-79)
+&#9733; F grades mean below standard (under 70)
+
+Every grade comes from real health inspectors — not internet opinions.
+
+You can also:
+&#8226; Save your favorite restaurants
+&#8226; Follow restaurants to get alerts when their grade changes
+&#8226; Read full inspection reports with violation details
+&#8226; Filter by grade, distance, and cuisine
+&#8226; Use GPS to find restaurants near you
+
+No account required. No ads. No opinions. Just the facts.
+
+SureVera — Be Sure. Verify..</div>
+        <div class="desc-card-actions">
+          <button class="desc-card-btn primary" onclick="useDescription('desc-3')">Use This</button>
+          <button class="desc-card-btn" onclick="copyDescription('desc-3', this)">Copy</button>
+        </div>
+      </div>
+
+      <div class="desc-card">
+        <div class="desc-card-label">Short & Punchy (Play Store Optimized)</div>
+        <div class="desc-card-text" id="desc-4">Check restaurant health grades before you eat.
+
+SureVera shows official health inspection scores from city and county health departments — not reviews, not opinions. Real data from real inspectors.
+
+&#9733; Search by city, ZIP, or GPS
+&#9733; A/B/C/F grades from government records
+&#9733; 90+ US cities: NYC, LA, Chicago, Las Vegas, Miami, Seattle & more
+&#9733; Full inspection reports & violation details
+&#9733; Save favorites & get grade change alerts
+&#9733; No account required — works instantly
+
+48 million Americans get food poisoning every year. Most outbreaks start at restaurants. Don't guess — know.
+
+Download SureVera. Be Sure. Verify..</div>
+        <div class="desc-card-actions">
+          <button class="desc-card-btn primary" onclick="useDescription('desc-4')">Use This</button>
+          <button class="desc-card-btn" onclick="copyDescription('desc-4', this)">Copy</button>
+        </div>
+      </div>
+
+      <div class="desc-card">
+        <div class="desc-card-label">Trust & Transparency</div>
+        <div class="desc-card-text" id="desc-5">Every restaurant you eat at has been inspected by your local health department. Those results are public — but almost nobody sees them.
+
+SureVera makes health inspection data accessible. We source every grade directly from official city and county health departments across 90+ US cities. No algorithms. No guesswork. No opinions.
+
+WHAT YOU GET:
+&#8226; Letter grades (A, B, C, F) based on real inspection scores
+&#8226; Full inspection details — violations, findings, and dates
+&#8226; Links to original source documents from health departments
+&#8226; Inspection history so you can see if a restaurant is improving or declining
+
+FEATURES:
+&#8226; Search restaurants by name, city, ZIP code, or GPS location
+&#8226; Filter results by health grade, cuisine, and distance
+&#8226; Sort by score, distance, or name
+&#8226; Save favorites for quick access
+&#8226; Follow restaurants to receive push notifications when grades change
+&#8226; No account or login required — your data stays on your device
+
+COVERED CITIES INCLUDE:
+New York City, Los Angeles, Chicago, Las Vegas, Miami, Tampa, Orlando, Seattle, Austin, San Antonio, San Francisco, Raleigh, Charlotte, Nashville, Louisville, Anchorage, Honolulu, Denver, Dallas, Fort Worth, Philadelphia, Portland, Columbus, Memphis, Albuquerque, Oakland, and more added regularly.
+
+ABOUT OUR DATA:
+All inspection scores are sourced from government health departments and are public record. Scores reflect official findings — not SureVera's opinion. Data freshness depends on each agency's publishing schedule.
+
+SureVera — Be Sure. Verify..</div>
+        <div class="desc-card-actions">
+          <button class="desc-card-btn primary" onclick="useDescription('desc-5')">Use This</button>
+          <button class="desc-card-btn" onclick="copyDescription('desc-5', this)">Copy</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="footer">SureVera Store Listing Helper — runs entirely in your browser</div>
+
+  <script>
+    // Initialize all counters on load
+    document.addEventListener('DOMContentLoaded', function() {
+      const fields = [
+        ['apple-name', 30],
+        ['apple-subtitle', 30],
+        ['apple-keywords', 100],
+        ['apple-promo', 170],
+        ['apple-desc', 4000],
+        ['apple-whatsnew', 4000],
+        ['google-name', 30],
+        ['google-short', 80],
+        ['google-desc', 4000],
+      ];
+      fields.forEach(function(f) { updateCounter(f[0], f[1]); });
+      highlightUsedKeywords();
+    });
+
+    function updateCounter(fieldId, max) {
+      var el = document.getElementById(fieldId);
+      var counter = document.getElementById('counter-' + fieldId);
+      if (!el || !counter) return;
+      var len = el.value.length;
+      counter.textContent = len + ' / ' + max;
+      counter.className = 'char-counter';
+      if (len > max) {
+        counter.classList.add('over');
+      } else if (len >= max * 0.9) {
+        counter.classList.add('warning');
+      }
+    }
+
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach(function(btn) { btn.classList.remove('active'); });
+      document.querySelectorAll('.tab-content').forEach(function(tc) { tc.classList.remove('active'); });
+      var sidebar = document.querySelector('.sidebar');
+      if (tab === 'apple') {
+        document.querySelectorAll('.tab-btn')[0].classList.add('active');
+        document.getElementById('tab-apple').classList.add('active');
+        if (sidebar) sidebar.style.display = '';
+      } else {
+        document.querySelectorAll('.tab-btn')[1].classList.add('active');
+        document.getElementById('tab-google').classList.add('active');
+        if (sidebar) sidebar.style.display = 'none';
+      }
+    }
+
+    function copyField(fieldId, btn) {
+      var el = document.getElementById(fieldId);
+      if (!el) return;
+      navigator.clipboard.writeText(el.value).then(function() {
+        var orig = btn.innerHTML;
+        btn.classList.add('copied');
+        btn.innerHTML = '<svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Copied';
+        setTimeout(function() {
+          btn.classList.remove('copied');
+          btn.innerHTML = orig;
+        }, 1500);
+      });
+    }
+
+    function copyAll(store) {
+      var text = '';
+      if (store === 'apple') {
+        text += 'APP NAME\n' + document.getElementById('apple-name').value + '\n\n';
+        text += 'SUBTITLE\n' + document.getElementById('apple-subtitle').value + '\n\n';
+        text += 'KEYWORDS\n' + document.getElementById('apple-keywords').value + '\n\n';
+        text += 'PROMOTIONAL TEXT\n' + document.getElementById('apple-promo').value + '\n\n';
+        text += 'DESCRIPTION\n' + document.getElementById('apple-desc').value + '\n\n';
+        var whatsnew = document.getElementById('apple-whatsnew').value;
+        if (whatsnew.trim()) {
+          text += "WHAT'S NEW\n" + whatsnew + '\n';
+        }
+      } else {
+        text += 'APP NAME\n' + document.getElementById('google-name').value + '\n\n';
+        text += 'SHORT DESCRIPTION\n' + document.getElementById('google-short').value + '\n\n';
+        text += 'FULL DESCRIPTION\n' + document.getElementById('google-desc').value + '\n\n';
+        var dev = document.getElementById('google-developer').value;
+        if (dev.trim()) {
+          text += 'DEVELOPER NAME\n' + dev + '\n';
+        }
+      }
+      var btn = document.querySelector('#tab-' + store + ' .copy-all-btn');
+      navigator.clipboard.writeText(text.trim()).then(function() {
+        var orig = btn.innerHTML;
+        btn.classList.add('copied');
+        btn.innerHTML = '<svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Copied to Clipboard';
+        setTimeout(function() {
+          btn.classList.remove('copied');
+          btn.innerHTML = orig;
+        }, 2000);
+      });
+    }
+
+    function addKeyword(chip) {
+      var field = document.getElementById('apple-keywords');
+      var keyword = chip.textContent.trim();
+      var current = field.value;
+      var keywords = current.split(',').map(function(k) { return k.trim(); });
+      var lowerKeywords = keywords.map(function(k) { return k.toLowerCase(); });
+      var idx = lowerKeywords.indexOf(keyword.toLowerCase());
+
+      if (idx !== -1) {
+        // Already exists — remove it (toggle off)
+        keywords.splice(idx, 1);
+        field.value = keywords.filter(function(k) { return k.length > 0; }).join(',');
+        updateCounter('apple-keywords', 100);
+        chip.classList.remove('added');
+        return;
+      }
+      // Add keyword
+      if (current.trim().length > 0 && !current.trim().endsWith(',')) {
+        field.value = current + ',' + keyword;
+      } else {
+        field.value = current + keyword;
+      }
+      updateCounter('apple-keywords', 100);
+      chip.classList.add('added');
+      // Switch to Apple tab if not already there
+      if (!document.getElementById('tab-apple').classList.contains('active')) {
+        switchTab('apple');
+      }
+    }
+
+    function highlightUsedKeywords() {
+      var field = document.getElementById('apple-keywords');
+      var keywords = field.value.split(',').map(function(k) { return k.trim().toLowerCase(); });
+      document.querySelectorAll('.keyword-chip').forEach(function(chip) {
+        if (keywords.indexOf(chip.textContent.trim().toLowerCase()) !== -1) {
+          chip.classList.add('added');
+        }
+      });
+      // Re-check when keywords field changes
+      field.addEventListener('input', function() {
+        var kws = field.value.split(',').map(function(k) { return k.trim().toLowerCase(); });
+        document.querySelectorAll('.keyword-chip').forEach(function(chip) {
+          if (kws.indexOf(chip.textContent.trim().toLowerCase()) !== -1) {
+            chip.classList.add('added');
+          } else {
+            chip.classList.remove('added');
+          }
+        });
+      });
+    }
+
+    function useDescription(id) {
+      var text = document.getElementById(id).textContent;
+      // Find the active tab's description field
+      var appleActive = document.getElementById('tab-apple').classList.contains('active');
+      var fieldId = appleActive ? 'apple-description' : 'google-description';
+      var field = document.getElementById(fieldId);
+      if (field) {
+        field.value = text;
+        var limit = 4000;
+        updateCounter(fieldId, limit);
+        field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        field.focus();
+      }
+    }
+
+    function copyDescription(id, btn) {
+      var text = document.getElementById(id).textContent;
+      navigator.clipboard.writeText(text).then(function() {
+        var orig = btn.textContent;
+        btn.textContent = 'Copied!';
+        btn.style.borderColor = '#16A34A';
+        btn.style.color = '#16A34A';
+        setTimeout(function() {
+          btn.textContent = orig;
+          btn.style.borderColor = '';
+          btn.style.color = '';
+        }, 2000);
+      });
+    }
+  </script>
+  <script src="dark-mode.js"></script>
+<script src="toolkit-nav.js"></script>
+</body>
+</html>

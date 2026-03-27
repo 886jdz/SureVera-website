@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SureVera Support Templates</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #F1F5F9;
+      color: #1E293B;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Toolbar */
+    .toolbar {
+      background: linear-gradient(135deg, #0D1B2E 0%, #1B3A6B 100%);
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .toolbar .divider { width: 1px; height: 24px; background: rgba(255,255,255,0.2); }
+    .toolbar .tool-label { font-size: 0.85rem; font-weight: 500; color: rgba(255,255,255,0.6); }
+
+    /* Container */
+    .container { max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem 1rem; }
+
+    /* Search & Controls */
+    .controls {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .search-box {
+      flex: 1;
+      min-width: 240px;
+      position: relative;
+    }
+    .search-box input {
+      width: 100%;
+      padding: 0.75rem 1rem 0.75rem 2.75rem;
+      border: 1px solid #E2E8F0;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      background: #FFFFFF;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .search-box input:focus {
+      outline: none;
+      border-color: #1B3A6B;
+      box-shadow: 0 0 0 3px rgba(27,58,107,0.1);
+    }
+    .search-box .search-icon {
+      position: absolute;
+      left: 0.9rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #94A3B8;
+      font-size: 1rem;
+    }
+    .btn-add {
+      padding: 0.75rem 1.25rem;
+      background: #E8612A;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-add:hover { background: #d45520; }
+    .btn-add:active { transform: scale(0.97); }
+
+    /* Category Tabs */
+    .category-tabs {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+    .cat-tab {
+      padding: 0.45rem 1rem;
+      border-radius: 20px;
+      border: 1px solid #E2E8F0;
+      background: #FFFFFF;
+      font-family: inherit;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      color: #64748B;
+      transition: all 0.2s;
+    }
+    .cat-tab:hover { border-color: #1B3A6B; color: #1B3A6B; }
+    .cat-tab.active {
+      background: #1B3A6B;
+      color: #FFFFFF;
+      border-color: #1B3A6B;
+    }
+
+    /* Template Card */
+    .template-card {
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 14px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.02);
+      transition: box-shadow 0.2s, border-color 0.2s;
+    }
+    .template-card:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 6px 20px rgba(0,0,0,0.04);
+      border-color: #CBD5E1;
+    }
+    .template-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .cat-badge {
+      display: inline-block;
+      padding: 0.2rem 0.65rem;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      flex-shrink: 0;
+    }
+    .template-name {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #0D1B2E;
+    }
+    .template-text {
+      font-size: 0.92rem;
+      color: #475569;
+      line-height: 1.7;
+      margin-bottom: 1rem;
+      white-space: pre-wrap;
+    }
+    .template-text .placeholder {
+      background: #FFF7ED;
+      color: #E8612A;
+      padding: 0.1rem 0.35rem;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 0.88rem;
+    }
+    .template-actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .btn-action {
+      padding: 0.45rem 0.9rem;
+      border-radius: 8px;
+      border: 1px solid #E2E8F0;
+      background: #F8FAFC;
+      font-family: inherit;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      color: #475569;
+      transition: all 0.2s;
+    }
+    .btn-action:hover { background: #E2E8F0; color: #1E293B; }
+    .btn-action.copy { color: #1B3A6B; border-color: #1B3A6B; background: rgba(27,58,107,0.05); }
+    .btn-action.copy:hover { background: #1B3A6B; color: #fff; }
+    .btn-action.edit { color: #E8612A; border-color: #E8612A; background: rgba(232,97,42,0.05); }
+    .btn-action.edit:hover { background: #E8612A; color: #fff; }
+    .btn-action.reset { color: #94A3B8; }
+    .btn-action.reset:hover { color: #EF4444; border-color: #EF4444; background: rgba(239,68,68,0.05); }
+    .btn-action.delete { color: #EF4444; border-color: #EF4444; background: rgba(239,68,68,0.05); }
+    .btn-action.delete:hover { background: #EF4444; color: #fff; }
+
+    .modified-badge {
+      font-size: 0.7rem;
+      color: #E8612A;
+      font-weight: 600;
+      margin-left: auto;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #0D1B2E;
+      color: #fff;
+      padding: 0.75rem 1.5rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+      z-index: 200;
+      opacity: 0;
+      transition: opacity 0.3s, transform 0.3s;
+      pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(13,27,46,0.6);
+      z-index: 300;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: #fff;
+      border-radius: 16px;
+      padding: 2rem;
+      width: 100%;
+      max-width: 560px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.2);
+    }
+    .modal h3 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #0D1B2E;
+      margin-bottom: 1.25rem;
+    }
+    .modal label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #64748B;
+      margin-bottom: 0.35rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .modal input, .modal textarea, .modal select {
+      width: 100%;
+      padding: 0.7rem 0.9rem;
+      border: 1px solid #E2E8F0;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.92rem;
+      margin-bottom: 1rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .modal input:focus, .modal textarea:focus, .modal select:focus {
+      outline: none;
+      border-color: #1B3A6B;
+      box-shadow: 0 0 0 3px rgba(27,58,107,0.1);
+    }
+    .modal textarea { min-height: 140px; resize: vertical; line-height: 1.6; }
+    .modal-btns {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: flex-end;
+      margin-top: 0.5rem;
+    }
+    .modal-btns .btn-cancel {
+      padding: 0.65rem 1.25rem;
+      border-radius: 10px;
+      border: 1px solid #E2E8F0;
+      background: #F8FAFC;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      color: #64748B;
+    }
+    .modal-btns .btn-save {
+      padding: 0.65rem 1.5rem;
+      border-radius: 10px;
+      border: none;
+      background: #1B3A6B;
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .modal-btns .btn-save:hover { background: #0D1B2E; }
+
+    /* Count */
+    .results-count {
+      font-size: 0.82rem;
+      color: #94A3B8;
+      font-weight: 500;
+      margin-bottom: 1rem;
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: #94A3B8;
+    }
+    .empty-state .icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+    .empty-state p { font-size: 0.95rem; font-weight: 500; }
+
+    /* Category Colors */
+    .cat-data-accuracy { background: #DBEAFE; color: #1E40AF; }
+    .cat-restaurant-owner-complaints { background: #FEE2E2; color: #B91C1C; }
+    .cat-subscription-billing { background: #D1FAE5; color: #065F46; }
+    .cat-privacy { background: #E0E7FF; color: #4338CA; }
+    .cat-feature-requests { background: #FEF3C7; color: #92400E; }
+    .cat-general { background: #F1F5F9; color: #475569; }
+    .cat-custom { background: #F3E8FF; color: #7C3AED; }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: #94A3B8;
+      font-size: 0.82rem;
+      font-weight: 500;
+    }
+
+    @media (max-width: 600px) {
+      .toolbar { padding: 1rem; }
+      .container { padding: 1.25rem 1rem 1rem; }
+      .template-card { padding: 1.25rem; }
+      .controls { flex-direction: column; }
+      .search-box { min-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Toolbar -->
+<div class="toolbar">
+  <img src="surevera-header-white-logo.png" alt="SureVera" style="height:28px;">
+  <div class="divider"></div>
+  <span class="tool-label">Support Templates</span>
+</div>
+
+<div class="container">
+
+  <!-- Controls -->
+  <div class="controls">
+    <div class="search-box">
+      <span class="search-icon">&#128269;</span>
+      <input type="text" id="searchInput" placeholder="Search templates..." oninput="renderTemplates()">
+    </div>
+    <button class="btn-add" onclick="openAddModal()">+ New Template</button>
+  </div>
+
+  <!-- Category Tabs -->
+  <div class="category-tabs" id="categoryTabs"></div>
+
+  <!-- Results Count -->
+  <div class="results-count" id="resultsCount"></div>
+
+  <!-- Templates List -->
+  <div id="templatesList"></div>
+
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <h3 id="modalTitle">Add Template</h3>
+    <label for="modalCategory">Category</label>
+    <select id="modalCategory">
+      <option value="Data Accuracy">Data Accuracy</option>
+      <option value="Restaurant Owner Complaints">Restaurant Owner Complaints</option>
+      <option value="Subscription & Billing">Subscription & Billing</option>
+      <option value="Privacy">Privacy</option>
+      <option value="Feature Requests">Feature Requests</option>
+      <option value="General">General</option>
+      <option value="Custom">Custom</option>
+    </select>
+    <label for="modalName">Template Name</label>
+    <input type="text" id="modalName" placeholder="e.g. Incorrect Grade">
+    <label for="modalText">Response Text</label>
+    <textarea id="modalText" placeholder="Write the response template. Use [brackets] for placeholders."></textarea>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" id="modalSaveBtn" onclick="saveModal()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">SureVera Support Templates &mdash; runs entirely in your browser</div>
+
+<script src="dark-mode.js"></script>
+<script src="toolkit-nav.js"></script>
+
+<script>
+const STORAGE_KEY = 'surevera_canned_responses';
+
+const DEFAULT_TEMPLATES = [
+  {
+    id: 'da-incorrect-grade',
+    category: 'Data Accuracy',
+    name: 'Incorrect Grade',
+    text: 'Hi, thank you for reaching out. The health inspection data in SureVera is sourced directly from [city/county] Health Department records. If you believe a grade is incorrect, it may be due to a recent inspection that hasn\'t been published yet, or a name-matching difference between the restaurant\'s registered name and its public-facing name. We regularly refresh our data to stay current. If you can share the restaurant name and location, we\'d be happy to look into it.'
+  },
+  {
+    id: 'da-missing-restaurant',
+    category: 'Data Accuracy',
+    name: 'Missing Restaurant',
+    text: 'Thanks for letting us know. Not every restaurant has a matching health inspection record in our system. This can happen with newer establishments, restaurants operating under a different registered name, or locations in areas we haven\'t added yet. We\'re continuously expanding our coverage.'
+  },
+  {
+    id: 'da-outdated-data',
+    category: 'Data Accuracy',
+    name: 'Outdated Data',
+    text: 'We refresh our inspection data regularly from official government sources. The date of the most recent inspection is shown on each restaurant\'s page. If you\'re seeing data that appears outdated, it may be that the health department hasn\'t published newer results yet.'
+  },
+  {
+    id: 'ro-grade-removed',
+    category: 'Restaurant Owner Complaints',
+    name: 'Restaurant Wants Grade Removed',
+    text: 'We understand your concern. SureVera displays publicly available health inspection data sourced directly from your local health department. This data is public record. We do not create ratings or opinions \u2014 we simply make existing government data more accessible to consumers. If you believe your inspection record is inaccurate, we recommend contacting your local health department directly to discuss the findings. We will always reflect the most current official data available.'
+  },
+  {
+    id: 'ro-legal-threat',
+    category: 'Restaurant Owner Complaints',
+    name: 'Threat of Legal Action',
+    text: 'Thank you for your message. SureVera publishes publicly available government health inspection records, which is protected activity under the First Amendment and various federal and state laws. We take data accuracy seriously and source all information directly from official health department records. If you believe there is a factual error in the data displayed, please let us know the specific restaurant name and location and we will verify it against the source records.'
+  },
+  {
+    id: 'sb-cancel',
+    category: 'Subscription & Billing',
+    name: 'Cancel Subscription',
+    text: 'You can cancel your subscription anytime through your device\'s settings: On iPhone, go to Settings > [Your Name] > Subscriptions > SureVera > Cancel. On Android, go to Google Play Store > Profile > Payments & subscriptions > Subscriptions > SureVera > Cancel. If you need further help, let us know.'
+  },
+  {
+    id: 'sb-refund',
+    category: 'Subscription & Billing',
+    name: 'Refund Request',
+    text: 'Refunds for SureVera subscriptions are handled by Apple or Google, depending on your device. For iPhone: visit reportaproblem.apple.com. For Android: visit play.google.com/store/account. If you have trouble with the refund process, let us know and we\'ll help guide you.'
+  },
+  {
+    id: 'sb-trial',
+    category: 'Subscription & Billing',
+    name: 'Trial Questions',
+    text: 'SureVera offers a free 3-day trial so you can explore the app. After the trial ends, an annual subscription ($20/year) is required to continue using the app. You won\'t be charged during the trial period.'
+  },
+  {
+    id: 'priv-data-collection',
+    category: 'Privacy',
+    name: 'Data Collection Question',
+    text: 'SureVera does not collect any personal information. We don\'t ask for your name, email, phone number, or any identifying data. No account is required. Your saved favorites are stored locally on your device and cannot be accessed by us or anyone else. If you enabled notifications, an anonymous token is used \u2014 it is not linked to your identity.'
+  },
+  {
+    id: 'priv-data-deletion',
+    category: 'Privacy',
+    name: 'Data Deletion',
+    text: 'You can delete all your server-side data at any time by going to Help > Delete My Data in the app. This permanently removes all followed restaurants, notification history, and device registration. Your locally saved favorites are not affected.'
+  },
+  {
+    id: 'fr-city-request',
+    category: 'Feature Requests',
+    name: 'City Request',
+    text: 'Thanks for the suggestion! We\'re always working to expand our coverage. [City] is on our radar and we\'ll prioritize cities based on data availability and user demand. You can tap \'Request this city\' in the app when searching for unsupported areas \u2014 this helps us gauge demand.'
+  },
+  {
+    id: 'fr-general',
+    category: 'Feature Requests',
+    name: 'General Feature Request',
+    text: 'Thank you for the feedback! We love hearing ideas from our users. We\'ll add your suggestion to our feature list for consideration in future updates.'
+  },
+  {
+    id: 'gen-thank-you',
+    category: 'General',
+    name: 'Thank You / Positive Review',
+    text: 'Thank you so much for the kind words! We\'re glad SureVera is helping you make safer dining choices. If you have a moment, a review on the App Store / Google Play would mean the world to us and help other people discover SureVera.'
+  }
+];
+
+function getCatClass(category) {
+  const map = {
+    'Data Accuracy': 'cat-data-accuracy',
+    'Restaurant Owner Complaints': 'cat-restaurant-owner-complaints',
+    'Subscription & Billing': 'cat-subscription-billing',
+    'Privacy': 'cat-privacy',
+    'Feature Requests': 'cat-feature-requests',
+    'General': 'cat-general',
+    'Custom': 'cat-custom'
+  };
+  return map[category] || 'cat-custom';
+}
+
+function loadTemplates() {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
+    try { return JSON.parse(saved); } catch(e) {}
+  }
+  const templates = DEFAULT_TEMPLATES.map(t => ({ ...t, original: t.text, isDefault: true }));
+  saveTemplates(templates);
+  return templates;
+}
+
+function saveTemplates(templates) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(templates));
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+let activeCategory = 'All';
+let editingId = null;
+
+function getCategories(templates) {
+  const cats = new Set();
+  templates.forEach(t => cats.add(t.category));
+  return ['All', ...Array.from(cats)];
+}
+
+function renderCategoryTabs() {
+  const templates = loadTemplates();
+  const cats = getCategories(templates);
+  const container = document.getElementById('categoryTabs');
+  container.innerHTML = cats.map(c =>
+    `<button class="cat-tab ${c === activeCategory ? 'active' : ''}" onclick="setCategory('${c.replace(/'/g, "\\'")}')">${c}</button>`
+  ).join('');
+}
+
+function setCategory(cat) {
+  activeCategory = cat;
+  renderCategoryTabs();
+  renderTemplates();
+}
+
+function highlightPlaceholders(text) {
+  return text.replace(/\[([^\]]+)\]/g, '<span class="placeholder">[$1]</span>');
+}
+
+function renderTemplates() {
+  const templates = loadTemplates();
+  const query = document.getElementById('searchInput').value.toLowerCase().trim();
+  let filtered = templates;
+
+  if (activeCategory !== 'All') {
+    filtered = filtered.filter(t => t.category === activeCategory);
+  }
+  if (query) {
+    filtered = filtered.filter(t =>
+      t.name.toLowerCase().includes(query) ||
+      t.text.toLowerCase().includes(query) ||
+      t.category.toLowerCase().includes(query)
+    );
+  }
+
+  document.getElementById('resultsCount').textContent = `${filtered.length} template${filtered.length !== 1 ? 's' : ''}`;
+
+  const container = document.getElementById('templatesList');
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="empty-state"><div class="icon">&#128203;</div><p>No templates found</p></div>`;
+    return;
+  }
+
+  container.innerHTML = filtered.map(t => {
+    const isModified = t.isDefault && t.text !== t.original;
+    const isCustom = !t.isDefault;
+    return `
+      <div class="template-card">
+        <div class="template-header">
+          <span class="cat-badge ${getCatClass(t.category)}">${t.category}</span>
+          <span class="template-name">${escapeHtml(t.name)}</span>
+          ${isModified ? '<span class="modified-badge">Modified</span>' : ''}
+        </div>
+        <div class="template-text">${highlightPlaceholders(escapeHtml(t.text))}</div>
+        <div class="template-actions">
+          <button class="btn-action copy" onclick="copyTemplate('${t.id}')">&#128203; Copy</button>
+          <button class="btn-action edit" onclick="editTemplate('${t.id}')">&#9998; Edit</button>
+          ${t.isDefault ? `<button class="btn-action reset" onclick="resetTemplate('${t.id}')">&#8634; Reset</button>` : ''}
+          ${isCustom ? `<button class="btn-action delete" onclick="deleteTemplate('${t.id}')">&#128465; Delete</button>` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function copyTemplate(id) {
+  const templates = loadTemplates();
+  const t = templates.find(x => x.id === id);
+  if (!t) return;
+  navigator.clipboard.writeText(t.text).then(() => {
+    showToast('Copied to clipboard');
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = t.text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('Copied to clipboard');
+  });
+}
+
+function editTemplate(id) {
+  const templates = loadTemplates();
+  const t = templates.find(x => x.id === id);
+  if (!t) return;
+  editingId = id;
+  document.getElementById('modalTitle').textContent = 'Edit Template';
+  document.getElementById('modalCategory').value = t.category;
+  document.getElementById('modalName').value = t.name;
+  document.getElementById('modalText').value = t.text;
+  document.getElementById('modalSaveBtn').textContent = 'Save Changes';
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function resetTemplate(id) {
+  const templates = loadTemplates();
+  const t = templates.find(x => x.id === id);
+  if (!t || !t.isDefault) return;
+  t.text = t.original;
+  saveTemplates(templates);
+  renderTemplates();
+  showToast('Restored to original');
+}
+
+function deleteTemplate(id) {
+  let templates = loadTemplates();
+  templates = templates.filter(x => x.id !== id);
+  saveTemplates(templates);
+  renderCategoryTabs();
+  renderTemplates();
+  showToast('Template deleted');
+}
+
+function openAddModal() {
+  editingId = null;
+  document.getElementById('modalTitle').textContent = 'Add Template';
+  document.getElementById('modalCategory').value = 'Custom';
+  document.getElementById('modalName').value = '';
+  document.getElementById('modalText').value = '';
+  document.getElementById('modalSaveBtn').textContent = 'Add Template';
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  editingId = null;
+}
+
+function saveModal() {
+  const category = document.getElementById('modalCategory').value;
+  const name = document.getElementById('modalName').value.trim();
+  const text = document.getElementById('modalText').value.trim();
+  if (!name || !text) {
+    showToast('Please fill in all fields');
+    return;
+  }
+
+  const templates = loadTemplates();
+
+  if (editingId) {
+    const t = templates.find(x => x.id === editingId);
+    if (t) {
+      t.category = category;
+      t.name = name;
+      t.text = text;
+    }
+    showToast('Template updated');
+  } else {
+    templates.push({
+      id: 'custom-' + Date.now(),
+      category,
+      name,
+      text,
+      isDefault: false
+    });
+    showToast('Template added');
+  }
+
+  saveTemplates(templates);
+  closeModal();
+  renderCategoryTabs();
+  renderTemplates();
+}
+
+// Keyboard shortcut
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
+
+// Init
+renderCategoryTabs();
+renderTemplates();
+</script>
+
+</body>
+</html>

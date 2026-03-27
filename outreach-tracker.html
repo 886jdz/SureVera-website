@@ -1,0 +1,2087 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>City Outreach Tracker — SureVera</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy: #1B3A6B;
+      --dark-navy: #0D1B2E;
+      --orange: #E8612A;
+      --bg: #F4F5F7;
+      --card-bg: #FFFFFF;
+      --text: #1a1a1a;
+      --text-secondary: #6B7280;
+      --border: #E5E7EB;
+      --footer-bg: #F9FAFB;
+      --footer-text: #9CA3AF;
+      --input-bg: #F8FAFC;
+      --hover-bg: #F9FAFB;
+      --row-overdue: rgba(220, 38, 38, 0.04);
+    }
+
+    body.dark-mode, [data-theme="dark"],
+    [data-theme="dark"] body,
+    [data-theme="dark"] {
+      --bg: #0D1B2E;
+      --card-bg: #132240;
+      --text: #FFFFFF;
+      --text-secondary: #8B9EC7;
+      --border: rgba(255,255,255,0.12);
+      --footer-bg: #0A1422;
+      --footer-text: #5A6E99;
+      --input-bg: #1A3060;
+      --hover-bg: #1A3060;
+      --row-overdue: rgba(220, 38, 38, 0.12);
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    .toolbar {
+      background: linear-gradient(135deg, #0D1B2E 0%, #1B3A6B 100%);
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+    }
+
+    .page-header {
+      text-align: center;
+      padding: 2rem 1rem 1rem;
+    }
+    .page-header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .page-header p {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      margin-top: 0.35rem;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 1rem 3rem;
+    }
+
+    /* Stats Bar */
+    .stats-bar {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .stat-card {
+      flex: 1;
+      min-width: 130px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      text-align: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .stat-card .stat-number {
+      font-size: 1.75rem;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+    .stat-card .stat-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-top: 0.25rem;
+    }
+    .stat-total .stat-number { color: var(--navy); }
+    .stat-awaiting .stat-number { color: #6366F1; }
+    .stat-progress .stat-number { color: #0D9488; }
+    .stat-success .stat-number { color: #16A34A; }
+    .stat-noresp .stat-number { color: #6B7280; }
+
+    [data-theme="dark"] .stat-total .stat-number { color: #4B7BF5; }
+
+    /* Due Today / Overdue Reminders */
+    .reminders-section {
+      margin-bottom: 1.5rem;
+    }
+    .reminders-header {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #DC2626;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    [data-theme="dark"] .reminders-header { color: #F87171; }
+    .reminder-cards {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .reminder-card {
+      background: var(--card-bg);
+      border: 1px solid #FECACA;
+      border-left: 4px solid #DC2626;
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+      min-width: 260px;
+      max-width: 360px;
+      flex: 1;
+      box-shadow: 0 1px 4px rgba(220,38,38,0.08);
+    }
+    [data-theme="dark"] .reminder-card {
+      border-color: rgba(248,113,113,0.3);
+      border-left-color: #F87171;
+    }
+    .reminder-card .rc-city {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .reminder-card .rc-dept {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+    .reminder-card .rc-overdue {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #DC2626;
+      margin-top: 0.4rem;
+    }
+    [data-theme="dark"] .reminder-card .rc-overdue { color: #F87171; }
+    .reminder-card .rc-actions {
+      margin-top: 0.6rem;
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    /* Action Bar */
+    .action-bar {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .action-bar .search-box {
+      flex: 1;
+      min-width: 200px;
+      padding: 0.6rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-family: inherit;
+      background: var(--input-bg);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .action-bar .search-box:focus { border-color: var(--orange); }
+    .action-bar .search-box::placeholder { color: var(--text-secondary); }
+
+    .action-bar select {
+      padding: 0.6rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-family: inherit;
+      background: var(--input-bg);
+      color: var(--text);
+      cursor: pointer;
+      outline: none;
+    }
+
+    .btn {
+      padding: 0.6rem 1.25rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: opacity 0.15s;
+      white-space: nowrap;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn-primary {
+      background: var(--orange);
+      color: #fff;
+    }
+    .btn-secondary {
+      background: var(--navy);
+      color: #fff;
+    }
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-danger {
+      background: #FEE2E2;
+      color: #DC2626;
+    }
+    [data-theme="dark"] .btn-danger {
+      background: #2D0A0A;
+      color: #F87171;
+    }
+    .btn-sm {
+      padding: 0.35rem 0.75rem;
+      font-size: 0.78rem;
+    }
+    .btn-email {
+      background: #DBEAFE;
+      color: #1D4ED8;
+    }
+    [data-theme="dark"] .btn-email {
+      background: #1E3A5F;
+      color: #60A5FA;
+    }
+
+    /* Form Card */
+    .form-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .form-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.25rem;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.15s;
+    }
+    .form-header:hover { background: var(--hover-bg); }
+    .form-header h3 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .form-chevron {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      transition: transform 0.2s;
+    }
+    .form-card.collapsed .form-chevron { transform: rotate(-90deg); }
+    .form-card.collapsed .form-body { display: none; }
+
+    .form-body {
+      border-top: 1px solid var(--border);
+      padding: 1.25rem;
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1rem;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+    .form-group label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+    .city-dropdown {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      max-height: 360px;
+      overflow-y: auto;
+      z-index: 100;
+    }
+    .city-dropdown.open { display: block; }
+    .city-dropdown-item {
+      padding: 0.6rem 0.75rem;
+      cursor: pointer;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.1s;
+    }
+    .city-dropdown-item:last-child { border-bottom: none; }
+    .city-dropdown-item:hover { background: var(--hover-bg, #F1F5F9); }
+    .city-dropdown-item .dd-city {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .city-dropdown-item .dd-dept {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-top: 1px;
+    }
+    .city-dropdown-item .dd-contact {
+      font-size: 0.7rem;
+      color: var(--text-muted, #94A3B8);
+      margin-top: 2px;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      padding: 0.55rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-family: inherit;
+      background: var(--input-bg);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--orange);
+    }
+    .form-group textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+    .form-actions {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1rem;
+      justify-content: flex-end;
+    }
+
+    /* Response Log in Form */
+    .response-log-section {
+      grid-column: 1 / -1;
+      margin-top: 0.5rem;
+      border-top: 1px solid var(--border);
+      padding-top: 1rem;
+    }
+    .response-log-section h4 {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.75rem;
+    }
+    .log-add-row {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.75rem;
+      align-items: flex-end;
+    }
+    .log-add-row .form-group { gap: 0.2rem; }
+    .log-add-row input, .log-add-row select, .log-add-row textarea {
+      padding: 0.4rem 0.6rem;
+      font-size: 0.8rem;
+    }
+    .log-timeline {
+      max-height: 200px;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--input-bg);
+    }
+    .log-entry {
+      display: flex;
+      gap: 0.75rem;
+      padding: 0.6rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+      align-items: flex-start;
+    }
+    .log-entry:last-child { border-bottom: none; }
+    .log-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--orange);
+      flex-shrink: 0;
+      margin-top: 5px;
+    }
+    .log-dot.type-sent-initial { background: #1D4ED8; }
+    .log-dot.type-sent-follow-up { background: #B45309; }
+    .log-dot.type-received-response { background: #16A34A; }
+    .log-dot.type-phone-call { background: #7C3AED; }
+    .log-dot.type-meeting { background: #0D9488; }
+    .log-content { flex: 1; min-width: 0; }
+    .log-content .log-date {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+    .log-content .log-type {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .log-content .log-notes {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+    .log-delete-btn {
+      background: none;
+      border: none;
+      color: #DC2626;
+      cursor: pointer;
+      font-size: 0.75rem;
+      padding: 2px 4px;
+      border-radius: 4px;
+    }
+    .log-delete-btn:hover { background: #FEE2E2; }
+
+    /* Table */
+    .table-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .table-wrapper {
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    thead {
+      background: var(--hover-bg);
+      border-bottom: 1px solid var(--border);
+    }
+    [data-theme="dark"] thead { background: #1A3060; }
+    th {
+      padding: 0.75rem 0.75rem;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+      cursor: pointer;
+      user-select: none;
+      transition: color 0.15s;
+    }
+    th:hover { color: var(--orange); }
+    th .sort-arrow { font-size: 0.65rem; margin-left: 0.25rem; }
+    td {
+      padding: 0.6rem 0.75rem;
+      border-top: 1px solid var(--border);
+      vertical-align: top;
+    }
+    tr.overdue {
+      background: var(--row-overdue);
+    }
+    tr:hover {
+      background: var(--hover-bg);
+    }
+    tr.overdue:hover {
+      background: var(--row-overdue);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--text-secondary);
+    }
+    .empty-state .empty-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    /* Status Badge */
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .badge-not-started { background: #E5E7EB; color: #4B5563; }
+    .badge-email-sent { background: #DBEAFE; color: #1D4ED8; }
+    .badge-follow-up-1 { background: #FEF3C7; color: #B45309; }
+    .badge-follow-up-2 { background: #FFEDD5; color: #C2410C; }
+    .badge-awaiting-legal { background: #EDE9FE; color: #7C3AED; }
+    .badge-in-discussion { background: #CCFBF1; color: #0D9488; }
+    .badge-successful { background: #DCFCE7; color: #16A34A; }
+    .badge-declined { background: #FEE2E2; color: #DC2626; }
+    .badge-no-response { background: #D1D5DB; color: #374151; }
+
+    [data-theme="dark"] .badge-not-started { background: #374151; color: #9CA3AF; }
+    [data-theme="dark"] .badge-email-sent { background: #1E3A5F; color: #60A5FA; }
+    [data-theme="dark"] .badge-follow-up-1 { background: #422006; color: #FBBF24; }
+    [data-theme="dark"] .badge-follow-up-2 { background: #431407; color: #FB923C; }
+    [data-theme="dark"] .badge-awaiting-legal { background: #2E1065; color: #A78BFA; }
+    [data-theme="dark"] .badge-in-discussion { background: #042F2E; color: #2DD4BF; }
+    [data-theme="dark"] .badge-successful { background: #052E16; color: #4ADE80; }
+    [data-theme="dark"] .badge-declined { background: #2D0A0A; color: #F87171; }
+    [data-theme="dark"] .badge-no-response { background: #1F2937; color: #9CA3AF; }
+
+    .overdue-text { color: #DC2626; font-weight: 600; }
+    [data-theme="dark"] .overdue-text { color: #F87171; }
+
+    .notes-cell {
+      max-width: 180px;
+    }
+    .notes-truncated {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      cursor: pointer;
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+    }
+    .notes-truncated.expanded {
+      -webkit-line-clamp: unset;
+    }
+
+    .cell-actions {
+      display: flex;
+      gap: 0.35rem;
+      white-space: nowrap;
+      flex-wrap: wrap;
+    }
+
+    /* Priority bar */
+    .priority-bar-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .priority-bar {
+      width: 50px;
+      height: 8px;
+      border-radius: 4px;
+      background: var(--border);
+      overflow: hidden;
+    }
+    .priority-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.3s;
+    }
+    .priority-score {
+      font-size: 0.78rem;
+      font-weight: 700;
+      min-width: 22px;
+    }
+
+    /* Modal overlay */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .modal-overlay.open {
+      display: flex;
+    }
+    .modal {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      max-width: 700px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .modal-header h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: 0 0.25rem;
+      line-height: 1;
+    }
+    .modal-close:hover { color: var(--text); }
+    .modal-body {
+      padding: 1.25rem;
+    }
+    .modal-body label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+    .modal-body select,
+    .modal-body input,
+    .modal-body textarea {
+      width: 100%;
+      padding: 0.55rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-family: inherit;
+      background: var(--input-bg);
+      color: var(--text);
+      outline: none;
+      margin-bottom: 0.85rem;
+    }
+    .modal-body textarea {
+      min-height: 300px;
+      resize: vertical;
+      line-height: 1.6;
+    }
+    .modal-body textarea:focus,
+    .modal-body select:focus,
+    .modal-body input:focus {
+      border-color: var(--orange);
+    }
+    .modal-actions {
+      display: flex;
+      gap: 0.75rem;
+      padding: 1rem 1.25rem;
+      border-top: 1px solid var(--border);
+      justify-content: flex-end;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      font-size: 0.8rem;
+      color: var(--footer-text);
+      background: var(--footer-bg);
+      border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 768px) {
+      .toolbar { padding: 1rem; }
+      .container { padding: 0 0.75rem 2rem; }
+      .stats-bar { gap: 0.5rem; }
+      .stat-card { min-width: 100px; padding: 0.75rem; }
+      .stat-card .stat-number { font-size: 1.35rem; }
+      .form-grid { grid-template-columns: 1fr; }
+      .page-header h1 { font-size: 1.35rem; }
+      .reminder-card { min-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="toolbar">
+    <img src="surevera-header-white-logo.png" alt="SureVera" style="height:32px">
+    <div style="width:1px;height:24px;background:rgba(255,255,255,0.2)"></div>
+    <span style="font-size:0.85rem;font-weight:500;color:rgba(255,255,255,0.6)">City Outreach Tracker</span>
+  </div>
+
+  <div class="page-header">
+    <h1>City Outreach Tracker</h1>
+    <p>Track health department outreach progress across all cities</p>
+  </div>
+
+  <div class="container">
+    <!-- Due Today / Overdue Reminders -->
+    <div class="reminders-section" id="remindersSection" style="display:none">
+      <div class="reminders-header">&#9888; Follow-Up Reminders</div>
+      <div class="reminder-cards" id="reminderCards"></div>
+    </div>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+      <div class="stat-card stat-total">
+        <div class="stat-number" id="statTotal">0</div>
+        <div class="stat-label">Total Contacts</div>
+      </div>
+      <div class="stat-card stat-awaiting">
+        <div class="stat-number" id="statAwaiting">0</div>
+        <div class="stat-label">Awaiting Response</div>
+      </div>
+      <div class="stat-card stat-progress">
+        <div class="stat-number" id="statProgress">0</div>
+        <div class="stat-label">In Progress</div>
+      </div>
+      <div class="stat-card stat-success">
+        <div class="stat-number" id="statSuccess">0</div>
+        <div class="stat-label">Successful</div>
+      </div>
+      <div class="stat-card stat-noresp">
+        <div class="stat-number" id="statNoResp">0</div>
+        <div class="stat-label">No Response</div>
+      </div>
+    </div>
+
+    <!-- Add/Edit Form -->
+    <div class="form-card collapsed" id="formCard">
+      <div class="form-header" id="formToggle">
+        <h3><span id="formIcon">+</span> <span id="formTitle">Add New Contact</span></h3>
+        <span class="form-chevron">&#9660;</span>
+      </div>
+      <div class="form-body">
+        <div class="form-grid">
+          <div class="form-group" style="position:relative">
+            <label>City / County *</label>
+            <input type="text" id="fCity" placeholder="Type to search or click Browse All..." autocomplete="off">
+            <button type="button" id="browseAllBtn" style="margin-top:0.35rem;padding:0.4rem 0.75rem;border:1px solid var(--border);border-radius:8px;background:var(--input-bg);color:var(--text-secondary);cursor:pointer;font-size:0.75rem;font-family:inherit;white-space:nowrap;transition:background 0.15s;width:100%" title="Browse all departments">Browse All Departments</button>
+            <div id="cityDropdown" class="city-dropdown"></div>
+          </div>
+          <div class="form-group">
+            <label>State *</label>
+            <select id="fState">
+              <option value="">Select state...</option>
+              <option>Alabama</option><option>Alaska</option><option>Arizona</option><option>Arkansas</option>
+              <option>California</option><option>Colorado</option><option>Connecticut</option><option>Delaware</option>
+              <option>Florida</option><option>Georgia</option><option>Hawaii</option><option>Idaho</option>
+              <option>Illinois</option><option>Indiana</option><option>Iowa</option><option>Kansas</option>
+              <option>Kentucky</option><option>Louisiana</option><option>Maine</option><option>Maryland</option>
+              <option>Massachusetts</option><option>Michigan</option><option>Minnesota</option><option>Mississippi</option>
+              <option>Missouri</option><option>Montana</option><option>Nebraska</option><option>Nevada</option>
+              <option>New Hampshire</option><option>New Jersey</option><option>New Mexico</option><option>New York</option>
+              <option>North Carolina</option><option>North Dakota</option><option>Ohio</option><option>Oklahoma</option>
+              <option>Oregon</option><option>Pennsylvania</option><option>Rhode Island</option><option>South Carolina</option>
+              <option>South Dakota</option><option>Tennessee</option><option>Texas</option><option>Utah</option>
+              <option>Vermont</option><option>Virginia</option><option>Washington</option><option>West Virginia</option>
+              <option>Wisconsin</option><option>Wyoming</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Department Name *</label>
+            <input type="text" id="fDept" placeholder="e.g. Austin Public Health">
+          </div>
+          <div class="form-group">
+            <label>Contact Name</label>
+            <input type="text" id="fName" placeholder="e.g. Jane Smith">
+          </div>
+          <div class="form-group">
+            <label>Contact Email</label>
+            <input type="email" id="fEmail" placeholder="e.g. jane@dept.gov">
+          </div>
+          <div class="form-group">
+            <label>Contact Phone</label>
+            <input type="tel" id="fPhone" placeholder="e.g. (512) 555-0100">
+          </div>
+          <div class="form-group">
+            <label>Status</label>
+            <select id="fStatus">
+              <option>Not Started</option>
+              <option>Email Sent</option>
+              <option>Follow-Up 1</option>
+              <option>Follow-Up 2</option>
+              <option>Awaiting Legal</option>
+              <option>In Discussion</option>
+              <option>Successful</option>
+              <option>Declined</option>
+              <option>No Response</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Template Used</label>
+            <select id="fTemplate">
+              <option value="">None</option>
+              <option>1. FOIA Request</option>
+              <option>2. Open Data Team Outreach</option>
+              <option>3. Partnership Pitch</option>
+              <option>4. Follow-Up (2 Weeks)</option>
+              <option>5. Follow-Up (4 Weeks)</option>
+              <option>6. Legal Review Response</option>
+              <option>7. No Resources Response</option>
+              <option>8. Paid App Defense</option>
+              <option>9. Cease & Desist Response</option>
+              <option>10. Own Portal Response</option>
+              <option>11. More Info Response</option>
+              <option>12. Thank You</option>
+              <option>13. Meeting Request</option>
+              <option>14. State-Level Pitch</option>
+              <option>15. Elected Official</option>
+              <option>16. Custom</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Date Contacted</label>
+            <input type="date" id="fDateContacted">
+          </div>
+          <div class="form-group">
+            <label>Next Follow-Up Date</label>
+            <input type="date" id="fNextFollowUp">
+          </div>
+          <div class="form-group full-width">
+            <label>Notes</label>
+            <textarea id="fNotes" placeholder="Any additional details..."></textarea>
+          </div>
+          <!-- Response Log Section (visible only when editing) -->
+          <div class="response-log-section" id="responseLogSection" style="display:none">
+            <h4>Response Log / Interaction History</h4>
+            <div class="log-add-row">
+              <div class="form-group">
+                <label>Date</label>
+                <input type="date" id="logDate">
+              </div>
+              <div class="form-group">
+                <label>Type</label>
+                <select id="logType">
+                  <option>Sent Initial</option>
+                  <option>Sent Follow-Up</option>
+                  <option>Received Response</option>
+                  <option>Phone Call</option>
+                  <option>Meeting</option>
+                </select>
+              </div>
+              <div class="form-group" style="flex:1;min-width:160px">
+                <label>Notes</label>
+                <input type="text" id="logNotes" placeholder="Brief description...">
+              </div>
+              <button class="btn btn-outline btn-sm" id="btnAddLog" style="align-self:flex-end;margin-bottom:1px">+ Add Entry</button>
+            </div>
+            <div class="log-timeline" id="logTimeline"></div>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-outline" id="btnCancel" style="display:none">Cancel</button>
+          <button class="btn btn-primary" id="btnSave">Save Contact</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter & Actions Bar -->
+    <div class="action-bar">
+      <input type="text" class="search-box" id="searchBox" placeholder="Search by city, department, contact name...">
+      <select id="filterStatus">
+        <option value="">All Statuses</option>
+        <option>Not Started</option>
+        <option>Email Sent</option>
+        <option>Follow-Up 1</option>
+        <option>Follow-Up 2</option>
+        <option>Awaiting Legal</option>
+        <option>In Discussion</option>
+        <option>Successful</option>
+        <option>Declined</option>
+        <option>No Response</option>
+      </select>
+      <button class="btn btn-secondary" id="btnExport">Export CSV</button>
+    </div>
+
+    <!-- Table -->
+    <div class="table-card">
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th data-sort="priority">Priority <span class="sort-arrow"></span></th>
+              <th data-sort="cityState">City/State <span class="sort-arrow"></span></th>
+              <th data-sort="department">Department <span class="sort-arrow"></span></th>
+              <th data-sort="contactName">Contact <span class="sort-arrow"></span></th>
+              <th data-sort="status">Status <span class="sort-arrow"></span></th>
+              <th data-sort="template">Template <span class="sort-arrow"></span></th>
+              <th data-sort="dateContacted">Contacted <span class="sort-arrow"></span></th>
+              <th data-sort="nextFollowUp">Follow-Up <span class="sort-arrow"></span></th>
+              <th>Notes</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+        <div class="empty-state" id="emptyState" style="display:none">
+          <div class="empty-icon">&#128196;</div>
+          <p>No contacts yet. Click "Add New Contact" to get started.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">SureVera City Outreach Tracker &mdash; data stored in your browser</div>
+
+  <!-- Email Draft Modal -->
+  <div class="modal-overlay" id="emailModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="emailModalTitle">Draft Email</h3>
+        <button class="modal-close" id="emailModalClose">&times;</button>
+      </div>
+      <div class="modal-body">
+        <label>Template</label>
+        <select id="emailTemplateSelect"></select>
+        <label>To</label>
+        <input type="text" id="emailTo" readonly>
+        <label>Subject</label>
+        <input type="text" id="emailSubject">
+        <label>Body</label>
+        <textarea id="emailBody"></textarea>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-outline" id="emailCopyBtn">Copy to Clipboard</button>
+        <button class="btn btn-secondary" id="emailMailtoBtn">Open in Mail</button>
+        <button class="btn btn-outline" id="emailCloseBtn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'surevera_outreach_contacts';
+
+    // ── Health Department Directory ──
+    const DIRECTORY = [
+      { city: "Austin", state: "Texas", dept: "Austin Public Health", email: "EHSD.Service@austintexas.gov", phone: "(512) 978-0300", website: "austintexas.gov" },
+      { city: "San Antonio", state: "Texas", dept: "San Antonio Metro Health", email: "samhd@sanantonio.gov", phone: "(210) 207-8823", website: "sa.gov/Directory/Departments/SAMHD" },
+      { city: "Los Angeles County", state: "California", dept: "LA County Environmental Health", email: "ehmail@ph.lacounty.gov", phone: "(888) 700-9995", website: "publichealth.lacounty.gov/eh/" },
+      { city: "Sacramento County", state: "California", dept: "Sacramento County Environmental Management", email: "EMDinfo@Saccounty.gov", phone: "(916) 875-8484", website: "emd.saccounty.gov" },
+      { city: "San Francisco", state: "California", dept: "SF Dept. of Public Health", email: "", phone: "(415) 252-3800", website: "sfdph.org" },
+      { city: "San Diego County", state: "California", dept: "San Diego County Dept. of Environmental Health", email: "dehinbox@sdcounty.ca.gov", phone: "(858) 505-6700", website: "sandiegocounty.gov/content/sdc/deh" },
+      { city: "Alameda County", state: "California", dept: "Alameda County Environmental Health", email: "", phone: "(510) 567-6700", website: "acgov.org/aceh/" },
+      { city: "Santa Clara County", state: "California", dept: "Santa Clara County DEH", email: "", phone: "(408) 918-3400", website: "sccgov.org/sites/deh" },
+      { city: "Louisville", state: "Kentucky", dept: "Louisville Metro Public Health", email: "", phone: "(502) 574-5380", website: "louisvilleky.gov/government/health-wellness" },
+      { city: "Fairfax County", state: "Virginia", dept: "Fairfax County Health Department", email: "HDehd@fairfaxcounty.gov", phone: "(703) 246-2201", website: "fairfaxcounty.gov/health" },
+      { city: "Minneapolis", state: "Minnesota", dept: "Minneapolis Environmental Health", email: "", phone: "(612) 673-2301", website: "minneapolismn.gov" },
+      { city: "Detroit", state: "Michigan", dept: "Detroit Health Department", email: "dhealth@detroitmi.gov", phone: "(313) 876-4715", website: "detroitmi.gov/departments/detroit-health-department" },
+      { city: "Arlington", state: "Texas", dept: "City of Arlington Environmental Health", email: "", phone: "(817) 459-6502", website: "arlingtontx.gov" },
+      { city: "Garland", state: "Texas", dept: "Garland Environmental Health", email: "EnvHealth@GarlandTX.gov", phone: "(972) 205-3460", website: "garlandtx.gov/669/Environmental-Health" },
+      { city: "Sioux Falls", state: "South Dakota", dept: "City of Sioux Falls Health", email: "jschmitt@siouxfalls.org", phone: "(605) 367-8760", website: "siouxfalls.gov/health" },
+      { city: "Boulder County", state: "Colorado", dept: "Boulder County Public Health", email: "healthinfo@bouldercounty.org", phone: "(303) 441-1100", website: "bouldercounty.gov/departments/public-health" },
+      { city: "Wake County", state: "North Carolina", dept: "Wake County Environmental Health", email: "jessica.sanders@wake.gov", phone: "(919) 856-7400", website: "wake.gov" },
+      { city: "Williamson County", state: "Texas", dept: "Williamson County & Cities Health District", email: "wcchd-info@wilcotx.gov", phone: "(512) 943-3600", website: "wcchd.org" },
+      { city: "Bell County", state: "Texas", dept: "Bell County Public Health District", email: "retailfood@bellcountyhealth.org", phone: "(254) 532-9800", website: "bellcountyhealth.org" },
+      { city: "Kitsap County", state: "Washington", dept: "Kitsap Public Health District", email: "pio@kitsappublichealth.org", phone: "(360) 728-2235", website: "kitsappublichealth.org" },
+      { city: "Houston", state: "Texas", dept: "Houston Health Department", email: "consumerhealthservices@houstontx.gov", phone: "(832) 393-5100", website: "houstonhealth.org" },
+      { city: "Philadelphia", state: "Pennsylvania", dept: "Philadelphia Dept. of Public Health", email: "", phone: "(215) 685-7495", website: "phila.gov/departments/department-of-public-health" },
+      { city: "Columbus", state: "Ohio", dept: "Columbus Public Health", email: "", phone: "(614) 645-7005", website: "columbus.gov/Services/Public-Health" },
+      { city: "Boston", state: "Massachusetts", dept: "Boston Inspectional Services", email: "isdtempevent@boston.gov", phone: "(617) 635-5326", website: "boston.gov/departments/inspectional-services" },
+      { city: "New Orleans", state: "Louisiana", dept: "New Orleans Health Department", email: "", phone: "(504) 568-7970", website: "nola.gov/health-department" },
+      { city: "Cincinnati", state: "Ohio", dept: "Cincinnati Health Department", email: "Philip.Murdock@cincinnati-oh.gov", phone: "(513) 564-1751", website: "cincinnati-oh.gov/health" },
+      { city: "Milwaukee", state: "Wisconsin", dept: "Milwaukee Health Department", email: "", phone: "(414) 286-8327", website: "city.milwaukee.gov/Health" },
+      { city: "Delaware (Statewide)", state: "Delaware", dept: "Delaware Division of Public Health", email: "", phone: "(302) 744-4546", website: "dhss.delaware.gov/dph/hsp/ofp" },
+      { city: "New York City", state: "New York", dept: "NYC Dept. of Health & Mental Hygiene", email: "", phone: "(311)", website: "nyc.gov/health" },
+      { city: "Chicago", state: "Illinois", dept: "Chicago Dept. of Public Health", email: "", phone: "(312) 746-8030", website: "chicago.gov/city/en/depts/cdph.html" },
+      { city: "Seattle / King County", state: "Washington", dept: "King County Public Health", email: "", phone: "(206) 263-8600", website: "kingcounty.gov/depts/health" },
+      { city: "Las Vegas / Clark County", state: "Nevada", dept: "Southern Nevada Health District", email: "", phone: "(702) 759-1000", website: "southernnevadahealthdistrict.org" },
+      { city: "Montgomery County", state: "Maryland", dept: "Montgomery County DHHS", email: "", phone: "(240) 777-0311", website: "montgomerycountymd.gov/HHS" },
+      { city: "Anchorage", state: "Alaska", dept: "Municipality of Anchorage Health & Human Services", email: "", phone: "(907) 343-4799", website: "muni.org" },
+      { city: "South Carolina (Statewide)", state: "South Carolina", dept: "SC DHEC", email: "", phone: "(803) 898-3432", website: "scdhec.gov" },
+      { city: "Florida (Statewide)", state: "Florida", dept: "Florida DBPR", email: "", phone: "(850) 487-1395", website: "myfloridalicense.com" },
+      { city: "New York State (Upstate)", state: "New York", dept: "NY State Dept. of Health", email: "", phone: "(518) 402-7600", website: "health.ny.gov" },
+      { city: "Tyler Technologies (Platform Partner)", state: "Ohio", dept: "Tyler Technologies — Platform Alliance", email: "", phone: "(800) 800-2581", website: "tylertech.com/about-us/partners/tyler-platform-alliance" },
+    ];
+
+    // ── Metro Population Lookup (approximate) ──
+    const METRO_POPULATIONS = {
+      "Austin": 2300000,
+      "San Antonio": 2550000,
+      "Los Angeles County": 10000000,
+      "Sacramento County": 1550000,
+      "San Francisco": 875000,
+      "San Diego County": 3300000,
+      "Alameda County": 1680000,
+      "Santa Clara County": 1940000,
+      "Louisville": 630000,
+      "Fairfax County": 1150000,
+      "Minneapolis": 430000,
+      "Detroit": 640000,
+      "Arlington": 395000,
+      "Garland": 240000,
+      "Sioux Falls": 195000,
+      "Boulder County": 330000,
+      "Wake County": 1175000,
+      "Williamson County": 640000,
+      "Bell County": 370000,
+      "Kitsap County": 275000,
+      "Houston": 2300000,
+      "Philadelphia": 1580000,
+      "Columbus": 905000,
+      "Boston": 685000,
+      "New Orleans": 390000,
+      "Cincinnati": 310000,
+      "Milwaukee": 575000,
+      "Delaware (Statewide)": 1000000,
+      "New York City": 8300000,
+      "Chicago": 2700000,
+      "Seattle / King County": 2270000,
+      "Las Vegas / Clark County": 2270000,
+      "Montgomery County": 1060000,
+      "Anchorage": 290000,
+      "South Carolina (Statewide)": 5200000,
+      "Florida (Statewide)": 22200000,
+      "New York State (Upstate)": 7500000,
+    };
+
+    // Cities that currently have violation data in SureVera
+    const CITIES_WITH_VIOLATIONS = [
+      "New York City", "Chicago", "San Francisco", "Seattle / King County",
+      "Las Vegas / Clark County", "San Antonio", "Bell County", "Williamson County",
+      "Kitsap County", "Anchorage", "South Carolina (Statewide)", "Florida (Statewide)",
+      "New York State (Upstate)", "Alameda County"
+    ];
+
+    // ── All 15 Email Templates (inline, standalone) ──
+    const EMAIL_TEMPLATES = [
+      {
+        num: 1,
+        title: "FOIA / Public Records Request",
+        subject: "Public Records Request - Food Establishment Inspection Violation Data",
+        body: `Dear [DEPT] Records Office,
+
+I am submitting a public records request under the [STATE] public records law for the following records:
+
+Food establishment inspection records for [CITY], [STATE], including:
+- Establishment name and address
+- Inspection date
+- Inspection score or grade
+- Individual violation descriptions, codes, or categories
+- Inspector notes or comments (if recorded)
+
+I am requesting records from the past 12 months in an electronic format. CSV, Excel, JSON, or database export is strongly preferred over paper records. If the complete dataset exceeds a reasonable scope, I am happy to discuss narrowing the request.
+
+Please let me know if there are any fees associated with this request or if you need additional information to process it.
+
+Thank you for your time and service to public health.
+
+Best regards,
+[YOUR NAME]
+Arrio Technologies LLC
+support@arriotech.com`
+      },
+      {
+        num: 2,
+        title: "Open Data Team Outreach",
+        subject: "Feature Request - Adding Violation Details to Your Open Data Portal",
+        body: `Hi [NAME],
+
+I'm a developer who works with public health inspection data, and I wanted to reach out about your food establishment inspection dataset on your open data portal.
+
+First, thank you for publishing this data - it's a great transparency initiative and we use it to help consumers in [CITY] make informed dining decisions through our app, SureVera.
+
+I noticed the current dataset includes inspection scores and dates, but does not include individual violation descriptions or inspector notes. This is the data point consumers find most valuable - understanding why a restaurant scored the way it did, not just the number.
+
+Would it be possible to add a violations or notes column to the existing dataset? Many other departments include this information in their open data feeds (NYC, Chicago, Seattle, and others publish violation-level detail).
+
+I understand this may require coordination with your IT or data teams. I'm happy to work with whatever format is easiest on your end - even a separate dataset that we can join by facility ID would work great.
+
+Would you be open to a brief conversation about this?
+
+Best regards,
+[YOUR NAME]
+Arrio Technologies LLC
+support@arriotech.com`
+      },
+      {
+        num: 3,
+        title: "Partnership Pitch",
+        subject: "Data Partnership Opportunity - Making Your Inspection Data More Accessible",
+        body: `Hi [NAME],
+
+Thank you for publishing your inspection data. I wanted to share what we're building with it and explore whether there's a way we can work together.
+
+I'm the founder of Arrio Technologies. We built SureVera, a mobile app that shows consumers restaurant health inspection grades from official government sources. Think of it as a health-score version of checking a restaurant's rating before you eat. We currently cover 90+ cities across the US.
+
+Here's what a partnership would look like:
+
+For [DEPT]:
+- Your inspection data reaches consumers who would never visit your website
+- Every restaurant listing credits your department as the official data source
+- Fewer individual records requests from the public
+- Modern mobile interface for your data at no cost to you
+
+What we'd need:
+- An automated data feed (API, scheduled export, or an additional column on your existing open data portal) so we can keep data current
+- Ideally including violation descriptions alongside scores
+
+We're not asking for funding or contracts. SureVera's infrastructure is funded by a modest consumer subscription ($20/year). We just need access to data you're already collecting.
+
+I'd love to do a quick 15-minute call to show you the app and discuss how this could work. Would you be open to that?
+
+Best regards,
+[YOUR NAME]
+Founder, Arrio Technologies LLC
+support@arriotech.com
+arriotech.com | surevera.app`
+      },
+      {
+        num: 4,
+        title: "Follow-Up (2 Weeks)",
+        subject: "Following Up - Food Inspection Data Partnership",
+        body: `Hi [NAME],
+
+I wanted to follow up on my email from a couple of weeks ago regarding a potential data partnership for restaurant health inspection data in [CITY], [STATE].
+
+I understand your team is busy - I just wanted to make sure my message didn't get lost. I'm reaching out because I believe this could be a great way to increase public engagement with [DEPT]'s inspection program at no cost or effort on your end.
+
+If there's a better person to direct this to, I'd appreciate being pointed in the right direction.
+
+Happy to work around your schedule for a brief call or to provide any additional information.
+
+Best regards,
+[YOUR NAME]
+Arrio Technologies LLC
+support@arriotech.com`
+      },
+      {
+        num: 5,
+        title: "Follow-Up (4 Weeks)",
+        subject: "Final Follow-Up - Restaurant Inspection Data",
+        body: `Hi [NAME],
+
+I reached out a few weeks ago about working together to make [DEPT]'s restaurant inspection data more accessible to the public through our app, SureVera.
+
+I don't want to be a bother, so this will be my last follow-up. If the timing isn't right or this isn't something your department is interested in, I completely understand.
+
+If anything changes in the future, or if your department starts publishing violation-level data through your open data portal, I'd love to hear about it. You can always reach me at support@arriotech.com.
+
+Thank you for the work your department does to keep [CITY] safe.
+
+Best regards,
+[YOUR NAME]
+Arrio Technologies LLC
+support@arriotech.com`
+      },
+      {
+        num: 6,
+        title: "Legal Review Response",
+        subject: "Re: Food Inspection Data Partnership - Happy to Support Your Review",
+        body: `Hi [NAME],
+
+Absolutely understand - I appreciate you looking into this.
+
+To help with your legal team's review, here are some key points that may be relevant:
+
+- All health inspection data we use is public record, sourced exclusively from publicly accessible government data portals and published reports
+- We do not access any restricted, internal, or password-protected systems
+- We attribute [DEPT] as the official data source on every restaurant listing
+- We do not modify, misrepresent, or editorialize the inspection data
+- Our app is a consumer tool, not a competitor to any government service
+- We're happy to sign a data use agreement if your department requires one
+
+I've also attached a one-page overview of our platform that may be helpful for the review.
+
+Please take whatever time you need. I'm available if your legal team has any questions.
+
+Best regards,
+[YOUR NAME]
+Arrio Technologies LLC
+support@arriotech.com`
+      },
+      {
+        num: 7,
+        title: "No Resources Response",
+        subject: "Re: Inspection Data - We'll Do All the Heavy Lifting",
+        body: `Hi [NAME],
+
+I completely understand - your team's priority should be inspections in [CITY], not data exports.
+
+The good news is we need very little from your side. Here are some zero-effort options:
+
+1. If you already publish data on an open data portal (Socrata, ArcGIS, etc.), we can pull from it automatically. Adding a violations column to your existing dataset would be the only ask.
+
+2. If you can do a one-time database export (CSV or Excel), we can handle everything from there. We already parse PDFs, spreadsheets, and custom data formats from other departments.
+
+3. If your inspection software has a built-in export or reporting feature, even a scheduled email with an attached report would work. We'll figure out the rest.
+
+We're not asking for a custom API or dedicated IT project. Whatever is easiest for [DEPT] - even if it's imperfect - we can work with it.
+
+Would any of these options work for your department?
+
+Best regards,
+[YOUR NAME]
+Arrio Technologies LLC
+support@arriotech.com`
+      },
+      {
+        num: 8,
+        title: "Paid App Defense",
+        subject: "Re: About SureVera's Subscription Model",
+        body: `Hi [NAME],
+
+Great question, and I appreciate the directness.
+
+SureVera charges a $20/year subscription to cover the real infrastructure costs of running the service - server hosting, API calls, data processing across 90+ cities, and mobile app maintenance. Without the subscription, the service wouldn't exist.
+
+But here's what's important: we're not selling [DEPT]'s data. Your data is and remains public. What we're selling is the product - the app experience, the search, the matching algorithm, the grade change alerts, and the ability to check any restaurant in 90+ cities from your phone in seconds.
+
+This is the same model used across the industry:
+- Weather apps charge subscriptions using free NOAA data
+- Real estate apps charge using free county property records
+- Navigation apps are built on free government road data
+
+Your department's data is one ingredient. The product we build around it is what consumers pay for.
+
+Most importantly, SureVera extends [DEPT]'s reach to consumers who would never find your data otherwise. Every listing attributes your department as the source. It's free marketing for your inspection program.
+
+I hope that context is helpful. Happy to discuss further if you have any other concerns.
+
+Best regards,
+[YOUR NAME]
+Arrio Technologies LLC
+support@arriotech.com`
+      },
+      {
+        num: 9,
+        title: "Cease & Desist Response",
+        subject: "Re: Your Request Regarding Inspection Data Usage",
+        body: `Dear [NAME],
+
+Thank you for reaching out. I take your concerns seriously and want to address them directly.
+
+SureVera accesses food establishment inspection data exclusively through publicly available channels - [DEPT]'s open data portal, published reports, and public records. We do not access any restricted or internal systems.
+
+Health inspection data is public record under [STATE] public records law, and we believe making this data accessible to consumers supports both the letter and spirit of public transparency laws.
+
+That said, we value our relationship with health departments and want to be good partners. I'd welcome a conversation about your specific concerns. In particular:
+
+- If there are data accuracy concerns, we want to know so we can correct them
+- If you'd prefer we present the data differently, we're open to feedback
+- If there's a preferred data access method, we're happy to use it
+- If you'd like us to add specific disclaimers or attribution language, we will
+
+Our goal is the same as yours: helping the public in [CITY] make informed decisions about food safety. I believe we can find an approach that works for everyone.
+
+Could we schedule a call to discuss this? I think a conversation would be more productive than email.
+
+Best regards,
+[YOUR NAME]
+Founder, Arrio Technologies LLC
+support@arriotech.com`
+      },
+      {
+        num: 10,
+        title: "Own Portal Response",
+        subject: "Re: SureVera as a Complement to Your Existing Portal",
+        body: `Hi [NAME],
+
+That's great that [DEPT] has its own lookup tool - not every department does, and it shows your commitment to transparency.
+
+SureVera isn't meant to replace your portal. Think of us as an additional distribution channel for your data. Here's how we're different:
+
+- Your portal serves people who already know to look for inspection data. SureVera reaches people who don't - the casual diner deciding where to eat tonight.
+- Your portal covers [CITY]. SureVera covers 90+ cities, so travelers and people moving to a new area can check restaurants anywhere.
+- SureVera sends push notifications when a restaurant's grade changes - something a static portal can't do.
+- We're a mobile-first experience designed for the moment of decision: standing on a street corner choosing between two restaurants.
+
+We'd actually love to link directly to your portal from within the app for users who want the full official record. That drives traffic back to your site.
+
+Would you be open to exploring how the two could complement each other?
+
+Best regards,
+[YOUR NAME]
+Arrio Technologies LLC
+support@arriotech.com`
+      },
+      {
+        num: 11,
+        title: "Send More Info Response",
+        subject: "Re: SureVera Overview - Partnership Information Attached",
+        body: `Hi [NAME],
+
+Thank you for your interest. I've attached a one-page overview of SureVera and our data partnership model.
+
+The quick summary:
+
+- SureVera is a mobile app (iOS/Android) that shows restaurant health inspection grades to consumers
+- We source 100% of our data from official government health departments - never from user submissions or third-party aggregators
+- We currently cover 90+ cities across 20 states
+- No cost to [DEPT] - our infrastructure is funded by a $20/year consumer subscription
+- We attribute your department on every listing and link to your official records when available
+
+What we'd love from [DEPT]:
+- Access to violation-level data (descriptions, codes, or inspector notes) alongside your existing inspection scores
+- An automated feed is ideal, but we can work with any format including CSV exports or PDFs
+
+I'd be happy to do a live demo of the app over a quick call, or answer any questions your team has.
+
+Best regards,
+[YOUR NAME]
+Arrio Technologies LLC
+support@arriotech.com`
+      },
+      {
+        num: 12,
+        title: "Thank You (Data Live)",
+        subject: "[CITY] Inspection Data Now Live on SureVera - Thank You!",
+        body: `Hi [NAME],
+
+I wanted to let you know that we've integrated the inspection data from [DEPT] into SureVera. Consumers in [CITY], [STATE] can now see health inspection grades - including violation details - for restaurants in your jurisdiction.
+
+Every listing includes attribution to [DEPT] as the official data source.
+
+A few things I wanted to share:
+
+- If you'd like to see how your data appears in the app, you can download SureVera on iOS or Android and search for any restaurant in [CITY]
+- If you notice any data accuracy issues or have feedback on how we present the information, please don't hesitate to reach out
+- We'd be happy to provide usage analytics (how many consumers are viewing your data) if that's useful for your department's reporting
+
+Thank you again for your support of public health transparency. This kind of partnership makes a real difference for consumers.
+
+Best regards,
+[YOUR NAME]
+Arrio Technologies LLC
+support@arriotech.com`
+      },
+      {
+        num: 13,
+        title: "Meeting Request",
+        subject: "Quick Call? 15 Minutes to Show You SureVera",
+        body: `Hi [NAME],
+
+I know email can only convey so much. Would you have 15 minutes this week or next for a quick call? I'd love to:
+
+1. Give you a live demo of SureVera so you can see how [CITY]'s data is presented
+2. Walk through how our data pipeline works (it's simpler than you'd expect)
+3. Discuss what a violation data feed could look like - tailored to whatever's easiest for [DEPT]
+
+I'm flexible on timing and can work around your schedule. Just let me know a couple of times that work and I'll send over a calendar invite.
+
+Looking forward to connecting.
+
+Best regards,
+[YOUR NAME]
+Arrio Technologies LLC
+support@arriotech.com`
+      },
+      {
+        num: 14,
+        title: "State-Level Pitch",
+        subject: "Statewide Data Partnership - Restaurant Inspection Transparency",
+        body: `Dear [DEPT],
+
+I'm reaching out regarding your statewide restaurant inspection data. My company, Arrio Technologies, builds consumer health transparency tools, and we believe a partnership with your agency could significantly advance public access to inspection information across [STATE].
+
+We've built SureVera, a mobile app that makes restaurant health inspection data accessible to everyday consumers. We currently cover 90+ cities nationwide using published government data.
+
+Your dataset currently includes inspection scores and dates, which is valuable. However, the most requested feature from our users is violation-level detail - knowing why a restaurant received its score, not just the number.
+
+A single conversation with your agency could unlock violation data for the entire state at once - rather than us approaching each county individually. This would:
+
+- Expand public access to inspection details across [STATE]
+- Support your agency's transparency mission at scale
+- Reduce individual county-level records requests
+- Provide a modern mobile interface for data your inspectors are already collecting
+
+We're flexible on format and can work with whatever your systems produce - CSV, API, bulk export, or even your existing data portal with an additional violations field.
+
+Would someone on your team be available for a brief call to explore this?
+
+Best regards,
+[YOUR NAME]
+Founder, Arrio Technologies LLC
+support@arriotech.com
+arriotech.com | surevera.app`
+      },
+      {
+        num: 15,
+        title: "Elected Official",
+        subject: "Constituent Request - Restaurant Health Inspection Data Transparency",
+        body: `Dear [NAME],
+
+I'm writing about an opportunity to improve public health transparency for constituents in [CITY], [STATE] at no cost to the city.
+
+The CDC reports that 48 million Americans get foodborne illness each year, with most outbreaks linked to restaurants. [CITY]'s health department ([DEPT]) conducts regular restaurant inspections - which is great - but the detailed results (specific violations found) aren't easily accessible to the public.
+
+My company has built SureVera, a mobile app that shows restaurant health inspection grades to consumers. We already cover 90+ cities nationwide using open government data. We'd like to include detailed violation data for [CITY], but this information isn't currently published in your open data portal.
+
+What I'm asking:
+- Could you champion adding violation-level detail to [CITY]'s existing open data feed for restaurant inspections?
+- Many peer cities already do this (New York City, Chicago, Seattle, San Francisco) and it's been well-received by the public
+
+This requires no new budget or contracts. The data already exists in [DEPT]'s inspection system - it just needs to be included in the public feed.
+
+I'd welcome the opportunity to discuss this with you or your staff. This is the kind of small, no-cost transparency win that constituents notice and appreciate.
+
+Thank you for your service to [CITY].
+
+Respectfully,
+[YOUR NAME]
+support@arriotech.com`
+      }
+    ];
+
+    // ── City autocomplete ──
+    const fCity = document.getElementById('fCity');
+    const cityDropdown = document.getElementById('cityDropdown');
+
+    fCity.addEventListener('input', () => {
+      const q = fCity.value.trim().toLowerCase();
+      if (q.length < 2) { cityDropdown.classList.remove('open'); return; }
+      const matches = DIRECTORY.filter(d =>
+        d.city.toLowerCase().includes(q) || d.dept.toLowerCase().includes(q) || d.state.toLowerCase().includes(q)
+      ).slice(0, 8);
+      if (matches.length === 0) { cityDropdown.classList.remove('open'); return; }
+      cityDropdown.innerHTML = matches.map((d, i) => `
+        <div class="city-dropdown-item" data-idx="${i}">
+          <div class="dd-city">${d.city}, ${d.state}</div>
+          <div class="dd-dept">${d.dept}</div>
+          <div class="dd-contact">${[d.email, d.phone].filter(Boolean).join(' \u00B7 ') || 'No contact info'}</div>
+        </div>
+      `).join('');
+      cityDropdown.classList.add('open');
+      cityDropdown.querySelectorAll('.city-dropdown-item').forEach((el, i) => {
+        el.addEventListener('click', () => {
+          const d = matches[i];
+          fCity.value = d.city;
+          document.getElementById('fState').value = d.state;
+          document.getElementById('fDept').value = d.dept;
+          if (d.email) document.getElementById('fEmail').value = d.email;
+          if (d.phone) document.getElementById('fPhone').value = d.phone;
+          cityDropdown.classList.remove('open');
+        });
+      });
+    });
+
+    fCity.addEventListener('blur', () => {
+      setTimeout(() => cityDropdown.classList.remove('open'), 200);
+    });
+
+    // Browse All button
+    document.getElementById('browseAllBtn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      const sorted = [...DIRECTORY].sort((a, b) => a.state.localeCompare(b.state) || a.city.localeCompare(b.city));
+      let currentState = '';
+      let html = '';
+      sorted.forEach((d, i) => {
+        if (d.state !== currentState) {
+          currentState = d.state;
+          html += `<div style="padding:0.4rem 0.75rem;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#E8612A;background:var(--hover-bg,#F8FAFC);border-bottom:1px solid var(--border);position:sticky;top:0">${d.state}</div>`;
+        }
+        html += `<div class="city-dropdown-item" data-didx="${i}">
+          <div class="dd-city">${d.city}</div>
+          <div class="dd-dept">${d.dept}</div>
+          <div class="dd-contact">${[d.email, d.phone].filter(Boolean).join(' \u00B7 ') || 'No contact info'}</div>
+        </div>`;
+      });
+      cityDropdown.innerHTML = html;
+      cityDropdown.classList.add('open');
+      cityDropdown.querySelectorAll('.city-dropdown-item').forEach(el => {
+        const idx = parseInt(el.dataset.didx);
+        const d = sorted[idx];
+        el.addEventListener('click', () => {
+          fCity.value = d.city;
+          document.getElementById('fState').value = d.state;
+          document.getElementById('fDept').value = d.dept;
+          if (d.email) document.getElementById('fEmail').value = d.email;
+          if (d.phone) document.getElementById('fPhone').value = d.phone;
+          cityDropdown.classList.remove('open');
+        });
+      });
+    });
+
+    // ── Data ──
+    function loadContacts() {
+      try {
+        const data = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+        // Migrate: ensure responseLog exists on all contacts
+        data.forEach(c => { if (!c.responseLog) c.responseLog = []; });
+        return data;
+      }
+      catch { return []; }
+    }
+    function saveContacts(data) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+
+    let contacts = loadContacts();
+    let editingId = null;
+    let sortCol = 'priority';
+    let sortDir = -1; // -1 = desc (highest priority first)
+    let currentEditResponseLog = []; // temp log for the contact being edited
+
+    // ── Status helpers ──
+    const STATUS_BADGES = {
+      'Not Started':     'badge-not-started',
+      'Email Sent':      'badge-email-sent',
+      'Follow-Up 1':     'badge-follow-up-1',
+      'Follow-Up 2':     'badge-follow-up-2',
+      'Awaiting Legal':  'badge-awaiting-legal',
+      'In Discussion':   'badge-in-discussion',
+      'Successful':      'badge-successful',
+      'Declined':        'badge-declined',
+      'No Response':     'badge-no-response',
+    };
+
+    const AWAITING_STATUSES = ['Email Sent', 'Follow-Up 1', 'Follow-Up 2', 'Awaiting Legal'];
+    const PROGRESS_STATUSES = ['In Discussion'];
+
+    // ── Priority Scoring ──
+    function calcPriority(contact) {
+      let score = 0;
+
+      // Population factor (0-40 points)
+      const pop = METRO_POPULATIONS[contact.city] || 500000;
+      if (pop >= 5000000) score += 40;
+      else if (pop >= 2000000) score += 35;
+      else if (pop >= 1000000) score += 30;
+      else if (pop >= 500000) score += 22;
+      else if (pop >= 250000) score += 15;
+      else score += 8;
+
+      // Violation data availability (0-35 points): higher if city does NOT have violations
+      const hasViolations = CITIES_WITH_VIOLATIONS.includes(contact.city);
+      if (!hasViolations) score += 35;
+      else score += 5; // still some value for improving existing partnerships
+
+      // Status factor (0-25 points)
+      const statusScores = {
+        'Not Started': 25,
+        'Email Sent': 18,
+        'Follow-Up 1': 15,
+        'Follow-Up 2': 10,
+        'Awaiting Legal': 12,
+        'In Discussion': 8,
+        'Successful': 0,
+        'Declined': 0,
+        'No Response': 5,
+      };
+      score += (statusScores[contact.status] || 10);
+
+      return Math.min(100, Math.max(1, score));
+    }
+
+    function getPriorityColor(score) {
+      if (score >= 75) return '#DC2626';
+      if (score >= 55) return '#E8612A';
+      if (score >= 35) return '#B45309';
+      return '#6B7280';
+    }
+
+    // ── Stats ──
+    function updateStats() {
+      document.getElementById('statTotal').textContent = contacts.length;
+      document.getElementById('statAwaiting').textContent = contacts.filter(c => AWAITING_STATUSES.includes(c.status)).length;
+      document.getElementById('statProgress').textContent = contacts.filter(c => PROGRESS_STATUSES.includes(c.status)).length;
+      document.getElementById('statSuccess').textContent = contacts.filter(c => c.status === 'Successful').length;
+      document.getElementById('statNoResp').textContent = contacts.filter(c => c.status === 'No Response').length;
+    }
+
+    // ── Follow-Up Reminders ──
+    function renderReminders() {
+      const section = document.getElementById('remindersSection');
+      const container = document.getElementById('reminderCards');
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const overdueContacts = contacts.filter(c => {
+        if (!c.nextFollowUp) return false;
+        if (['Successful', 'Declined', 'No Response'].includes(c.status)) return false;
+        const fuDate = new Date(c.nextFollowUp + 'T00:00:00');
+        return fuDate <= today;
+      }).sort((a, b) => {
+        return new Date(a.nextFollowUp + 'T00:00:00') - new Date(b.nextFollowUp + 'T00:00:00');
+      });
+
+      if (overdueContacts.length === 0) {
+        section.style.display = 'none';
+        return;
+      }
+
+      section.style.display = 'block';
+      container.innerHTML = overdueContacts.map(c => {
+        const fuDate = new Date(c.nextFollowUp + 'T00:00:00');
+        const diffDays = Math.floor((today - fuDate) / (1000 * 60 * 60 * 24));
+        const overdueText = diffDays === 0 ? 'Due today' : `${diffDays} day${diffDays > 1 ? 's' : ''} overdue`;
+
+        // Determine which follow-up template to suggest
+        let suggestedTemplate = 4; // default: 2-week follow-up
+        if (c.dateContacted) {
+          const contactedDate = new Date(c.dateContacted + 'T00:00:00');
+          const daysSinceContact = Math.floor((today - contactedDate) / (1000 * 60 * 60 * 24));
+          if (daysSinceContact >= 28) suggestedTemplate = 5; // 4-week follow-up
+        }
+
+        return `<div class="reminder-card">
+          <div class="rc-city">${escapeHtml(c.city)}, ${escapeHtml(c.state)}</div>
+          <div class="rc-dept">${escapeHtml(c.department)}</div>
+          <div class="rc-overdue">${overdueText}</div>
+          <div class="rc-actions">
+            <button class="btn btn-email btn-sm" onclick="openEmailDraft('${c.id}', ${suggestedTemplate})">Draft Follow-Up</button>
+            <button class="btn btn-outline btn-sm" onclick="editContact('${c.id}')">Edit</button>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    // ── Form ──
+    const formCard = document.getElementById('formCard');
+    const formToggle = document.getElementById('formToggle');
+    const btnSave = document.getElementById('btnSave');
+    const btnCancel = document.getElementById('btnCancel');
+
+    formToggle.addEventListener('click', () => {
+      formCard.classList.toggle('collapsed');
+    });
+
+    function clearForm() {
+      ['fCity','fState','fDept','fName','fEmail','fPhone','fStatus','fTemplate','fDateContacted','fNextFollowUp','fNotes'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el.tagName === 'SELECT') el.selectedIndex = 0;
+        else el.value = '';
+      });
+      editingId = null;
+      currentEditResponseLog = [];
+      document.getElementById('formTitle').textContent = 'Add New Contact';
+      document.getElementById('formIcon').textContent = '+';
+      btnSave.textContent = 'Save Contact';
+      btnCancel.style.display = 'none';
+      document.getElementById('responseLogSection').style.display = 'none';
+    }
+
+    function renderLogTimeline() {
+      const container = document.getElementById('logTimeline');
+      if (currentEditResponseLog.length === 0) {
+        container.innerHTML = '<div style="padding:0.75rem;text-align:center;font-size:0.8rem;color:var(--text-secondary)">No interactions logged yet.</div>';
+        return;
+      }
+      const sorted = [...currentEditResponseLog].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+      container.innerHTML = sorted.map((entry, i) => {
+        const typeClass = 'type-' + (entry.type || '').toLowerCase().replace(/\s+/g, '-');
+        return `<div class="log-entry">
+          <div class="log-dot ${typeClass}"></div>
+          <div class="log-content">
+            <div class="log-date">${entry.date ? formatDate(entry.date) : 'No date'}</div>
+            <div class="log-type">${escapeHtml(entry.type || 'Unknown')}</div>
+            ${entry.notes ? '<div class="log-notes">' + escapeHtml(entry.notes) + '</div>' : ''}
+          </div>
+          <button class="log-delete-btn" onclick="deleteLogEntry(${i})" title="Remove">&times;</button>
+        </div>`;
+      }).join('');
+    }
+
+    window.deleteLogEntry = function(idx) {
+      // idx is based on the sorted array, so re-sort to find the right one
+      const sorted = [...currentEditResponseLog].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+      const entry = sorted[idx];
+      const realIdx = currentEditResponseLog.indexOf(entry);
+      if (realIdx >= 0) currentEditResponseLog.splice(realIdx, 1);
+      renderLogTimeline();
+    };
+
+    document.getElementById('btnAddLog').addEventListener('click', () => {
+      const date = document.getElementById('logDate').value;
+      const type = document.getElementById('logType').value;
+      const notes = document.getElementById('logNotes').value.trim();
+      if (!date) { alert('Please select a date for the log entry.'); return; }
+      currentEditResponseLog.push({ date, type, notes });
+      document.getElementById('logDate').value = '';
+      document.getElementById('logNotes').value = '';
+      renderLogTimeline();
+    });
+
+    function populateForm(contact) {
+      document.getElementById('fCity').value = contact.city || '';
+      document.getElementById('fState').value = contact.state || '';
+      document.getElementById('fDept').value = contact.department || '';
+      document.getElementById('fName').value = contact.contactName || '';
+      document.getElementById('fEmail').value = contact.email || '';
+      document.getElementById('fPhone').value = contact.phone || '';
+      document.getElementById('fStatus').value = contact.status || 'Not Started';
+      document.getElementById('fTemplate').value = contact.template || '';
+      document.getElementById('fDateContacted').value = contact.dateContacted || '';
+      document.getElementById('fNextFollowUp').value = contact.nextFollowUp || '';
+      document.getElementById('fNotes').value = contact.notes || '';
+      editingId = contact.id;
+      currentEditResponseLog = contact.responseLog ? [...contact.responseLog] : [];
+      document.getElementById('formTitle').textContent = 'Edit Contact';
+      document.getElementById('formIcon').textContent = '&#9998;';
+      btnSave.textContent = 'Update Contact';
+      btnCancel.style.display = 'inline-block';
+      document.getElementById('responseLogSection').style.display = 'block';
+      renderLogTimeline();
+      formCard.classList.remove('collapsed');
+      formCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    btnCancel.addEventListener('click', () => {
+      clearForm();
+    });
+
+    btnSave.addEventListener('click', () => {
+      const city = document.getElementById('fCity').value.trim();
+      const state = document.getElementById('fState').value;
+      const dept = document.getElementById('fDept').value.trim();
+      if (!city || !state || !dept) {
+        alert('Please fill in City/County, State, and Department Name.');
+        return;
+      }
+
+      const record = {
+        id: editingId || Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+        city,
+        state,
+        department: dept,
+        contactName: document.getElementById('fName').value.trim(),
+        email: document.getElementById('fEmail').value.trim(),
+        phone: document.getElementById('fPhone').value.trim(),
+        status: document.getElementById('fStatus').value,
+        template: document.getElementById('fTemplate').value,
+        dateContacted: document.getElementById('fDateContacted').value,
+        nextFollowUp: document.getElementById('fNextFollowUp').value,
+        notes: document.getElementById('fNotes').value.trim(),
+        responseLog: currentEditResponseLog,
+      };
+
+      if (editingId) {
+        const idx = contacts.findIndex(c => c.id === editingId);
+        if (idx >= 0) contacts[idx] = record;
+      } else {
+        contacts.push(record);
+      }
+
+      saveContacts(contacts);
+      clearForm();
+      formCard.classList.add('collapsed');
+      renderTable();
+      updateStats();
+      renderReminders();
+    });
+
+    // ── Sorting ──
+    document.querySelectorAll('th[data-sort]').forEach(th => {
+      th.addEventListener('click', () => {
+        const col = th.dataset.sort;
+        if (sortCol === col) sortDir *= -1;
+        else { sortCol = col; sortDir = (col === 'priority') ? -1 : 1; }
+        renderTable();
+      });
+    });
+
+    function getSortValue(contact, col) {
+      switch (col) {
+        case 'priority': return calcPriority(contact);
+        case 'cityState': return (contact.city + ', ' + contact.state).toLowerCase();
+        case 'department': return (contact.department || '').toLowerCase();
+        case 'contactName': return (contact.contactName || '').toLowerCase();
+        case 'status': return (contact.status || '').toLowerCase();
+        case 'template': return (contact.template || '').toLowerCase();
+        case 'dateContacted': return contact.dateContacted || '';
+        case 'nextFollowUp': return contact.nextFollowUp || '';
+        default: return '';
+      }
+    }
+
+    // ── Filtering ──
+    const searchBox = document.getElementById('searchBox');
+    const filterStatus = document.getElementById('filterStatus');
+    searchBox.addEventListener('input', renderTable);
+    filterStatus.addEventListener('change', renderTable);
+
+    function getFilteredContacts() {
+      const q = searchBox.value.trim().toLowerCase();
+      const statusFilter = filterStatus.value;
+      let list = contacts;
+
+      if (statusFilter) {
+        list = list.filter(c => c.status === statusFilter);
+      }
+      if (q) {
+        list = list.filter(c =>
+          (c.city + ' ' + c.state + ' ' + c.department + ' ' + c.contactName + ' ' + c.email + ' ' + c.notes)
+            .toLowerCase().includes(q)
+        );
+      }
+
+      list = [...list].sort((a, b) => {
+        const va = getSortValue(a, sortCol);
+        const vb = getSortValue(b, sortCol);
+        if (va < vb) return -1 * sortDir;
+        if (va > vb) return 1 * sortDir;
+        return 0;
+      });
+
+      return list;
+    }
+
+    // ── Table Rendering ──
+    function isOverdue(dateStr) {
+      if (!dateStr) return false;
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return new Date(dateStr + 'T00:00:00') < today;
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '\u2014';
+      const d = new Date(dateStr + 'T00:00:00');
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('tableBody');
+      const empty = document.getElementById('emptyState');
+      const filtered = getFilteredContacts();
+
+      // Update sort arrows
+      document.querySelectorAll('th[data-sort]').forEach(th => {
+        const arrow = th.querySelector('.sort-arrow');
+        if (th.dataset.sort === sortCol) {
+          arrow.textContent = sortDir === 1 ? ' \u25B2' : ' \u25BC';
+        } else {
+          arrow.textContent = '';
+        }
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '';
+        empty.style.display = 'block';
+        if (contacts.length > 0) {
+          empty.querySelector('p').textContent = 'No contacts match your filters.';
+        } else {
+          empty.querySelector('p').textContent = 'No contacts yet. Click "Add New Contact" to get started.';
+        }
+        return;
+      }
+
+      empty.style.display = 'none';
+      tbody.innerHTML = filtered.map(c => {
+        const overdue = isOverdue(c.nextFollowUp) && !['Successful', 'Declined', 'No Response'].includes(c.status);
+        const badgeClass = STATUS_BADGES[c.status] || 'badge-not-started';
+        const followUpHtml = c.nextFollowUp
+          ? (overdue ? `<span class="overdue-text">${formatDate(c.nextFollowUp)} (overdue)</span>` : formatDate(c.nextFollowUp))
+          : '\u2014';
+        const notes = c.notes ? escapeHtml(c.notes) : '';
+        const priority = calcPriority(c);
+        const prioColor = getPriorityColor(priority);
+        const logCount = (c.responseLog || []).length;
+
+        return `<tr class="${overdue ? 'overdue' : ''}">
+          <td>
+            <div class="priority-bar-wrapper">
+              <span class="priority-score" style="color:${prioColor}">${priority}</span>
+              <div class="priority-bar">
+                <div class="priority-bar-fill" style="width:${priority}%;background:${prioColor}"></div>
+              </div>
+            </div>
+          </td>
+          <td>${escapeHtml(c.city)}, ${escapeHtml(c.state)}</td>
+          <td>${escapeHtml(c.department)}</td>
+          <td>
+            ${escapeHtml(c.contactName || '\u2014')}
+            ${c.email ? '<br><span style="font-size:0.78rem;color:var(--text-secondary)">' + escapeHtml(c.email) + '</span>' : ''}
+          </td>
+          <td><span class="badge ${badgeClass}">${escapeHtml(c.status)}</span></td>
+          <td style="font-size:0.82rem">${escapeHtml(c.template || '\u2014')}</td>
+          <td style="white-space:nowrap">${formatDate(c.dateContacted)}</td>
+          <td style="white-space:nowrap">${followUpHtml}</td>
+          <td class="notes-cell">
+            ${notes ? `<div class="notes-truncated" onclick="this.classList.toggle('expanded')">${notes}</div>` : '\u2014'}
+            ${logCount > 0 ? `<div style="font-size:0.7rem;color:var(--orange);margin-top:3px;cursor:pointer" onclick="editContact('${c.id}')">${logCount} log entr${logCount === 1 ? 'y' : 'ies'}</div>` : ''}
+          </td>
+          <td>
+            <div class="cell-actions">
+              <button class="btn btn-email btn-sm" onclick="openEmailDraft('${c.id}')" title="Draft Email">Email</button>
+              <button class="btn btn-outline btn-sm" onclick="editContact('${c.id}')">Edit</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteContact('${c.id}')">Del</button>
+            </div>
+          </td>
+        </tr>`;
+      }).join('');
+    }
+
+    // ── CRUD actions ──
+    window.editContact = function(id) {
+      const c = contacts.find(x => x.id === id);
+      if (c) populateForm(c);
+    };
+
+    window.deleteContact = function(id) {
+      if (!confirm('Delete this contact? This cannot be undone.')) return;
+      contacts = contacts.filter(c => c.id !== id);
+      saveContacts(contacts);
+      renderTable();
+      updateStats();
+      renderReminders();
+      if (editingId === id) clearForm();
+    };
+
+    // ── Email Draft Generator ──
+    let emailDraftContactId = null;
+
+    function initEmailTemplateSelect() {
+      const sel = document.getElementById('emailTemplateSelect');
+      sel.innerHTML = EMAIL_TEMPLATES.map(t =>
+        `<option value="${t.num}">${t.num}. ${t.title}</option>`
+      ).join('');
+    }
+    initEmailTemplateSelect();
+
+    function populateEmailFromTemplate(contact, templateNum) {
+      const tpl = EMAIL_TEMPLATES.find(t => t.num === templateNum);
+      if (!tpl) return;
+
+      const name = contact.contactName || 'Health Department';
+      const city = contact.city || '[City]';
+      const state = contact.state || '[State]';
+      const dept = contact.department || '[Department]';
+      const email = contact.email || '';
+
+      let subject = tpl.subject
+        .replace(/\[CITY\]/g, city)
+        .replace(/\[STATE\]/g, state)
+        .replace(/\[DEPT\]/g, dept)
+        .replace(/\[City\/County\]/g, city)
+        .replace(/\[City\]/g, city);
+
+      let body = tpl.body
+        .replace(/\[NAME\]/g, name)
+        .replace(/\[CITY\]/g, city)
+        .replace(/\[STATE\]/g, state)
+        .replace(/\[DEPT\]/g, dept)
+        .replace(/\[City\/County Health Department\]/g, dept)
+        .replace(/\[Contact Name\]/g, name)
+        .replace(/\[Contact Name \/ Health Department\]/g, name)
+        .replace(/\[YOUR NAME\]/g, '[Your Name]');
+
+      document.getElementById('emailTo').value = email;
+      document.getElementById('emailSubject').value = subject;
+      document.getElementById('emailBody').value = body;
+    }
+
+    window.openEmailDraft = function(contactId, presetTemplate) {
+      const contact = contacts.find(c => c.id === contactId);
+      if (!contact) return;
+      emailDraftContactId = contactId;
+
+      const sel = document.getElementById('emailTemplateSelect');
+      const templateNum = presetTemplate || 1;
+      sel.value = templateNum;
+
+      document.getElementById('emailModalTitle').textContent = 'Draft Email \u2014 ' + contact.city + ', ' + contact.state;
+      populateEmailFromTemplate(contact, templateNum);
+      document.getElementById('emailModal').classList.add('open');
+    };
+
+    document.getElementById('emailTemplateSelect').addEventListener('change', () => {
+      if (!emailDraftContactId) return;
+      const contact = contacts.find(c => c.id === emailDraftContactId);
+      if (!contact) return;
+      const templateNum = parseInt(document.getElementById('emailTemplateSelect').value);
+      populateEmailFromTemplate(contact, templateNum);
+    });
+
+    document.getElementById('emailModalClose').addEventListener('click', () => {
+      document.getElementById('emailModal').classList.remove('open');
+    });
+    document.getElementById('emailCloseBtn').addEventListener('click', () => {
+      document.getElementById('emailModal').classList.remove('open');
+    });
+    document.getElementById('emailModal').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('emailModal')) {
+        document.getElementById('emailModal').classList.remove('open');
+      }
+    });
+
+    document.getElementById('emailCopyBtn').addEventListener('click', () => {
+      const subject = document.getElementById('emailSubject').value;
+      const body = document.getElementById('emailBody').value;
+      const fullText = 'Subject: ' + subject + '\n\n' + body;
+      navigator.clipboard.writeText(fullText).then(() => {
+        const btn = document.getElementById('emailCopyBtn');
+        btn.textContent = 'Copied!';
+        btn.style.background = 'var(--orange)';
+        btn.style.color = '#fff';
+        btn.style.borderColor = 'var(--orange)';
+        setTimeout(() => {
+          btn.textContent = 'Copy to Clipboard';
+          btn.style.background = '';
+          btn.style.color = '';
+          btn.style.borderColor = '';
+        }, 2000);
+      }).catch(() => {
+        // Fallback
+        const ta = document.createElement('textarea');
+        ta.value = fullText;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        const btn = document.getElementById('emailCopyBtn');
+        btn.textContent = 'Copied!';
+        setTimeout(() => { btn.textContent = 'Copy to Clipboard'; }, 2000);
+      });
+    });
+
+    document.getElementById('emailMailtoBtn').addEventListener('click', () => {
+      const to = document.getElementById('emailTo').value;
+      const subject = document.getElementById('emailSubject').value;
+      const body = document.getElementById('emailBody').value;
+      const mailto = `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      window.open(mailto, '_blank');
+    });
+
+    // ── CSV Export ──
+    document.getElementById('btnExport').addEventListener('click', () => {
+      if (contacts.length === 0) {
+        alert('No contacts to export.');
+        return;
+      }
+      const headers = ['City', 'State', 'Department', 'Contact Name', 'Email', 'Phone', 'Status', 'Template', 'Date Contacted', 'Next Follow-Up', 'Priority', 'Notes', 'Response Log'];
+      const rows = contacts.map(c => [
+        c.city, c.state, c.department, c.contactName, c.email, c.phone,
+        c.status, c.template, c.dateContacted, c.nextFollowUp,
+        calcPriority(c),
+        c.notes,
+        (c.responseLog || []).map(l => `${l.date}: ${l.type} - ${l.notes}`).join(' | ')
+      ]);
+
+      const csvContent = [headers, ...rows]
+        .map(row => row.map(cell => '"' + (cell == null ? '' : String(cell)).replace(/"/g, '""') + '"').join(','))
+        .join('\n');
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'surevera-outreach-' + new Date().toISOString().slice(0, 10) + '.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    // ── Initial render ──
+    renderTable();
+    updateStats();
+    renderReminders();
+  </script>
+  <script src="dark-mode.js"></script>
+  <script src="toolkit-nav.js"></script>
+</body>
+</html>

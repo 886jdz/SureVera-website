@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SureVera — Mockup Tool</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #F0F3F8;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #1E293B;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .toolbar {
+      width: 100%;
+      background: linear-gradient(135deg, #0D1B2E 0%, #1B3A6B 100%);
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+      margin-bottom: 2rem;
+    }
+    .toolbar img { height: 32px; }
+    .toolbar h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #FFFFFF;
+      letter-spacing: -0.02em;
+    }
+    .toolbar .divider {
+      width: 1px;
+      height: 24px;
+      background: rgba(255,255,255,0.2);
+    }
+    .toolbar .tool-label {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: rgba(255,255,255,0.6);
+    }
+
+    .page { padding: 0 2rem 2rem; width: 100%; display: flex; flex-direction: column; align-items: center; }
+
+    .subtitle { color: #64748B; font-size: 0.85rem; margin-bottom: 1.5rem; }
+
+    .controls {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      background: #FFF;
+      padding: 1rem 1.5rem;
+      border-radius: 14px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      border: 1px solid #E2E8F0;
+    }
+    .controls label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #475569;
+    }
+    .controls select, .controls input[type="color"] {
+      padding: 0.4rem 0.75rem;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-family: inherit;
+      background: #F8FAFC;
+      cursor: pointer;
+    }
+    .controls select:focus, .controls input[type="color"]:focus {
+      outline: 2px solid #1B3A6B;
+      outline-offset: 1px;
+    }
+    .controls input[type="color"] {
+      width: 36px; height: 32px; padding: 2px; border-radius: 8px;
+    }
+
+    .drop-zone {
+      width: 100%;
+      max-width: 900px;
+      min-height: 180px;
+      border: 2px dashed #94A3B8;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      background: #FFF;
+    }
+    .drop-zone:hover, .drop-zone.drag-over {
+      border-color: #E8612A;
+      background: #FFF7F3;
+    }
+    .drop-zone p { color: #64748B; font-size: 0.9rem; }
+    .drop-zone .browse {
+      color: #E8612A;
+      font-weight: 600;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+    .drop-zone input { display: none; }
+
+    .results {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+      width: 100%;
+      max-width: 1200px;
+    }
+    .result-card {
+      background: #FFF;
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      border: 1px solid #E2E8F0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+    .result-card canvas {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+    }
+    .download-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 1.5rem;
+      background: #1B3A6B;
+      color: #FFF;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .download-btn:hover { background: #15305A; }
+    .download-all-btn {
+      padding: 0.75rem 2rem;
+      background: #E8612A;
+      color: #FFF;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      margin-bottom: 2rem;
+      transition: background 0.2s;
+    }
+    .download-all-btn:hover { background: #D4541F; }
+    .hidden { display: none; }
+
+    .footer {
+      margin-top: 3rem;
+      padding: 1.5rem;
+      text-align: center;
+      font-size: 0.75rem;
+      color: #94A3B8;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="toolbar">
+    <img src="surevera-header-white-logo.png" alt="SureVera">
+    <div class="divider"></div>
+    <span class="tool-label">Mockup Tool</span>
+  </div>
+
+  <div class="page">
+  <p class="subtitle">100% offline — nothing leaves your Mac</p>
+
+  <div class="controls">
+    <label>Device:
+      <select id="deviceSelect">
+        <optgroup label="Apple">
+          <option value="iphone17pro">iPhone 17 Pro</option>
+          <option value="iphone16promax">iPhone 16 Pro Max</option>
+          <option value="iphone16pro">iPhone 16 Pro</option>
+          <option value="iphone16">iPhone 16</option>
+          <option value="iphone16e">iPhone 16e</option>
+          <option value="iphone15pro">iPhone 15 Pro</option>
+          <option value="iphone15">iPhone 15</option>
+          <option value="iphone14">iPhone 14</option>
+          <option value="iphoneSE">iPhone SE</option>
+        </optgroup>
+        <optgroup label="Samsung">
+          <option value="galaxyS25ultra">Galaxy S25 Ultra</option>
+          <option value="galaxyS25">Galaxy S25</option>
+          <option value="galaxyS24ultra">Galaxy S24 Ultra</option>
+          <option value="galaxyS24">Galaxy S24</option>
+          <option value="galaxyS23">Galaxy S23</option>
+          <option value="galaxyS23Ultra" selected>Galaxy S23 Ultra</option>
+          <option value="galaxyZFlip6">Galaxy Z Flip 6</option>
+          <option value="galaxyZFold6">Galaxy Z Fold 6</option>
+          <option value="galaxyA54">Galaxy A54</option>
+          <option value="galaxyA15">Galaxy A15</option>
+        </optgroup>
+        <optgroup label="Google">
+          <option value="pixel9pro">Pixel 9 Pro</option>
+          <option value="pixel9">Pixel 9</option>
+          <option value="pixel8">Pixel 8</option>
+          <option value="pixel8pro">Pixel 8 Pro</option>
+        </optgroup>
+        <optgroup label="OnePlus">
+          <option value="oneplus12">OnePlus 12</option>
+        </optgroup>
+      </select>
+    </label>
+    <label>Background:
+      <select id="bgSelect">
+        <option value="transparent">Transparent</option>
+        <option value="#FFFFFF">White</option>
+        <option value="#F1F5F9">Light Gray</option>
+        <option value="#1B3A6B">Navy</option>
+        <option value="#0D1B2E">Dark Navy</option>
+        <option value="#000000">Black</option>
+        <option value="custom">Custom...</option>
+      </select>
+    </label>
+    <input type="color" id="customColor" class="hidden" value="#1B3A6B">
+    <label style="display:flex;align-items:center;gap:0.4rem;">
+      <input type="checkbox" id="topInsetCheck">
+      Top inset
+    </label>
+    <label>Inset color:
+      <input type="color" id="topInsetColor" value="#1B3A6B">
+    </label>
+  </div>
+
+  <div class="drop-zone" id="dropZone">
+    <p>Drag & drop your screenshots here</p>
+    <p>or <span class="browse" id="browseBtn">browse files</span></p>
+    <input type="file" id="fileInput" accept="image/*" multiple>
+  </div>
+
+  <button class="download-all-btn hidden" id="downloadAllBtn">Download All Mockups</button>
+  <div class="results" id="results"></div>
+
+  <script>
+    const devices = {
+      // ── Apple ──
+      iphone17pro: {
+        name: "iPhone 17 Pro",
+        width: 440, height: 900,
+        screen: { x: 14, y: 14, w: 412, h: 872 },
+        bodyRadius: 54, screenRadius: 48,
+        bezelColor: "#1A1A1E", sideButtons: true,
+      },
+      iphone16promax: {
+        name: "iPhone 16 Pro Max",
+        width: 444, height: 906,
+        screen: { x: 14, y: 14, w: 416, h: 878 },
+        bodyRadius: 54, screenRadius: 48,
+        bezelColor: "#1A1A1E", sideButtons: true,
+      },
+      iphone16pro: {
+        name: "iPhone 16 Pro",
+        width: 438, height: 890,
+        screen: { x: 14, y: 14, w: 410, h: 862 },
+        bodyRadius: 54, screenRadius: 48,
+        bezelColor: "#1A1A1E", sideButtons: true,
+      },
+      iphone16: {
+        name: "iPhone 16",
+        width: 436, height: 880,
+        screen: { x: 16, y: 16, w: 404, h: 848 },
+        bodyRadius: 52, screenRadius: 46,
+        bezelColor: "#1A1A1E", sideButtons: true,
+      },
+      iphone16e: {
+        name: "iPhone 16e",
+        width: 436, height: 880,
+        screen: { x: 16, y: 16, w: 404, h: 848 },
+        bodyRadius: 52, screenRadius: 46,
+        bezelColor: "#1A1A1E", sideButtons: true,
+      },
+      iphone15pro: {
+        name: "iPhone 15 Pro",
+        width: 440, height: 880,
+        screen: { x: 18, y: 18, w: 404, h: 844 },
+        bodyRadius: 52, screenRadius: 44,
+        bezelColor: "#1A1A1E", sideButtons: true,
+      },
+      iphone15: {
+        name: "iPhone 15",
+        width: 440, height: 880,
+        screen: { x: 18, y: 18, w: 404, h: 844 },
+        bodyRadius: 52, screenRadius: 44,
+        bezelColor: "#1A1A1E", sideButtons: true,
+      },
+      iphone14: {
+        name: "iPhone 14",
+        width: 440, height: 880,
+        screen: { x: 18, y: 18, w: 404, h: 844 },
+        bodyRadius: 52, screenRadius: 44,
+        bezelColor: "#1A1A1E", sideButtons: true,
+      },
+      iphoneSE: {
+        name: "iPhone SE",
+        width: 420, height: 840,
+        screen: { x: 30, y: 100, w: 360, h: 640 },
+        bodyRadius: 48, screenRadius: 4,
+        bezelColor: "#1A1A1E", sideButtons: true,
+        homeButton: { cx: 210, cy: 790, r: 30 },
+      },
+      // ── Samsung ──
+      galaxyS25ultra: {
+        name: "Galaxy S25 Ultra",
+        width: 438, height: 940,
+        screen: { x: 10, y: 10, w: 418, h: 920 },
+        bodyRadius: 28, screenRadius: 22,
+        bezelColor: "#111113", sideButtons: true,
+        punchHole: { cx: 219, cy: 28, r: 7 },
+      },
+      galaxyS25: {
+        name: "Galaxy S25",
+        width: 430, height: 900,
+        screen: { x: 12, y: 12, w: 406, h: 876 },
+        bodyRadius: 42, screenRadius: 36,
+        bezelColor: "#111113", sideButtons: true,
+        punchHole: { cx: 215, cy: 30, r: 7 },
+      },
+      galaxyS24ultra: {
+        name: "Galaxy S24 Ultra",
+        width: 436, height: 936,
+        screen: { x: 10, y: 10, w: 416, h: 916 },
+        bodyRadius: 28, screenRadius: 22,
+        bezelColor: "#111113", sideButtons: true,
+        punchHole: { cx: 218, cy: 28, r: 7 },
+      },
+      galaxyS24: {
+        name: "Galaxy S24",
+        width: 430, height: 900,
+        screen: { x: 12, y: 12, w: 406, h: 876 },
+        bodyRadius: 42, screenRadius: 36,
+        bezelColor: "#111113", sideButtons: true,
+        punchHole: { cx: 215, cy: 30, r: 7 },
+      },
+      galaxyS23: {
+        name: "Galaxy S23",
+        width: 430, height: 900,
+        screen: { x: 14, y: 14, w: 402, h: 872 },
+        bodyRadius: 42, screenRadius: 36,
+        bezelColor: "#111113", sideButtons: true,
+        punchHole: { cx: 215, cy: 32, r: 7 },
+      },
+      galaxyS23Ultra: {
+        name: "Galaxy S23 Ultra",
+        width: 436, height: 930,
+        screen: { x: 10, y: 10, w: 416, h: 910 },
+        bodyRadius: 30, screenRadius: 24,
+        bezelColor: "#111113", sideButtons: true,
+        punchHole: { cx: 218, cy: 28, r: 7 },
+      },
+      galaxyZFlip6: {
+        name: "Galaxy Z Flip 6",
+        width: 410, height: 880,
+        screen: { x: 14, y: 14, w: 382, h: 852 },
+        bodyRadius: 38, screenRadius: 32,
+        bezelColor: "#111113", sideButtons: true,
+        punchHole: { cx: 205, cy: 32, r: 7 },
+      },
+      galaxyZFold6: {
+        name: "Galaxy Z Fold 6 (inner)",
+        width: 500, height: 840,
+        screen: { x: 12, y: 12, w: 476, h: 816 },
+        bodyRadius: 30, screenRadius: 24,
+        bezelColor: "#111113", sideButtons: true,
+        punchHole: { cx: 250, cy: 30, r: 6 },
+      },
+      galaxyA54: {
+        name: "Galaxy A54",
+        width: 430, height: 910,
+        screen: { x: 14, y: 14, w: 402, h: 882 },
+        bodyRadius: 40, screenRadius: 34,
+        bezelColor: "#111113", sideButtons: true,
+        punchHole: { cx: 215, cy: 32, r: 7 },
+      },
+      galaxyA15: {
+        name: "Galaxy A15",
+        width: 428, height: 910,
+        screen: { x: 14, y: 14, w: 400, h: 882 },
+        bodyRadius: 38, screenRadius: 32,
+        bezelColor: "#111113", sideButtons: true,
+        punchHole: { cx: 214, cy: 32, r: 7 },
+      },
+      // ── Google ──
+      pixel9pro: {
+        name: "Pixel 9 Pro",
+        width: 432, height: 910,
+        screen: { x: 12, y: 12, w: 408, h: 886 },
+        bodyRadius: 46, screenRadius: 40,
+        bezelColor: "#1A1A1E", sideButtons: true,
+        punchHole: { cx: 216, cy: 30, r: 7 },
+      },
+      pixel9: {
+        name: "Pixel 9",
+        width: 426, height: 890,
+        screen: { x: 14, y: 14, w: 398, h: 862 },
+        bodyRadius: 46, screenRadius: 40,
+        bezelColor: "#1A1A1E", sideButtons: true,
+        punchHole: { cx: 213, cy: 32, r: 7 },
+      },
+      pixel8: {
+        name: "Pixel 8",
+        width: 424, height: 880,
+        screen: { x: 14, y: 14, w: 396, h: 852 },
+        bodyRadius: 46, screenRadius: 40,
+        bezelColor: "#1A1A1E", sideButtons: true,
+        punchHole: { cx: 212, cy: 32, r: 7 },
+      },
+      pixel8pro: {
+        name: "Pixel 8 Pro",
+        width: 430, height: 910,
+        screen: { x: 12, y: 12, w: 406, h: 886 },
+        bodyRadius: 46, screenRadius: 40,
+        bezelColor: "#1A1A1E", sideButtons: true,
+        punchHole: { cx: 215, cy: 30, r: 7 },
+      },
+      // ── OnePlus ──
+      oneplus12: {
+        name: "OnePlus 12",
+        width: 434, height: 920,
+        screen: { x: 12, y: 12, w: 410, h: 896 },
+        bodyRadius: 44, screenRadius: 38,
+        bezelColor: "#111113", sideButtons: true,
+        punchHole: { cx: 217, cy: 30, r: 7 },
+      },
+    };
+
+    const dropZone = document.getElementById("dropZone");
+    const fileInput = document.getElementById("fileInput");
+    const browseBtn = document.getElementById("browseBtn");
+    const results = document.getElementById("results");
+    const downloadAllBtn = document.getElementById("downloadAllBtn");
+    const deviceSelect = document.getElementById("deviceSelect");
+    const bgSelect = document.getElementById("bgSelect");
+    const customColor = document.getElementById("customColor");
+    const topInsetCheck = document.getElementById("topInsetCheck");
+    const topInsetColor = document.getElementById("topInsetColor");
+
+    let canvases = [];
+
+    bgSelect.addEventListener("change", () => {
+      customColor.classList.toggle("hidden", bgSelect.value !== "custom");
+    });
+
+    browseBtn.addEventListener("click", () => fileInput.click());
+    dropZone.addEventListener("click", (e) => {
+      if (e.target === dropZone || e.target.tagName === "P") fileInput.click();
+    });
+
+    dropZone.addEventListener("dragover", (e) => { e.preventDefault(); dropZone.classList.add("drag-over"); });
+    dropZone.addEventListener("dragleave", () => dropZone.classList.remove("drag-over"));
+    dropZone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      dropZone.classList.remove("drag-over");
+      handleFiles(e.dataTransfer.files);
+    });
+    fileInput.addEventListener("change", () => handleFiles(fileInput.files));
+
+    function handleFiles(files) {
+      canvases = [];
+      results.innerHTML = "";
+      downloadAllBtn.classList.add("hidden");
+
+      const fileArr = Array.from(files).filter(f => f.type.startsWith("image/"));
+      if (!fileArr.length) return;
+
+      let loaded = 0;
+      fileArr.forEach((file, i) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = renderMockup(img, file.name);
+            canvases.push({ canvas, name: file.name });
+            loaded++;
+            if (loaded === fileArr.length && fileArr.length > 1) {
+              downloadAllBtn.classList.remove("hidden");
+            }
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function renderMockup(img, fileName) {
+      const device = devices[deviceSelect.value];
+      const scale = 2; // 2x for retina
+      const padding = 60;
+      const canvasW = (device.width + padding * 2) * scale;
+      const canvasH = (device.height + padding * 2) * scale;
+
+      const canvas = document.createElement("canvas");
+      canvas.width = canvasW;
+      canvas.height = canvasH;
+      const ctx = canvas.getContext("2d");
+      ctx.scale(scale, scale);
+
+      // Background
+      let bg = bgSelect.value === "custom" ? customColor.value : bgSelect.value;
+      if (bg === "transparent") {
+        ctx.clearRect(0, 0, canvasW, canvasH);
+      } else {
+        ctx.fillStyle = bg;
+        ctx.fillRect(0, 0, device.width + padding * 2, device.height + padding * 2);
+      }
+
+      const ox = padding;
+      const oy = padding;
+
+      // Drop shadow
+      ctx.save();
+      ctx.shadowColor = "rgba(0,0,0,0.25)";
+      ctx.shadowBlur = 40;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 12;
+
+      // Device body
+      ctx.fillStyle = device.bezelColor;
+      roundRect(ctx, ox, oy, device.width, device.height, device.bodyRadius);
+      ctx.fill();
+      ctx.restore();
+
+      // Subtle bezel edge highlight
+      ctx.strokeStyle = "rgba(255,255,255,0.08)";
+      ctx.lineWidth = 1;
+      roundRect(ctx, ox + 0.5, oy + 0.5, device.width - 1, device.height - 1, device.bodyRadius);
+      ctx.stroke();
+
+      // Screen area — clip and draw screenshot
+      ctx.save();
+      const s = device.screen;
+      const topInset = topInsetCheck.checked ? 36 : 0; // padding for status bar / camera area
+      roundRect(ctx, ox + s.x, oy + s.y, s.w, s.h, device.screenRadius);
+      ctx.clip();
+
+      // Fill top inset with chosen color (blends with camera/Dynamic Island area)
+      if (topInset > 0) {
+        ctx.fillStyle = topInsetColor.value;
+        ctx.fillRect(ox + s.x, oy + s.y, s.w, topInset);
+      }
+
+      // Draw the screenshot below the inset, scaled to fill remaining screen area
+      const screenDrawH = s.h - topInset;
+      const screenDrawY = oy + s.y + topInset;
+      const imgAspect = img.width / img.height;
+      const screenAspect = s.w / screenDrawH;
+      let drawW, drawH, drawX, drawY;
+      if (imgAspect > screenAspect) {
+        drawH = screenDrawH;
+        drawW = screenDrawH * imgAspect;
+        drawX = ox + s.x + (s.w - drawW) / 2;
+        drawY = screenDrawY;
+      } else {
+        drawW = s.w;
+        drawH = s.w / imgAspect;
+        drawX = ox + s.x;
+        drawY = screenDrawY;
+      }
+      ctx.drawImage(img, drawX, drawY, drawW, drawH);
+      ctx.restore();
+
+      // Punch-hole camera (Samsung / Android devices)
+      if (device.punchHole) {
+        const ph = device.punchHole;
+        // Dark circle
+        ctx.fillStyle = "#000000";
+        ctx.beginPath();
+        ctx.arc(ox + ph.cx, oy + ph.cy, ph.r, 0, Math.PI * 2);
+        ctx.fill();
+        // Subtle lens ring
+        ctx.strokeStyle = "rgba(255,255,255,0.1)";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(ox + ph.cx, oy + ph.cy, ph.r - 1, 0, Math.PI * 2);
+        ctx.stroke();
+        // Inner lens dot
+        ctx.fillStyle = "rgba(255,255,255,0.05)";
+        ctx.beginPath();
+        ctx.arc(ox + ph.cx, oy + ph.cy, ph.r * 0.4, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Home button
+      if (device.homeButton) {
+        const hb = device.homeButton;
+        ctx.strokeStyle = "rgba(255,255,255,0.15)";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(ox + hb.cx, oy + hb.cy, hb.r, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
+      // Side buttons (volume + power)
+      if (device.sideButtons) {
+        ctx.fillStyle = "#2A2A2E";
+        // Power button (right side)
+        roundRect(ctx, ox + device.width - 2, oy + 180, 4, 70, 2);
+        ctx.fill();
+        // Volume up (left side)
+        ctx.fillStyle = "#2A2A2E";
+        roundRect(ctx, ox - 2, oy + 160, 4, 40, 2);
+        ctx.fill();
+        // Volume down (left side)
+        roundRect(ctx, ox - 2, oy + 210, 4, 40, 2);
+        ctx.fill();
+        // Silent switch (left side)
+        roundRect(ctx, ox - 2, oy + 120, 4, 24, 2);
+        ctx.fill();
+      }
+
+      // Add to results
+      const card = document.createElement("div");
+      card.className = "result-card";
+
+      const displayCanvas = document.createElement("canvas");
+      displayCanvas.width = canvas.width;
+      displayCanvas.height = canvas.height;
+      displayCanvas.style.maxWidth = "300px";
+      displayCanvas.getContext("2d").drawImage(canvas, 0, 0);
+
+      const btn = document.createElement("button");
+      btn.className = "download-btn";
+      btn.textContent = "Download PNG";
+      btn.addEventListener("click", () => downloadCanvas(canvas, fileName));
+
+      card.appendChild(displayCanvas);
+      card.appendChild(btn);
+      results.appendChild(card);
+
+      return canvas;
+    }
+
+    function roundRect(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + r, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+    }
+
+    function downloadCanvas(canvas, originalName) {
+      const baseName = originalName.replace(/\.[^.]+$/, "");
+      const link = document.createElement("a");
+      link.download = `${baseName}-mockup.png`;
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    }
+
+    downloadAllBtn.addEventListener("click", () => {
+      canvases.forEach(({ canvas, name }) => downloadCanvas(canvas, name));
+    });
+  </script>
+
+  <div class="footer">SureVera Mockup Tool — runs entirely in your browser</div>
+  </div>
+<script src="dark-mode.js"></script>
+<script src="toolkit-nav.js"></script>
+</body>
+</html>

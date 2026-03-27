@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SureVera — City Cards</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #F0F3F8;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #1E293B;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .toolbar {
+      width: 100%;
+      background: linear-gradient(135deg, #0D1B2E 0%, #1B3A6B 100%);
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+      margin-bottom: 2rem;
+    }
+    .toolbar img { height: 32px; }
+    .toolbar .divider { width: 1px; height: 24px; background: rgba(255,255,255,0.2); }
+    .toolbar .tool-label { font-size: 0.85rem; font-weight: 500; color: rgba(255,255,255,0.6); }
+
+    .page {
+      padding: 0 2rem 2rem;
+      width: 100%;
+      max-width: 1300px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 2rem;
+      width: 100%;
+      align-items: start;
+    }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+
+    .controls-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .card {
+      background: #FFF;
+      border-radius: 12px;
+      padding: 1.25rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .card h3 {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #64748B;
+      margin-bottom: 0.75rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: 0.3rem;
+    }
+
+    input[type="text"], select, textarea {
+      width: 100%;
+      padding: 0.55rem 0.75rem;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      color: #1E293B;
+      background: #F8FAFC;
+      transition: border-color 0.2s;
+      outline: none;
+    }
+    input[type="text"]:focus, select:focus, textarea:focus {
+      border-color: #1B3A6B;
+      background: #FFF;
+    }
+
+    .field-group { margin-bottom: 0.75rem; }
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 100px;
+      gap: 0.5rem;
+    }
+
+    /* Size preset pills */
+    .size-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+    .size-pill {
+      padding: 0.35rem 0.65rem;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: #F8FAFC;
+      color: #475569;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .size-pill:hover { border-color: #1B3A6B; }
+    .size-pill.active { border-color: #E8612A; background: #FFF7F3; color: #E8612A; }
+
+    /* Background style pills */
+    .bg-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+    .bg-pill {
+      padding: 0.35rem 0.65rem;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: #F8FAFC;
+      color: #475569;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .bg-pill:hover { border-color: #1B3A6B; }
+    .bg-pill.active { border-color: #1B3A6B; background: #EEF2FF; color: #1B3A6B; }
+
+    /* Toggle switches */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.4rem 0;
+    }
+    .toggle-row span {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #475569;
+    }
+    .toggle {
+      position: relative;
+      width: 40px;
+      height: 22px;
+      cursor: pointer;
+    }
+    .toggle input { display: none; }
+    .toggle .slider {
+      position: absolute;
+      inset: 0;
+      background: #CBD5E1;
+      border-radius: 22px;
+      transition: background 0.2s;
+    }
+    .toggle .slider::after {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      background: #FFF;
+      border-radius: 50%;
+      top: 3px;
+      left: 3px;
+      transition: transform 0.2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    }
+    .toggle input:checked + .slider { background: #1B3A6B; }
+    .toggle input:checked + .slider::after { transform: translateX(18px); }
+
+    /* Preview area */
+    .preview-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+    .preview-wrapper {
+      background: #FFF;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+    .preview-wrapper h3 {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #64748B;
+      margin-bottom: 0.75rem;
+      align-self: flex-start;
+    }
+    .canvas-container {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+    }
+    #preview {
+      max-width: 100%;
+      max-height: 520px;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    }
+    .size-label {
+      font-size: 0.72rem;
+      color: #94A3B8;
+      margin-top: 0.5rem;
+    }
+
+    /* Buttons */
+    .btn-row {
+      display: flex;
+      gap: 0.75rem;
+      width: 100%;
+      margin-top: 0.75rem;
+    }
+    .btn {
+      flex: 1;
+      padding: 0.7rem 1rem;
+      border: none;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: center;
+    }
+    .btn-navy { background: #1B3A6B; color: #FFF; }
+    .btn-navy:hover { background: #15305A; }
+    .btn-orange { background: #E8612A; color: #FFF; }
+    .btn-orange:hover { background: #D4551F; }
+
+    /* Quick generate */
+    .quick-section {
+      width: 100%;
+      margin-top: 2rem;
+    }
+    .quick-section h2 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #1E293B;
+      margin-bottom: 0.75rem;
+    }
+    .quick-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+    }
+    .quick-chip {
+      padding: 0.4rem 0.85rem;
+      background: #FFF;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #475569;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .quick-chip:hover {
+      border-color: #E8612A;
+      color: #E8612A;
+      background: #FFF7F3;
+    }
+
+    .footer {
+      margin-top: 3rem;
+      padding: 1.5rem;
+      text-align: center;
+      font-size: 0.75rem;
+      color: #94A3B8;
+    }
+  </style>
+</head>
+<body>
+
+<div class="toolbar">
+  <img src="surevera-header-white-logo.png" alt="SureVera" style="height:32px">
+  <div class="divider" style="width:1px;height:24px;background:rgba(255,255,255,0.2)"></div>
+  <span class="tool-label" style="font-size:0.85rem;font-weight:500;color:rgba(255,255,255,0.6)">City Cards</span>
+</div>
+
+<div class="page">
+  <div class="layout">
+
+    <!-- LEFT: Controls -->
+    <div class="controls-panel">
+
+      <div class="card">
+        <h3>City Details</h3>
+        <div class="field-row" style="margin-bottom:0.75rem">
+          <div>
+            <label>City Name</label>
+            <input type="text" id="cityName" placeholder="Denver" value="">
+          </div>
+          <div>
+            <label>State</label>
+            <input type="text" id="stateName" placeholder="CO" value="" maxlength="2" style="text-transform:uppercase">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Headline & Subtitle</h3>
+        <div class="field-group">
+          <label>Headline Template</label>
+          <select id="headlineTemplate">
+            <option value="Now Available in {City}!">Now Available in {City}!</option>
+            <option value="SureVera has landed in {City}!">SureVera has landed in {City}!</option>
+            <option value="New City Alert: {City}, {State}">New City Alert: {City}, {State}</option>
+            <option value="{City} — You're Covered!">{City} — You're Covered!</option>
+            <option value="Coming Soon: {City}, {State}">Coming Soon: {City}, {State}</option>
+            <option value="custom">Custom...</option>
+          </select>
+        </div>
+        <div class="field-group" id="customHeadlineGroup" style="display:none">
+          <label>Custom Headline</label>
+          <input type="text" id="customHeadline" placeholder="Your headline here...">
+        </div>
+        <div class="field-group">
+          <label>Subtitle</label>
+          <input type="text" id="subtitle" value="Real restaurant health grades, now in {City}">
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Output Size</h3>
+        <div class="size-pills">
+          <div class="size-pill active" data-w="1080" data-h="1080" onclick="selectSize(this)">Instagram Post<br><span style="font-weight:400;opacity:0.6">1080 x 1080</span></div>
+          <div class="size-pill" data-w="1080" data-h="1920" onclick="selectSize(this)">IG Story<br><span style="font-weight:400;opacity:0.6">1080 x 1920</span></div>
+          <div class="size-pill" data-w="1200" data-h="630" onclick="selectSize(this)">Facebook<br><span style="font-weight:400;opacity:0.6">1200 x 630</span></div>
+          <div class="size-pill" data-w="1600" data-h="900" onclick="selectSize(this)">Twitter/X<br><span style="font-weight:400;opacity:0.6">1600 x 900</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Background Style</h3>
+        <div class="bg-pills">
+          <div class="bg-pill active" data-bg="navy" onclick="selectBg(this)">Navy</div>
+          <div class="bg-pill" data-bg="dark" onclick="selectBg(this)">Dark Navy</div>
+          <div class="bg-pill" data-bg="orange" onclick="selectBg(this)">Orange</div>
+          <div class="bg-pill" data-bg="white" onclick="selectBg(this)">White</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Options</h3>
+        <div class="toggle-row">
+          <span>Show SureVera Logo</span>
+          <label class="toggle"><input type="checkbox" id="showLogo" checked onchange="render()"><span class="slider"></span></label>
+        </div>
+        <div class="toggle-row">
+          <span>Show "Download Free" CTA</span>
+          <label class="toggle"><input type="checkbox" id="showCTA" checked onchange="render()"><span class="slider"></span></label>
+        </div>
+        <div class="toggle-row">
+          <span>Show City Pin Icon</span>
+          <label class="toggle"><input type="checkbox" id="showPin" checked onchange="render()"><span class="slider"></span></label>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT: Preview -->
+    <div class="preview-area">
+      <div class="preview-wrapper">
+        <h3>Live Preview</h3>
+        <div class="canvas-container">
+          <canvas id="preview" width="1080" height="1080"></canvas>
+        </div>
+        <div class="size-label" id="sizeLabel">1080 x 1080 — Instagram Post</div>
+        <div class="btn-row">
+          <button class="btn btn-navy" onclick="downloadPNG()">Download PNG</button>
+          <button class="btn btn-orange" onclick="downloadAll()">Download All Sizes</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Quick Generate -->
+  <div class="quick-section">
+    <h2>Quick Generate</h2>
+    <div class="quick-grid" id="quickGrid"></div>
+  </div>
+</div>
+
+<div class="footer">SureVera City Cards — runs entirely in your browser</div>
+
+<script>
+const SIZES = [
+  { name: 'Instagram Post', w: 1080, h: 1080 },
+  { name: 'Instagram Story', w: 1080, h: 1920 },
+  { name: 'Facebook Post', w: 1200, h: 630 },
+  { name: 'Twitter/X Post', w: 1600, h: 900 },
+];
+
+const QUICK_CITIES = [
+  { city: 'New York', state: 'NY' },
+  { city: 'Los Angeles', state: 'CA' },
+  { city: 'Chicago', state: 'IL' },
+  { city: 'Miami', state: 'FL' },
+  { city: 'Seattle', state: 'WA' },
+  { city: 'Austin', state: 'TX' },
+  { city: 'Denver', state: 'CO' },
+  { city: 'Nashville', state: 'TN' },
+  { city: 'Portland', state: 'OR' },
+  { city: 'San Francisco', state: 'CA' },
+  { city: 'Las Vegas', state: 'NV' },
+  { city: 'Orlando', state: 'FL' },
+  { city: 'Tampa', state: 'FL' },
+  { city: 'Houston', state: 'TX' },
+  { city: 'Dallas', state: 'TX' },
+  { city: 'Phoenix', state: 'AZ' },
+  { city: 'Atlanta', state: 'GA' },
+  { city: 'Boston', state: 'MA' },
+  { city: 'Philadelphia', state: 'PA' },
+  { city: 'San Diego', state: 'CA' },
+];
+
+let currentW = 1080, currentH = 1080, currentBg = 'navy';
+
+// Build quick grid
+const quickGrid = document.getElementById('quickGrid');
+QUICK_CITIES.forEach(c => {
+  const chip = document.createElement('div');
+  chip.className = 'quick-chip';
+  chip.textContent = c.city;
+  chip.onclick = () => {
+    document.getElementById('cityName').value = c.city;
+    document.getElementById('stateName').value = c.state;
+    render();
+  };
+  quickGrid.appendChild(chip);
+});
+
+// Event listeners
+document.getElementById('cityName').addEventListener('input', render);
+document.getElementById('stateName').addEventListener('input', render);
+document.getElementById('headlineTemplate').addEventListener('change', function() {
+  document.getElementById('customHeadlineGroup').style.display = this.value === 'custom' ? 'block' : 'none';
+  render();
+});
+document.getElementById('customHeadline').addEventListener('input', render);
+document.getElementById('subtitle').addEventListener('input', render);
+
+function selectSize(el) {
+  document.querySelectorAll('.size-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  currentW = parseInt(el.dataset.w);
+  currentH = parseInt(el.dataset.h);
+  const name = SIZES.find(s => s.w === currentW && s.h === currentH)?.name || '';
+  document.getElementById('sizeLabel').textContent = currentW + ' x ' + currentH + (name ? ' — ' + name : '');
+  render();
+}
+
+function selectBg(el) {
+  document.querySelectorAll('.bg-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  currentBg = el.dataset.bg;
+  render();
+}
+
+function getHeadline(city, state) {
+  const tmpl = document.getElementById('headlineTemplate').value;
+  if (tmpl === 'custom') {
+    const raw = document.getElementById('customHeadline').value || 'Your City Here';
+    return raw.replace(/\{City\}/g, city || 'City').replace(/\{State\}/g, state || 'ST');
+  }
+  return tmpl.replace(/\{City\}/g, city || 'City').replace(/\{State\}/g, state || 'ST');
+}
+
+function getSubtitle(city) {
+  const sub = document.getElementById('subtitle').value;
+  return sub.replace(/\{City\}/g, city || 'City');
+}
+
+function drawPin(ctx, cx, cy, size, color) {
+  const s = size;
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  // Outer pin shape
+  ctx.moveTo(0, s * 0.5);
+  ctx.bezierCurveTo(-s * 0.08, s * 0.35, -s * 0.35, s * 0.15, -s * 0.35, -s * 0.05);
+  ctx.bezierCurveTo(-s * 0.35, -s * 0.3, -s * 0.2, -s * 0.5, 0, -s * 0.5);
+  ctx.bezierCurveTo(s * 0.2, -s * 0.5, s * 0.35, -s * 0.3, s * 0.35, -s * 0.05);
+  ctx.bezierCurveTo(s * 0.35, s * 0.15, s * 0.08, s * 0.35, 0, s * 0.5);
+  ctx.closePath();
+  ctx.fill();
+  // Inner circle
+  ctx.fillStyle = currentBg === 'white' ? '#FFFFFF' : 'rgba(255,255,255,0.25)';
+  ctx.beginPath();
+  ctx.arc(0, -s * 0.08, s * 0.14, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+}
+
+function renderToCanvas(canvas, w, h) {
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext('2d');
+  const city = document.getElementById('cityName').value || '';
+  const state = (document.getElementById('stateName').value || '').toUpperCase();
+  const headline = getHeadline(city, state);
+  const subtitle = getSubtitle(city);
+  const showLogo = document.getElementById('showLogo').checked;
+  const showCTA = document.getElementById('showCTA').checked;
+  const showPin = document.getElementById('showPin').checked;
+  const isWhite = currentBg === 'white';
+
+  // Background
+  let grad;
+  switch (currentBg) {
+    case 'navy':
+      grad = ctx.createLinearGradient(0, 0, w, h);
+      grad.addColorStop(0, '#1B3A6B');
+      grad.addColorStop(1, '#0D1B2E');
+      ctx.fillStyle = grad;
+      break;
+    case 'dark':
+      grad = ctx.createLinearGradient(0, 0, w, h);
+      grad.addColorStop(0, '#0D1B2E');
+      grad.addColorStop(0.5, '#0A1525');
+      grad.addColorStop(1, '#060D17');
+      ctx.fillStyle = grad;
+      break;
+    case 'orange':
+      grad = ctx.createLinearGradient(0, 0, w, h);
+      grad.addColorStop(0, '#E8612A');
+      grad.addColorStop(1, '#C44A1A');
+      ctx.fillStyle = grad;
+      break;
+    case 'white':
+      ctx.fillStyle = '#FFFFFF';
+      break;
+  }
+  ctx.fillRect(0, 0, w, h);
+
+  // Subtle decorative circles
+  if (!isWhite) {
+    ctx.save();
+    ctx.globalAlpha = 0.04;
+    ctx.fillStyle = '#FFFFFF';
+    ctx.beginPath();
+    ctx.arc(w * 0.85, h * 0.15, w * 0.25, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(w * 0.1, h * 0.85, w * 0.2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  } else {
+    ctx.save();
+    ctx.globalAlpha = 0.03;
+    ctx.fillStyle = '#1B3A6B';
+    ctx.beginPath();
+    ctx.arc(w * 0.85, h * 0.15, w * 0.25, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(w * 0.1, h * 0.85, w * 0.2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  const isPortrait = h > w;
+  const isWide = w / h > 1.5;
+  const scale = Math.min(w, h) / 1080;
+  const textColor = isWhite ? '#1B3A6B' : '#FFFFFF';
+  const subtextColor = isWhite ? 'rgba(27,58,107,0.6)' : 'rgba(255,255,255,0.7)';
+
+  // Layout calculations
+  let pinY, cityY, headlineY, subtitleY, logoY, ctaY;
+  const cx = w / 2;
+
+  if (isPortrait) {
+    // Story-like: 1080x1920
+    pinY = h * 0.22;
+    cityY = h * 0.38;
+    headlineY = h * 0.46;
+    subtitleY = h * 0.52;
+    logoY = h * 0.78;
+    ctaY = h * 0.85;
+  } else if (isWide) {
+    // Wide: Facebook/Twitter
+    pinY = h * 0.2;
+    cityY = h * 0.42;
+    headlineY = h * 0.58;
+    subtitleY = h * 0.7;
+    logoY = h * 0.82;
+    ctaY = h * 0.92;
+  } else {
+    // Square: 1080x1080
+    pinY = h * 0.18;
+    cityY = h * 0.38;
+    headlineY = h * 0.52;
+    subtitleY = h * 0.6;
+    logoY = h * 0.8;
+    ctaY = h * 0.9;
+  }
+
+  // Pin icon
+  if (showPin) {
+    const pinSize = isPortrait ? 130 * scale : (isWide ? 90 * scale : 110 * scale);
+    const pinColor = isWhite ? '#E8612A' : (currentBg === 'orange' ? 'rgba(255,255,255,0.3)' : '#E8612A');
+    drawPin(ctx, cx, pinY, pinSize, pinColor);
+  }
+
+  // City name (very large)
+  const cityFontSize = isPortrait ? 110 * scale : (isWide ? 80 * scale : 96 * scale);
+  ctx.font = `900 ${cityFontSize}px Inter, sans-serif`;
+  ctx.fillStyle = textColor;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(city || 'City', cx, cityY);
+
+  // State abbreviation below city
+  if (state) {
+    const stateSize = cityFontSize * 0.3;
+    ctx.font = `700 ${stateSize}px Inter, sans-serif`;
+    ctx.fillStyle = subtextColor;
+    ctx.fillText(state, cx, cityY + cityFontSize * 0.5);
+  }
+
+  // Headline
+  const headlineFontSize = isPortrait ? 38 * scale : (isWide ? 32 * scale : 36 * scale);
+  ctx.font = `700 ${headlineFontSize}px Inter, sans-serif`;
+  ctx.fillStyle = textColor;
+  // Word wrap headline
+  const maxTextW = w * 0.8;
+  const headlineLines = wrapText(ctx, headline, maxTextW);
+  headlineLines.forEach((line, i) => {
+    ctx.fillText(line, cx, headlineY + i * headlineFontSize * 1.3);
+  });
+
+  // Subtitle
+  const subFontSize = isPortrait ? 26 * scale : (isWide ? 22 * scale : 24 * scale);
+  const subStartY = headlineY + headlineLines.length * headlineFontSize * 1.3 + subFontSize * 0.8;
+  ctx.font = `400 ${subFontSize}px Inter, sans-serif`;
+  ctx.fillStyle = subtextColor;
+  const subLines = wrapText(ctx, subtitle, maxTextW);
+  subLines.forEach((line, i) => {
+    ctx.fillText(line, cx, subStartY + i * subFontSize * 1.4);
+  });
+
+  // Logo: "Sure" + "Bite"
+  if (showLogo) {
+    const logoFontSize = isPortrait ? 42 * scale : (isWide ? 34 * scale : 38 * scale);
+    const sureColor = isWhite ? '#1B3A6B' : '#FFFFFF';
+    ctx.font = `800 ${logoFontSize}px Inter, sans-serif`;
+    const sureW = ctx.measureText('Sure').width;
+    const biteW = ctx.measureText('Bite').width;
+    const totalW = sureW + biteW;
+    const startX = cx - totalW / 2;
+
+    ctx.textAlign = 'left';
+    ctx.fillStyle = sureColor;
+    ctx.fillText('Sure', startX, logoY);
+    ctx.fillStyle = '#E8612A';
+    ctx.fillText('Bite', startX + sureW, logoY);
+    ctx.textAlign = 'center';
+
+    // Tagline
+    const tagSize = logoFontSize * 0.35;
+    ctx.font = `500 ${tagSize}px Inter, sans-serif`;
+    ctx.fillStyle = subtextColor;
+    ctx.fillText('Be Sure. Verify.', cx, logoY + logoFontSize * 0.55);
+  }
+
+  // CTA Badge
+  if (showCTA) {
+    const badgeFontSize = isPortrait ? 22 * scale : (isWide ? 18 * scale : 20 * scale);
+    ctx.font = `700 ${badgeFontSize}px Inter, sans-serif`;
+    const ctaText = 'Download Free on iOS & Android';
+    const ctaTextW = ctx.measureText(ctaText).width;
+    const padX = 30 * scale;
+    const padY = 14 * scale;
+    const badgeW = ctaTextW + padX * 2;
+    const badgeH = badgeFontSize + padY * 2;
+    const badgeR = badgeH / 2;
+
+    ctx.fillStyle = '#E8612A';
+    roundRect(ctx, cx - badgeW / 2, ctaY - badgeH / 2, badgeW, badgeH, badgeR);
+    ctx.fill();
+
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillText(ctaText, cx, ctaY + 1);
+  }
+}
+
+function wrapText(ctx, text, maxWidth) {
+  const words = text.split(' ');
+  const lines = [];
+  let current = '';
+  for (const word of words) {
+    const test = current ? current + ' ' + word : word;
+    if (ctx.measureText(test).width > maxWidth && current) {
+      lines.push(current);
+      current = word;
+    } else {
+      current = test;
+    }
+  }
+  if (current) lines.push(current);
+  return lines.length ? lines : [''];
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+function render() {
+  const canvas = document.getElementById('preview');
+  renderToCanvas(canvas, currentW, currentH);
+}
+
+function downloadPNG() {
+  const offscreen = document.createElement('canvas');
+  renderToCanvas(offscreen, currentW, currentH);
+  const city = document.getElementById('cityName').value || 'city';
+  const sizeName = SIZES.find(s => s.w === currentW && s.h === currentH)?.name || currentW + 'x' + currentH;
+  const a = document.createElement('a');
+  a.download = `surevera-${city.toLowerCase().replace(/\s+/g, '-')}-${currentW}x${currentH}.png`;
+  a.href = offscreen.toDataURL('image/png');
+  a.click();
+}
+
+function downloadAll() {
+  const city = document.getElementById('cityName').value || 'city';
+  SIZES.forEach(s => {
+    const offscreen = document.createElement('canvas');
+    renderToCanvas(offscreen, s.w, s.h);
+    const a = document.createElement('a');
+    a.download = `surevera-${city.toLowerCase().replace(/\s+/g, '-')}-${s.w}x${s.h}.png`;
+    a.href = offscreen.toDataURL('image/png');
+    a.click();
+  });
+}
+
+// Initial render — wait for fonts so canvas text renders correctly
+if (document.fonts && document.fonts.ready) {
+  document.fonts.ready.then(() => render());
+} else {
+  render();
+}
+</script>
+<script src="dark-mode.js"></script>
+<script src="toolkit-nav.js"></script>
+</body>
+</html>

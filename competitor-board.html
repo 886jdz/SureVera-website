@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SureVera Competitor Board</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #F1F5F9;
+      color: #1E293B;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Toolbar */
+    .toolbar {
+      background: linear-gradient(135deg, #0D1B2E 0%, #1B3A6B 100%);
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .toolbar .divider { width: 1px; height: 24px; background: rgba(255,255,255,0.2); }
+    .toolbar .tool-label { font-size: 0.85rem; font-weight: 500; color: rgba(255,255,255,0.6); }
+
+    /* Layout */
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem 1rem; }
+
+    /* Controls Bar */
+    .controls-bar {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .search-input {
+      flex: 1;
+      min-width: 200px;
+      padding: 0.65rem 1rem 0.65rem 2.5rem;
+      border: 1px solid #E2E8F0;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%2394A3B8' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85zm-5.242.156a5 5 0 1 1 0-10 5 5 0 0 1 0 10z'/%3E%3C/svg%3E") 0.75rem center no-repeat;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .search-input:focus { border-color: #1B3A6B; }
+
+    .filter-select {
+      padding: 0.65rem 1rem;
+      border: 1px solid #E2E8F0;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-family: inherit;
+      background: #fff;
+      color: #1E293B;
+      cursor: pointer;
+      outline: none;
+    }
+    .filter-select:focus { border-color: #1B3A6B; }
+
+    .btn {
+      padding: 0.65rem 1.25rem;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .btn-primary {
+      background: #E8612A;
+      color: #fff;
+    }
+    .btn-primary:hover { background: #d4551f; transform: translateY(-1px); }
+    .btn-secondary {
+      background: #1B3A6B;
+      color: #fff;
+    }
+    .btn-secondary:hover { background: #15305a; transform: translateY(-1px); }
+    .btn-outline {
+      background: #fff;
+      color: #1B3A6B;
+      border: 1px solid #CBD5E1;
+    }
+    .btn-outline:hover { border-color: #1B3A6B; background: #F8FAFC; }
+    .btn-outline.active {
+      background: #1B3A6B;
+      color: #fff;
+      border-color: #1B3A6B;
+    }
+    .btn-danger {
+      background: #FEE2E2;
+      color: #DC2626;
+      border: 1px solid #FECACA;
+    }
+    .btn-danger:hover { background: #DC2626; color: #fff; }
+    .btn-sm { padding: 0.4rem 0.75rem; font-size: 0.78rem; }
+
+    /* View Toggle */
+    .view-toggle {
+      display: flex;
+      gap: 0.25rem;
+      background: #E2E8F0;
+      border-radius: 10px;
+      padding: 3px;
+    }
+    .view-toggle .btn-outline {
+      border: none;
+      background: transparent;
+      border-radius: 8px;
+      padding: 0.45rem 0.85rem;
+    }
+    .view-toggle .btn-outline.active {
+      background: #fff;
+      color: #1B3A6B;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    /* Card Grid */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 1.25rem;
+    }
+    @media (max-width: 720px) { .card-grid { grid-template-columns: 1fr; } }
+
+    /* Competitor Card */
+    .comp-card {
+      background: #fff;
+      border: 1px solid #E2E8F0;
+      border-radius: 14px;
+      padding: 1.5rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.03);
+      position: relative;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .comp-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.08); transform: translateY(-2px); }
+    .comp-card.selected { border-color: #E8612A; box-shadow: 0 0 0 2px rgba(232,97,42,0.2); }
+
+    .comp-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    .comp-card-name {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #1B3A6B;
+    }
+    .comp-card-category {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .cat-direct { background: #FEE2E2; color: #DC2626; }
+    .cat-indirect { background: #FEF3C7; color: #D97706; }
+    .cat-inspiration { background: #DBEAFE; color: #2563EB; }
+
+    .comp-card-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .meta-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.25rem 0.6rem;
+      background: #F1F5F9;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      color: #64748B;
+      font-weight: 500;
+    }
+
+    .star-display { color: #F59E0B; font-size: 0.85rem; letter-spacing: 1px; }
+    .star-dim { color: #E2E8F0; }
+
+    .comp-card-section {
+      margin-bottom: 0.75rem;
+    }
+    .comp-card-section-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #94A3B8;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.25rem;
+    }
+    .comp-card-section-text {
+      font-size: 0.82rem;
+      color: #475569;
+      white-space: pre-line;
+      line-height: 1.5;
+    }
+    .advantage-text {
+      color: #15803D;
+      font-weight: 500;
+    }
+
+    .comp-card-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid #F1F5F9;
+    }
+    .comp-card-url {
+      font-size: 0.78rem;
+      color: #1B3A6B;
+      text-decoration: none;
+      word-break: break-all;
+    }
+    .comp-card-url:hover { text-decoration: underline; }
+
+    .comp-card-updated {
+      font-size: 0.7rem;
+      color: #94A3B8;
+      margin-top: 0.5rem;
+    }
+
+    .select-checkbox {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 22px;
+      height: 22px;
+      border: 2px solid #CBD5E1;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+      transition: all 0.15s;
+    }
+    .select-checkbox.checked {
+      background: #E8612A;
+      border-color: #E8612A;
+    }
+    .select-checkbox.checked::after {
+      content: '\2713';
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    /* Comparison View */
+    .comparison-bar {
+      background: linear-gradient(135deg, #0D1B2E 0%, #1B3A6B 100%);
+      color: #fff;
+      padding: 0.75rem 1.5rem;
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .comparison-bar-text { font-size: 0.85rem; font-weight: 500; }
+    .comparison-bar .btn { font-size: 0.8rem; }
+
+    .comparison-table-wrap {
+      overflow-x: auto;
+      margin-bottom: 2rem;
+    }
+    .comparison-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: #fff;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.03);
+      border: 1px solid #E2E8F0;
+    }
+    .comparison-table th {
+      background: #F8FAFC;
+      padding: 0.85rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #64748B;
+      letter-spacing: 0.05em;
+      text-align: left;
+      border-bottom: 1px solid #E2E8F0;
+      white-space: nowrap;
+    }
+    .comparison-table th:first-child { width: 140px; }
+    .comparison-table td {
+      padding: 0.75rem 1rem;
+      font-size: 0.82rem;
+      color: #475569;
+      border-bottom: 1px solid #F1F5F9;
+      vertical-align: top;
+      white-space: pre-line;
+      min-width: 200px;
+    }
+    .comparison-table td:first-child {
+      font-weight: 600;
+      color: #1B3A6B;
+      background: #F8FAFC;
+      white-space: nowrap;
+      min-width: 140px;
+    }
+    .comparison-table tr:last-child td { border-bottom: none; }
+    .comp-name-header {
+      font-weight: 700;
+      color: #1B3A6B;
+      font-size: 0.95rem;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(13,27,46,0.5);
+      z-index: 200;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 2rem;
+      overflow-y: auto;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: #fff;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 640px;
+      padding: 2rem;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+      margin-top: 2rem;
+    }
+    .modal h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #1B3A6B;
+      margin-bottom: 1.5rem;
+    }
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    .form-group label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #64748B;
+      margin-bottom: 0.3rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.6rem 0.85rem;
+      border: 1px solid #E2E8F0;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-family: inherit;
+      color: #1E293B;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus { border-color: #1B3A6B; }
+    .form-group textarea { resize: vertical; min-height: 70px; }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    @media (max-width: 500px) { .form-row { grid-template-columns: 1fr; } }
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid #F1F5F9;
+    }
+
+    /* Rating Input */
+    .star-input {
+      display: flex;
+      gap: 0.25rem;
+      align-items: center;
+    }
+    .star-input span {
+      cursor: pointer;
+      font-size: 1.3rem;
+      color: #E2E8F0;
+      transition: color 0.15s;
+      user-select: none;
+    }
+    .star-input span.lit { color: #F59E0B; }
+    .star-input .rating-val {
+      font-size: 0.8rem;
+      color: #64748B;
+      margin-left: 0.5rem;
+      font-weight: 600;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: #94A3B8;
+    }
+    .empty-state-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .empty-state h3 { font-size: 1.1rem; font-weight: 600; color: #64748B; margin-bottom: 0.5rem; }
+
+    /* Footer */
+    .footer {
+      margin-top: 3rem;
+      padding: 1.5rem;
+      text-align: center;
+      font-size: 0.75rem;
+      color: #94A3B8;
+    }
+  </style>
+</head>
+<body>
+
+<div class="toolbar">
+  <img src="surevera-header-white-logo.png" alt="SureVera" style="height:28px;">
+  <div class="divider"></div>
+  <span class="tool-label">Competitor Board</span>
+</div>
+
+<div class="container">
+
+  <!-- Controls -->
+  <div class="controls-bar">
+    <input type="text" class="search-input" id="searchInput" placeholder="Search competitors...">
+    <select class="filter-select" id="categoryFilter">
+      <option value="all">All Categories</option>
+      <option value="Direct Competitor">Direct</option>
+      <option value="Indirect Competitor">Indirect</option>
+      <option value="Inspiration">Inspiration</option>
+    </select>
+    <div class="view-toggle">
+      <button class="btn btn-outline active" id="gridViewBtn" onclick="setView('grid')">Grid</button>
+      <button class="btn btn-outline" id="compareViewBtn" onclick="setView('compare')">Compare</button>
+    </div>
+    <button class="btn btn-primary" onclick="openModal()">+ Add Competitor</button>
+  </div>
+
+  <!-- Comparison Bar (hidden by default) -->
+  <div class="comparison-bar" id="comparisonBar" style="display:none;">
+    <span class="comparison-bar-text" id="comparisonBarText">Select 2-3 competitors to compare</span>
+    <div style="display:flex;gap:0.5rem;">
+      <button class="btn btn-primary btn-sm" id="compareBtn" onclick="showComparison()" disabled>Compare Selected</button>
+      <button class="btn btn-outline btn-sm" style="color:#fff;border-color:rgba(255,255,255,0.3);" onclick="clearSelection()">Clear</button>
+    </div>
+  </div>
+
+  <!-- Comparison Table -->
+  <div class="comparison-table-wrap" id="comparisonTableWrap" style="display:none;"></div>
+
+  <!-- Card Grid -->
+  <div class="card-grid" id="cardGrid"></div>
+
+  <!-- Empty State -->
+  <div class="empty-state" id="emptyState" style="display:none;">
+    <div class="empty-state-icon">&#128269;</div>
+    <h3>No competitors found</h3>
+    <p>Try adjusting your search or filter, or add a new competitor.</p>
+  </div>
+
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h2 id="modalTitle">Add Competitor</h2>
+    <input type="hidden" id="editId">
+    <div class="form-row">
+      <div class="form-group">
+        <label>Name *</label>
+        <input type="text" id="fName" placeholder="e.g. Yelp">
+      </div>
+      <div class="form-group">
+        <label>Category</label>
+        <select id="fCategory">
+          <option value="Direct Competitor">Direct Competitor</option>
+          <option value="Indirect Competitor">Indirect Competitor</option>
+          <option value="Inspiration">Inspiration</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Platform</label>
+        <select id="fPlatform">
+          <option value="Both">Both (iOS + Android)</option>
+          <option value="iOS">iOS</option>
+          <option value="Android">Android</option>
+          <option value="Web">Web</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Pricing</label>
+        <select id="fPricing" onchange="togglePriceField()">
+          <option value="Free">Free</option>
+          <option value="Freemium">Freemium</option>
+          <option value="Paid">Paid</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group" id="priceFieldWrap" style="display:none;">
+        <label>Price</label>
+        <input type="text" id="fPrice" placeholder="e.g. $9.99/mo">
+      </div>
+      <div class="form-group">
+        <label>City Coverage</label>
+        <input type="text" id="fCoverage" placeholder="e.g. Nationwide, NYC only">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>App Store Rating</label>
+        <div class="star-input" id="starInput">
+          <span onclick="setRating(0.5)" onmouseover="previewRating(0.5)">&#9733;</span>
+          <span onclick="setRating(1.5)" onmouseover="previewRating(1.5)">&#9733;</span>
+          <span onclick="setRating(2.5)" onmouseover="previewRating(2.5)">&#9733;</span>
+          <span onclick="setRating(3.5)" onmouseover="previewRating(3.5)">&#9733;</span>
+          <span onclick="setRating(4.5)" onmouseover="previewRating(4.5)">&#9733;</span>
+          <span class="rating-val" id="ratingVal">0</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Number of Ratings/Reviews</label>
+        <input type="text" id="fRatingCount" placeholder="e.g. 12,500">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Key Features</label>
+      <textarea id="fFeatures" placeholder="List key features, one per line"></textarea>
+    </div>
+    <div class="form-group">
+      <label>Strengths</label>
+      <textarea id="fStrengths" placeholder="What do they do well?"></textarea>
+    </div>
+    <div class="form-group">
+      <label>Weaknesses</label>
+      <textarea id="fWeaknesses" placeholder="Where do they fall short?"></textarea>
+    </div>
+    <div class="form-group">
+      <label>SureVera's Advantage</label>
+      <textarea id="fAdvantage" placeholder="How is SureVera better?"></textarea>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>URL / Link</label>
+        <input type="url" id="fUrl" placeholder="https://...">
+      </div>
+      <div class="form-group">
+        <label>Last Updated</label>
+        <input type="date" id="fDate">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Notes</label>
+      <textarea id="fNotes" rows="2" placeholder="Additional notes..."></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveCompetitor()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="footer">SureVera Competitor Board &mdash; runs entirely in your browser</div>
+
+<script>
+const STORAGE_KEY = 'surevera_competitor_board';
+let competitors = [];
+let selectedIds = new Set();
+let currentView = 'grid';
+let currentRating = 0;
+
+// Default competitors
+const DEFAULTS = [
+  {
+    id: '1',
+    name: 'Yelp',
+    category: 'Indirect Competitor',
+    platform: 'Both',
+    pricing: 'Free',
+    price: '',
+    rating: 4.0,
+    ratingCount: '300,000+',
+    coverage: '~200 cities (health data in select cities)',
+    features: 'Restaurant reviews & ratings\nHealth inspection scores (select cities)\nPhotos & menus\nReservations & delivery links\nBusiness owner tools',
+    strengths: 'Massive user base and brand recognition\nExtensive review database\nStrong local search & discovery\nWell-established business model',
+    weaknesses: 'Health inspection data is buried and incomplete\nOnly available in select cities for health scores\nReview manipulation concerns\nAd-heavy experience for free users',
+    advantage: 'SureVera is purpose-built for health inspections, making scores the primary focus rather than an afterthought. Cleaner, ad-free experience with transparent grading.',
+    url: 'https://www.yelp.com',
+    notes: 'Yelp has experimented with health inspection data since 2015 but has not made it a core feature.',
+    lastUpdated: '2026-03-18'
+  },
+  {
+    id: '2',
+    name: 'Google Maps',
+    category: 'Indirect Competitor',
+    platform: 'Both',
+    pricing: 'Free',
+    price: '',
+    rating: 4.5,
+    ratingCount: '10,000,000+',
+    coverage: 'Select markets (health data)',
+    features: 'Maps & navigation\nRestaurant reviews & ratings\nHealth inspection data (limited markets)\nMenu info & popular times\nReservation integration',
+    strengths: 'Ubiquitous platform with massive reach\nDeep integration with Android ecosystem\nReal-time data and satellite imagery\nTrusted brand',
+    weaknesses: 'Health inspection data not consistently available\nNot a dedicated food safety tool\nHealth data presentation is minimal\nNo grading system or trend tracking',
+    advantage: 'SureVera provides a dedicated, comprehensive view of health inspection data with letter grades, trend tracking, and coverage across many jurisdictions that Google does not surface.',
+    url: 'https://maps.google.com',
+    notes: 'Google began showing health inspection scores in search results in some US cities around 2018.',
+    lastUpdated: '2026-03-18'
+  },
+  {
+    id: '3',
+    name: 'Hazel Analytics',
+    category: 'Direct Competitor',
+    platform: 'Web',
+    pricing: 'Paid',
+    price: 'Enterprise pricing (B2B)',
+    rating: 0,
+    ratingCount: 'N/A (B2B)',
+    coverage: '300+ jurisdictions (US focus)',
+    features: 'Restaurant inspection data aggregation\nRisk scoring for food establishments\nAPI access for enterprise clients\nCompliance monitoring\nAnalytics dashboard',
+    strengths: 'Extensive jurisdiction coverage\nProfessional-grade data aggregation\nEstablished B2B relationships\nComprehensive data pipeline',
+    weaknesses: 'B2B only, not consumer-facing\nNo mobile app for end users\nExpensive enterprise pricing\nNot designed for casual dining decisions',
+    advantage: 'SureVera is consumer-facing and free, making health inspection data accessible to everyday diners rather than just enterprise clients. Mobile-first with a friendly UX.',
+    url: 'https://www.hazelanalytics.com',
+    notes: 'Primary B2B competitor. Different market segment (enterprise vs consumer) but same underlying data.',
+    lastUpdated: '2026-03-18'
+  },
+  {
+    id: '4',
+    name: 'iwaspoisoned.com',
+    category: 'Indirect Competitor',
+    platform: 'Web',
+    pricing: 'Free',
+    price: '',
+    rating: 0,
+    ratingCount: 'N/A (website)',
+    coverage: 'Nationwide (crowdsourced)',
+    features: 'Crowdsourced food poisoning reports\nOutbreak tracking\nRestaurant safety alerts\nUser-submitted reports\nMedia partnerships',
+    strengths: 'Unique crowdsourced data source\nStrong media presence and PR\nReal-time outbreak reporting\nEngaged community',
+    weaknesses: 'No official inspection data\nCrowdsourced data can be unreliable\nNegative framing (only shows problems)\nNo mobile app\nLimited verification of reports',
+    advantage: 'SureVera uses official government inspection data for reliability and objectivity. Provides complete picture (good and bad scores) rather than only negative reports.',
+    url: 'https://iwaspoisoned.com',
+    notes: 'Complementary rather than directly competing. Could be a data partnership opportunity.',
+    lastUpdated: '2026-03-18'
+  }
+];
+
+function load() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (raw) {
+    competitors = JSON.parse(raw);
+  } else {
+    competitors = DEFAULTS;
+    save();
+  }
+}
+
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(competitors));
+}
+
+function genId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+}
+
+// Star helpers
+function renderStars(rating) {
+  let html = '';
+  for (let i = 1; i <= 5; i++) {
+    if (rating >= i) {
+      html += '<span style="color:#F59E0B;">&#9733;</span>';
+    } else if (rating >= i - 0.5) {
+      html += '<span style="color:#F59E0B;">&#9734;</span>';
+    } else {
+      html += '<span style="color:#E2E8F0;">&#9733;</span>';
+    }
+  }
+  return html;
+}
+
+function catClass(cat) {
+  if (cat === 'Direct Competitor') return 'cat-direct';
+  if (cat === 'Indirect Competitor') return 'cat-indirect';
+  return 'cat-inspiration';
+}
+
+function catLabel(cat) {
+  if (cat === 'Direct Competitor') return 'Direct';
+  if (cat === 'Indirect Competitor') return 'Indirect';
+  return 'Inspiration';
+}
+
+function truncate(text, maxLines) {
+  if (!text) return '';
+  const lines = text.split('\n');
+  if (lines.length <= maxLines) return text;
+  return lines.slice(0, maxLines).join('\n') + '...';
+}
+
+function renderCard(c) {
+  const isSelected = selectedIds.has(c.id);
+  return `
+    <div class="comp-card ${isSelected ? 'selected' : ''}" id="card-${c.id}">
+      <div class="select-checkbox ${isSelected ? 'checked' : ''}" onclick="toggleSelect('${c.id}')" title="Select for comparison"></div>
+      <div class="comp-card-header">
+        <div>
+          <div class="comp-card-name">${esc(c.name)}</div>
+          <span class="comp-card-category ${catClass(c.category)}">${catLabel(c.category)}</span>
+        </div>
+      </div>
+      <div class="comp-card-meta">
+        <span class="meta-tag">${esc(c.platform)}</span>
+        <span class="meta-tag">${esc(c.pricing)}${c.price ? ' — ' + esc(c.price) : ''}</span>
+        ${c.coverage ? '<span class="meta-tag">' + esc(c.coverage) + '</span>' : ''}
+      </div>
+      ${c.rating > 0 ? `
+        <div style="margin-bottom:0.75rem;">
+          <span class="star-display">${renderStars(c.rating)}</span>
+          <span style="font-size:0.8rem;color:#64748B;margin-left:0.3rem;">${c.rating.toFixed(1)}</span>
+          ${c.ratingCount ? '<span style="font-size:0.75rem;color:#94A3B8;margin-left:0.3rem;">(' + esc(c.ratingCount) + ')</span>' : ''}
+        </div>
+      ` : ''}
+      ${c.features ? `
+        <div class="comp-card-section">
+          <div class="comp-card-section-label">Key Features</div>
+          <div class="comp-card-section-text">${esc(truncate(c.features, 3))}</div>
+        </div>
+      ` : ''}
+      ${c.strengths ? `
+        <div class="comp-card-section">
+          <div class="comp-card-section-label">Strengths</div>
+          <div class="comp-card-section-text">${esc(truncate(c.strengths, 2))}</div>
+        </div>
+      ` : ''}
+      ${c.weaknesses ? `
+        <div class="comp-card-section">
+          <div class="comp-card-section-label">Weaknesses</div>
+          <div class="comp-card-section-text">${esc(truncate(c.weaknesses, 2))}</div>
+        </div>
+      ` : ''}
+      ${c.advantage ? `
+        <div class="comp-card-section">
+          <div class="comp-card-section-label">SureVera's Advantage</div>
+          <div class="comp-card-section-text advantage-text">${esc(truncate(c.advantage, 2))}</div>
+        </div>
+      ` : ''}
+      ${c.url ? `<a class="comp-card-url" href="${esc(c.url)}" target="_blank" rel="noopener">${esc(c.url)}</a>` : ''}
+      ${c.lastUpdated ? `<div class="comp-card-updated">Updated: ${c.lastUpdated}</div>` : ''}
+      <div class="comp-card-actions">
+        <button class="btn btn-outline btn-sm" onclick="editCompetitor('${c.id}')">Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteCompetitor('${c.id}')">Delete</button>
+      </div>
+    </div>
+  `;
+}
+
+function esc(str) {
+  if (!str) return '';
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+function getFiltered() {
+  const q = document.getElementById('searchInput').value.toLowerCase().trim();
+  const cat = document.getElementById('categoryFilter').value;
+  return competitors.filter(c => {
+    if (cat !== 'all' && c.category !== cat) return false;
+    if (q) {
+      const searchable = [c.name, c.category, c.platform, c.coverage, c.features, c.strengths, c.weaknesses, c.advantage, c.notes].join(' ').toLowerCase();
+      return searchable.includes(q);
+    }
+    return true;
+  });
+}
+
+function render() {
+  const filtered = getFiltered();
+  const grid = document.getElementById('cardGrid');
+  const empty = document.getElementById('emptyState');
+
+  if (filtered.length === 0) {
+    grid.innerHTML = '';
+    empty.style.display = 'block';
+  } else {
+    empty.style.display = 'none';
+    grid.innerHTML = filtered.map(renderCard).join('');
+  }
+}
+
+// View modes
+function setView(view) {
+  currentView = view;
+  document.getElementById('gridViewBtn').classList.toggle('active', view === 'grid');
+  document.getElementById('compareViewBtn').classList.toggle('active', view === 'compare');
+  document.getElementById('comparisonBar').style.display = view === 'compare' ? 'flex' : 'none';
+  if (view === 'grid') {
+    document.getElementById('comparisonTableWrap').style.display = 'none';
+    clearSelection();
+  }
+  render();
+}
+
+// Selection for comparison
+function toggleSelect(id) {
+  if (selectedIds.has(id)) {
+    selectedIds.delete(id);
+  } else {
+    if (selectedIds.size >= 3) {
+      alert('You can compare up to 3 competitors at a time.');
+      return;
+    }
+    selectedIds.add(id);
+  }
+  updateComparisonBar();
+  render();
+}
+
+function clearSelection() {
+  selectedIds.clear();
+  document.getElementById('comparisonTableWrap').style.display = 'none';
+  updateComparisonBar();
+  render();
+}
+
+function updateComparisonBar() {
+  const text = document.getElementById('comparisonBarText');
+  const btn = document.getElementById('compareBtn');
+  const n = selectedIds.size;
+  if (n === 0) {
+    text.textContent = 'Select 2-3 competitors to compare';
+    btn.disabled = true;
+  } else if (n === 1) {
+    text.textContent = '1 selected — select at least 1 more';
+    btn.disabled = true;
+  } else {
+    text.textContent = n + ' selected';
+    btn.disabled = false;
+  }
+}
+
+function showComparison() {
+  const selected = competitors.filter(c => selectedIds.has(c.id));
+  if (selected.length < 2) return;
+
+  const rows = [
+    ['Category', c => `<span class="comp-card-category ${catClass(c.category)}">${catLabel(c.category)}</span>`],
+    ['Platform', c => esc(c.platform)],
+    ['Pricing', c => esc(c.pricing) + (c.price ? ' — ' + esc(c.price) : '')],
+    ['Rating', c => c.rating > 0 ? renderStars(c.rating) + ' ' + c.rating.toFixed(1) + (c.ratingCount ? ' (' + esc(c.ratingCount) + ')' : '') : 'N/A'],
+    ['Coverage', c => esc(c.coverage) || 'N/A'],
+    ['Key Features', c => esc(c.features) || 'N/A'],
+    ['Strengths', c => esc(c.strengths) || 'N/A'],
+    ['Weaknesses', c => esc(c.weaknesses) || 'N/A'],
+    ['SureVera Advantage', c => c.advantage ? '<span class="advantage-text">' + esc(c.advantage) + '</span>' : 'N/A'],
+    ['URL', c => c.url ? '<a class="comp-card-url" href="' + esc(c.url) + '" target="_blank">' + esc(c.url) + '</a>' : 'N/A'],
+    ['Notes', c => esc(c.notes) || ''],
+    ['Last Updated', c => c.lastUpdated || 'N/A'],
+  ];
+
+  let html = '<table class="comparison-table"><thead><tr><th></th>';
+  selected.forEach(c => { html += '<th><span class="comp-name-header">' + esc(c.name) + '</span></th>'; });
+  html += '</tr></thead><tbody>';
+  rows.forEach(([label, fn]) => {
+    html += '<tr><td>' + label + '</td>';
+    selected.forEach(c => { html += '<td>' + fn(c) + '</td>'; });
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+
+  const wrap = document.getElementById('comparisonTableWrap');
+  wrap.innerHTML = html;
+  wrap.style.display = 'block';
+  wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// Modal
+function openModal(id) {
+  document.getElementById('modalOverlay').classList.add('open');
+  document.getElementById('modalTitle').textContent = id ? 'Edit Competitor' : 'Add Competitor';
+  document.getElementById('editId').value = id || '';
+  currentRating = 0;
+
+  if (id) {
+    const c = competitors.find(x => x.id === id);
+    if (!c) return;
+    document.getElementById('fName').value = c.name;
+    document.getElementById('fCategory').value = c.category;
+    document.getElementById('fPlatform').value = c.platform;
+    document.getElementById('fPricing').value = c.pricing;
+    document.getElementById('fPrice').value = c.price || '';
+    document.getElementById('fCoverage').value = c.coverage || '';
+    document.getElementById('fRatingCount').value = c.ratingCount || '';
+    document.getElementById('fFeatures').value = c.features || '';
+    document.getElementById('fStrengths').value = c.strengths || '';
+    document.getElementById('fWeaknesses').value = c.weaknesses || '';
+    document.getElementById('fAdvantage').value = c.advantage || '';
+    document.getElementById('fUrl').value = c.url || '';
+    document.getElementById('fDate').value = c.lastUpdated || '';
+    document.getElementById('fNotes').value = c.notes || '';
+    currentRating = c.rating || 0;
+  } else {
+    document.getElementById('fName').value = '';
+    document.getElementById('fCategory').value = 'Direct Competitor';
+    document.getElementById('fPlatform').value = 'Both';
+    document.getElementById('fPricing').value = 'Free';
+    document.getElementById('fPrice').value = '';
+    document.getElementById('fCoverage').value = '';
+    document.getElementById('fRatingCount').value = '';
+    document.getElementById('fFeatures').value = '';
+    document.getElementById('fStrengths').value = '';
+    document.getElementById('fWeaknesses').value = '';
+    document.getElementById('fAdvantage').value = '';
+    document.getElementById('fUrl').value = '';
+    document.getElementById('fDate').value = new Date().toISOString().split('T')[0];
+    document.getElementById('fNotes').value = '';
+  }
+  togglePriceField();
+  updateStarInput();
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+
+function togglePriceField() {
+  const val = document.getElementById('fPricing').value;
+  document.getElementById('priceFieldWrap').style.display = (val === 'Paid' || val === 'Freemium') ? 'block' : 'none';
+}
+
+// Star rating input
+function setRating(val) {
+  // Clicking on the same star region toggles half/full
+  const starIndex = Math.ceil(val);
+  const currentFull = Math.ceil(currentRating);
+  if (starIndex === currentFull) {
+    if (currentRating === starIndex) {
+      currentRating = starIndex - 0.5;
+    } else if (currentRating === starIndex - 0.5) {
+      currentRating = 0;
+    } else {
+      currentRating = starIndex;
+    }
+  } else {
+    currentRating = starIndex;
+  }
+  updateStarInput();
+}
+
+function previewRating(val) {
+  const stars = document.querySelectorAll('#starInput span:not(.rating-val)');
+  const idx = Math.ceil(val);
+  stars.forEach((s, i) => {
+    s.classList.toggle('lit', i < idx);
+  });
+}
+
+function updateStarInput() {
+  const stars = document.querySelectorAll('#starInput span:not(.rating-val)');
+  stars.forEach((s, i) => {
+    s.classList.toggle('lit', i < Math.ceil(currentRating));
+  });
+  document.getElementById('ratingVal').textContent = currentRating > 0 ? currentRating.toFixed(1) : '0';
+  // Restore on mouseout
+  document.getElementById('starInput').onmouseleave = updateStarInput;
+}
+
+function saveCompetitor() {
+  const name = document.getElementById('fName').value.trim();
+  if (!name) { alert('Name is required.'); return; }
+
+  const data = {
+    name,
+    category: document.getElementById('fCategory').value,
+    platform: document.getElementById('fPlatform').value,
+    pricing: document.getElementById('fPricing').value,
+    price: document.getElementById('fPrice').value.trim(),
+    rating: currentRating,
+    ratingCount: document.getElementById('fRatingCount').value.trim(),
+    coverage: document.getElementById('fCoverage').value.trim(),
+    features: document.getElementById('fFeatures').value.trim(),
+    strengths: document.getElementById('fStrengths').value.trim(),
+    weaknesses: document.getElementById('fWeaknesses').value.trim(),
+    advantage: document.getElementById('fAdvantage').value.trim(),
+    url: document.getElementById('fUrl').value.trim(),
+    notes: document.getElementById('fNotes').value.trim(),
+    lastUpdated: document.getElementById('fDate').value || new Date().toISOString().split('T')[0]
+  };
+
+  const editId = document.getElementById('editId').value;
+  if (editId) {
+    const idx = competitors.findIndex(c => c.id === editId);
+    if (idx >= 0) {
+      data.id = editId;
+      competitors[idx] = data;
+    }
+  } else {
+    data.id = genId();
+    competitors.push(data);
+  }
+
+  save();
+  closeModal();
+  render();
+}
+
+function editCompetitor(id) {
+  openModal(id);
+}
+
+function deleteCompetitor(id) {
+  const c = competitors.find(x => x.id === id);
+  if (!c) return;
+  if (!confirm('Delete "' + c.name + '"? This cannot be undone.')) return;
+  competitors = competitors.filter(x => x.id !== id);
+  selectedIds.delete(id);
+  save();
+  updateComparisonBar();
+  render();
+}
+
+// Close modal on overlay click
+document.getElementById('modalOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// Search & filter
+document.getElementById('searchInput').addEventListener('input', render);
+document.getElementById('categoryFilter').addEventListener('change', render);
+
+// Init
+load();
+render();
+</script>
+<script src="dark-mode.js"></script>
+<script src="toolkit-nav.js"></script>
+</body>
+</html>

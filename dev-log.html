@@ -1,0 +1,1957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dev Log — SureVera</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy: #1B3A6B;
+      --dark-navy: #0D1B2E;
+      --orange: #E8612A;
+      --bg: #F0F3F8;
+      --card-bg: #FFFFFF;
+      --text: #1E293B;
+      --text-sec: #64748B;
+      --text-muted: #94A3B8;
+      --border: #E2E8F0;
+      --shadow: 0 1px 4px rgba(0,0,0,0.06);
+      --shadow-hover: 0 8px 30px rgba(0,0,0,0.1);
+      --section-hover: #F9FAFB;
+      --input-bg: #FFFFFF;
+    }
+
+    body.dark-mode, [data-theme="dark"],
+    [data-theme="dark"] body, [data-theme="dark"] {
+      --bg: #0A1422;
+      --card-bg: #132240;
+      --text: #FFFFFF;
+      --text-sec: #8B9EC7;
+      --text-muted: #5A6E99;
+      --border: rgba(255,255,255,0.10);
+      --shadow: 0 1px 4px rgba(0,0,0,0.3);
+      --shadow-hover: 0 8px 30px rgba(0,0,0,0.5);
+      --section-hover: #1A3060;
+      --input-bg: #1A3060;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    .toolbar {
+      background: linear-gradient(135deg, #0D1B2E 0%, #1B3A6B 100%);
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+      position: relative;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 1.5rem 1rem 3rem;
+    }
+
+    .page-title {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    .page-title h1 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 0.3rem;
+    }
+    .page-title p {
+      font-size: 0.9rem;
+      color: var(--text-sec);
+    }
+
+    /* ── Top bar: search + actions ── */
+    .top-bar {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .search-wrapper {
+      flex: 1;
+      min-width: 200px;
+      position: relative;
+    }
+    .search-wrapper svg {
+      position: absolute;
+      left: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      color: var(--text-muted);
+    }
+    .search-input {
+      width: 100%;
+      padding: 0.6rem 1rem 0.6rem 2.4rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--card-bg);
+      color: var(--text);
+      font-size: 0.85rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .search-input:focus { border-color: var(--orange); }
+
+    .cat-filter {
+      padding: 0.55rem 0.9rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--card-bg);
+      color: var(--text);
+      font-size: 0.8rem;
+      font-family: inherit;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.55rem 1rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--card-bg);
+      color: var(--text);
+      font-size: 0.8rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .action-btn:hover { background: var(--orange); color: white; border-color: var(--orange); }
+    .action-btn svg { width: 15px; height: 15px; }
+
+    .action-btn.primary {
+      background: var(--orange);
+      color: white;
+      border-color: var(--orange);
+    }
+    .action-btn.primary:hover { opacity: 0.9; }
+
+    /* ── Add Entry Form ── */
+    .form-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      margin-bottom: 1.25rem;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .form-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.85rem 1.25rem;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.15s;
+    }
+    .form-header:hover { background: var(--section-hover); }
+    .form-header h2 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .form-chevron {
+      width: 16px;
+      height: 16px;
+      color: var(--text-muted);
+      transition: transform 0.25s;
+    }
+    .form-card.open .form-chevron { transform: rotate(180deg); }
+
+    .form-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease;
+    }
+    .form-card.open .form-body {
+      max-height: 2000px;
+    }
+    .form-inner {
+      padding: 0 1.25rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .form-row { display: flex; gap: 0.75rem; }
+    .form-row > * { flex: 1; }
+
+    label.field-label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.3rem;
+    }
+
+    .field-input, .field-textarea {
+      width: 100%;
+      padding: 0.55rem 0.75rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--input-bg);
+      color: var(--text);
+      font-size: 0.85rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .field-input:focus, .field-textarea:focus { border-color: var(--orange); }
+    .field-textarea { resize: vertical; min-height: 80px; }
+    .field-textarea.large { min-height: 180px; }
+
+    .cat-checkboxes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+    .cat-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.3rem 0.6rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      cursor: pointer;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text-sec);
+      transition: all 0.15s;
+      user-select: none;
+    }
+    .cat-checkbox input { display: none; }
+    .cat-checkbox.selected {
+      background: var(--orange);
+      color: white;
+      border-color: var(--orange);
+    }
+
+    .save-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      padding: 0.65rem 1.5rem;
+      border-radius: 10px;
+      border: none;
+      background: var(--orange);
+      color: white;
+      font-size: 0.85rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      align-self: flex-start;
+    }
+    .save-btn:hover { opacity: 0.9; }
+
+    /* ── Entry Cards ── */
+    .entry-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      margin-bottom: 0.75rem;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: box-shadow 0.2s;
+    }
+    .entry-card:hover { box-shadow: var(--shadow-hover); }
+
+    .entry-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.85rem 1.25rem;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.15s;
+    }
+    .entry-header:hover { background: var(--section-hover); }
+
+    .entry-date {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--orange);
+      white-space: nowrap;
+      min-width: 75px;
+    }
+    .entry-title-block { flex: 1; min-width: 0; }
+    .entry-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .entry-summary {
+      font-size: 0.78rem;
+      color: var(--text-sec);
+      line-height: 1.4;
+      margin-top: 0.15rem;
+    }
+    .entry-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+    }
+    .entry-badge {
+      font-size: 0.6rem;
+      font-weight: 700;
+      padding: 0.12rem 0.45rem;
+      border-radius: 5px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      white-space: nowrap;
+    }
+    .entry-chevron {
+      width: 14px;
+      height: 14px;
+      color: var(--text-muted);
+      flex-shrink: 0;
+      transition: transform 0.25s;
+    }
+    .entry-card.open .entry-chevron { transform: rotate(180deg); }
+
+    .entry-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease;
+    }
+    .entry-card.open .entry-body {
+      max-height: 10000px;
+    }
+    .entry-detail {
+      padding: 0 1.25rem 1.25rem;
+      border-top: 1px solid var(--border);
+    }
+    .entry-detail-content {
+      font-size: 0.85rem;
+      color: var(--text-sec);
+      line-height: 1.8;
+      white-space: pre-wrap;
+      overflow-wrap: break-word;
+      word-wrap: break-word;
+      padding-top: 1rem;
+    }
+    .entry-detail-content h2 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin: 1rem 0 0.4rem;
+    }
+    .entry-detail-content h2:first-child { margin-top: 0; }
+    .entry-detail-content ul, .entry-detail-content ol {
+      padding-left: 1.25rem;
+      margin: 0.25rem 0 0.5rem;
+    }
+    .entry-detail-content li {
+      font-size: 0.82rem;
+      margin-bottom: 0.15rem;
+    }
+    .entry-detail-content code {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.78rem;
+      background: var(--bg);
+      padding: 0.1rem 0.35rem;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      color: var(--orange);
+    }
+
+    .entry-actions {
+      display: flex;
+      gap: 0.5rem;
+      padding: 0.75rem 1.25rem;
+      border-top: 1px solid var(--border);
+    }
+    .entry-action-btn {
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text-sec);
+      font-size: 0.75rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .entry-action-btn:hover { background: var(--border); color: var(--text); }
+    .entry-action-btn.danger { color: #DC2626; }
+    .entry-action-btn.danger:hover { background: #FEE2E2; color: #DC2626; border-color: #FECACA; }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 2rem;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+    }
+
+    /* Badge colors */
+    .badge-backend { background: #DBEAFE; color: #1E40AF; }
+    .badge-mobile-app { background: #EDE9FE; color: #6D28D9; }
+    .badge-security { background: #FEE2E2; color: #991B1B; }
+    .badge-infrastructure { background: #DCFCE7; color: #166534; }
+    .badge-toolkit { background: #FEF3C7; color: #92400E; }
+    .badge-data-quality { background: #FFEDD5; color: #9A3412; }
+    .badge-ui-ux { background: #F0ABFC33; color: #A855F7; }
+    .badge-business { background: #E0F2F1; color: #047857; }
+    .badge-bug-fix { background: #FEE2E2; color: #DC2626; }
+    .badge-new-feature { background: #DBEAFE; color: #2563EB; }
+
+    [data-theme="dark"] .badge-backend { background: #172554; color: #93C5FD; }
+    [data-theme="dark"] .badge-mobile-app { background: #2E1065; color: #C4B5FD; }
+    [data-theme="dark"] .badge-security { background: #450A0A; color: #FCA5A5; }
+    [data-theme="dark"] .badge-infrastructure { background: #052E16; color: #86EFAC; }
+    [data-theme="dark"] .badge-toolkit { background: #451A03; color: #FDE68A; }
+    [data-theme="dark"] .badge-data-quality { background: #431407; color: #FDBA74; }
+    [data-theme="dark"] .badge-ui-ux { background: #3B0764; color: #E9D5FF; }
+    [data-theme="dark"] .badge-business { background: #022C22; color: #6EE7B7; }
+    [data-theme="dark"] .badge-bug-fix { background: #450A0A; color: #FCA5A5; }
+    [data-theme="dark"] .badge-new-feature { background: #172554; color: #93C5FD; }
+
+    .entry-count {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+      font-weight: 500;
+    }
+
+    @media (max-width: 600px) {
+      .toolbar { padding: 1rem; }
+      .container { padding: 1rem 0.75rem 2rem; }
+      .form-row { flex-direction: column; }
+      .top-bar { gap: 0.5rem; }
+      .entry-header { flex-wrap: wrap; }
+      .entry-badges { margin-top: 0.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="toolbar">
+    <img src="surevera-header-white-logo.png" alt="SureVera" style="height:32px">
+    <div style="width:1px;height:24px;background:rgba(255,255,255,0.2)"></div>
+    <span style="font-size:0.85rem;font-weight:500;color:rgba(255,255,255,0.6)">Dev Log</span>
+  </div>
+
+  <div class="container">
+    <div class="page-title">
+      <h1>Dev Log</h1>
+      <p>Daily development updates and progress tracking</p>
+    </div>
+
+    <!-- Top bar -->
+    <div class="top-bar">
+      <div class="search-wrapper">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" class="search-input" id="searchInput" placeholder="Search entries...">
+      </div>
+      <select class="cat-filter" id="catFilter">
+        <option value="">All Categories</option>
+        <option value="Backend">Backend</option>
+        <option value="Mobile App">Mobile App</option>
+        <option value="Security">Security</option>
+        <option value="Infrastructure">Infrastructure</option>
+        <option value="Toolkit">Toolkit</option>
+        <option value="Data Quality">Data Quality</option>
+        <option value="UI/UX">UI/UX</option>
+        <option value="Business">Business</option>
+        <option value="Bug Fix">Bug Fix</option>
+        <option value="New Feature">New Feature</option>
+      </select>
+      <button class="action-btn" onclick="exportMarkdown()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Export
+      </button>
+      <button class="action-btn" onclick="resetDevLog()" style="color:#DC2626">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+        Restore
+      </button>
+    </div>
+
+    <!-- Add Entry Form -->
+    <div class="form-card" id="formCard">
+      <div class="form-header" onclick="toggleForm()">
+        <h2>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <span id="formHeaderText">Add Entry</span>
+        </h2>
+        <svg class="form-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="form-body">
+        <div class="form-inner">
+          <div class="form-row">
+            <div>
+              <label class="field-label">Date</label>
+              <input type="date" class="field-input" id="entryDate">
+            </div>
+            <div>
+              <label class="field-label">Title</label>
+              <input type="text" class="field-input" id="entryTitle" placeholder="e.g. Beta Testing Day 3">
+            </div>
+          </div>
+          <div>
+            <label class="field-label">Summary</label>
+            <textarea class="field-textarea" id="entrySummary" placeholder="Short summary of today's work..."></textarea>
+          </div>
+          <div>
+            <label class="field-label">Details (markdown-style)</label>
+            <textarea class="field-textarea large" id="entryDetails" placeholder="## Section Title&#10;- Detail item 1&#10;- Detail item 2"></textarea>
+          </div>
+          <div>
+            <label class="field-label">Categories</label>
+            <div class="cat-checkboxes" id="catCheckboxes"></div>
+          </div>
+          <div style="display:flex;gap:0.5rem;align-items:center">
+            <button class="save-btn" onclick="saveEntry()">Save Entry</button>
+            <button class="action-btn" id="cancelEditBtn" style="display:none" onclick="cancelEdit()">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="entry-count" id="entryCount"></div>
+    <div id="entriesList"></div>
+  </div>
+
+  <div class="footer">SureVera Dev Log -- runs entirely in your browser</div>
+
+  <script>
+    const STORAGE_KEY = 'surevera_dev_log';
+    const ALL_CATEGORIES = [
+      'Backend', 'Mobile App', 'Security', 'Infrastructure', 'Toolkit',
+      'Data Quality', 'UI/UX', 'Business', 'Bug Fix', 'New Feature'
+    ];
+
+    // ── State ──
+    let entries = loadEntries();
+    let editingId = null;
+
+    function loadEntries() {
+      try {
+        const data = JSON.parse(localStorage.getItem(STORAGE_KEY));
+        return Array.isArray(data) ? data : [];
+      } catch { return []; }
+    }
+    function saveEntries() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+    }
+
+    // ── Init ──
+    function init() {
+      // Set date default
+      document.getElementById('entryDate').value = new Date().toISOString().slice(0, 10);
+
+      // Build category checkboxes
+      const container = document.getElementById('catCheckboxes');
+      ALL_CATEGORIES.forEach(cat => {
+        const label = document.createElement('label');
+        label.className = 'cat-checkbox';
+        label.innerHTML = `<input type="checkbox" value="${cat}"> ${cat}`;
+        label.addEventListener('click', () => {
+          setTimeout(() => {
+            label.classList.toggle('selected', label.querySelector('input').checked);
+          }, 0);
+        });
+        container.appendChild(label);
+      });
+
+      // Seed data if empty
+      if (entries.length === 0) {
+        seedData();
+        saveEntries();
+      }
+
+      render();
+
+      // Bind filter events
+      document.getElementById('searchInput').addEventListener('input', render);
+      document.getElementById('catFilter').addEventListener('change', render);
+    }
+
+    // ── Form toggle ──
+    function toggleForm() {
+      document.getElementById('formCard').classList.toggle('open');
+    }
+
+    function cancelEdit() {
+      editingId = null;
+      clearForm();
+      document.getElementById('formHeaderText').textContent = 'Add Entry';
+      document.getElementById('cancelEditBtn').style.display = 'none';
+    }
+
+    function clearForm() {
+      document.getElementById('entryDate').value = new Date().toISOString().slice(0, 10);
+      document.getElementById('entryTitle').value = '';
+      document.getElementById('entrySummary').value = '';
+      document.getElementById('entryDetails').value = '';
+      document.querySelectorAll('#catCheckboxes .cat-checkbox').forEach(l => {
+        l.querySelector('input').checked = false;
+        l.classList.remove('selected');
+      });
+    }
+
+    // ── Save ──
+    function saveEntry() {
+      const date = document.getElementById('entryDate').value;
+      const title = document.getElementById('entryTitle').value.trim();
+      const summary = document.getElementById('entrySummary').value.trim();
+      const details = document.getElementById('entryDetails').value.trim();
+      const categories = [];
+      document.querySelectorAll('#catCheckboxes input:checked').forEach(cb => {
+        categories.push(cb.value);
+      });
+
+      if (!title) { alert('Please enter a title.'); return; }
+      if (!date) { alert('Please enter a date.'); return; }
+
+      if (editingId) {
+        const idx = entries.findIndex(e => e.id === editingId);
+        if (idx !== -1) {
+          entries[idx] = { ...entries[idx], date, title, summary, details, categories };
+        }
+        editingId = null;
+        document.getElementById('formHeaderText').textContent = 'Add Entry';
+        document.getElementById('cancelEditBtn').style.display = 'none';
+      } else {
+        entries.push({
+          id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+          date, title, summary, details, categories,
+          createdAt: new Date().toISOString()
+        });
+      }
+
+      saveEntries();
+      clearForm();
+      document.getElementById('formCard').classList.remove('open');
+      render();
+    }
+
+    // ── Edit ──
+    function editEntry(id) {
+      const entry = entries.find(e => e.id === id);
+      if (!entry) return;
+
+      editingId = id;
+      document.getElementById('entryDate').value = entry.date;
+      document.getElementById('entryTitle').value = entry.title;
+      document.getElementById('entrySummary').value = entry.summary || '';
+      document.getElementById('entryDetails').value = entry.details || '';
+
+      // Set categories
+      document.querySelectorAll('#catCheckboxes .cat-checkbox').forEach(l => {
+        const cb = l.querySelector('input');
+        const checked = (entry.categories || []).includes(cb.value);
+        cb.checked = checked;
+        l.classList.toggle('selected', checked);
+      });
+
+      document.getElementById('formHeaderText').textContent = 'Edit Entry';
+      document.getElementById('cancelEditBtn').style.display = '';
+      document.getElementById('formCard').classList.add('open');
+      document.getElementById('entryTitle').focus();
+    }
+
+    // ── Delete ──
+    function deleteEntry(id) {
+      if (!confirm('Delete this entry? This cannot be undone.')) return;
+      entries = entries.filter(e => e.id !== id);
+      saveEntries();
+      render();
+    }
+
+    // ── Render ──
+    function render() {
+      const q = document.getElementById('searchInput').value.toLowerCase().trim();
+      const catFilter = document.getElementById('catFilter').value;
+
+      let filtered = entries.slice();
+
+      if (q) {
+        filtered = filtered.filter(e => {
+          const haystack = [e.title, e.summary, e.details, ...(e.categories || [])].join(' ').toLowerCase();
+          return haystack.includes(q);
+        });
+      }
+      if (catFilter) {
+        filtered = filtered.filter(e => (e.categories || []).includes(catFilter));
+      }
+
+      // Sort newest first
+      filtered.sort((a, b) => b.date.localeCompare(a.date));
+
+      const countEl = document.getElementById('entryCount');
+      countEl.textContent = filtered.length + ' entr' + (filtered.length === 1 ? 'y' : 'ies') + (q || catFilter ? ' (filtered)' : '');
+
+      const list = document.getElementById('entriesList');
+      if (filtered.length === 0) {
+        list.innerHTML = '<div class="empty-state">No entries found. Add your first dev log entry above.</div>';
+        return;
+      }
+
+      list.innerHTML = '';
+      filtered.forEach(entry => {
+        const card = document.createElement('div');
+        card.className = 'entry-card';
+        card.dataset.id = entry.id;
+
+        const badgesHTML = (entry.categories || []).map(cat => {
+          const cls = 'badge-' + cat.toLowerCase().replace(/[\s\/]+/g, '-');
+          return `<span class="entry-badge ${cls}">${esc(cat)}</span>`;
+        }).join('');
+
+        const formattedDate = formatDate(entry.date);
+
+        card.innerHTML = `
+          <div class="entry-header" onclick="toggleEntry('${entry.id}')">
+            <span class="entry-date">${formattedDate}</span>
+            <div class="entry-title-block">
+              <div class="entry-title">${esc(entry.title)}</div>
+              <div class="entry-summary">${esc(entry.summary || '')}</div>
+            </div>
+            <div class="entry-badges">${badgesHTML}</div>
+            <svg class="entry-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div class="entry-body">
+            <div class="entry-detail">
+              <div class="entry-detail-content">${renderMarkdown(entry.details || '')}</div>
+            </div>
+          </div>
+        `;
+
+        list.appendChild(card);
+      });
+    }
+
+    function toggleEntry(id) {
+      const card = document.querySelector(`.entry-card[data-id="${id}"]`);
+      if (card) card.classList.toggle('open');
+    }
+
+    // ── Helpers ──
+    function esc(s) {
+      if (!s) return '';
+      const d = document.createElement('div');
+      d.textContent = s;
+      return d.innerHTML;
+    }
+
+    function formatDate(dateStr) {
+      const d = new Date(dateStr + 'T12:00:00');
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    function renderMarkdown(text) {
+      if (!text) return '';
+      // Escape HTML first
+      let html = esc(text);
+      // ## headings
+      html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+      // **bold**
+      html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+      // `code`
+      html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+      // Lines starting with - as list items (group consecutive)
+      html = html.replace(/((?:^- .+\n?)+)/gm, function(block) {
+        const items = block.trim().split('\n').map(line => {
+          return '<li>' + line.replace(/^- /, '') + '</li>';
+        }).join('');
+        return '<ul>' + items + '</ul>';
+      });
+      // Blank lines as paragraph breaks
+      html = html.replace(/\n\n+/g, '<br><br>');
+      html = html.replace(/\n/g, '\n');
+      return html;
+    }
+
+    // ── Export ──
+    function resetDevLog() {
+      if (!confirm('Restore the dev log to its original entries? Any entries you added manually will be lost unless you export first.')) return;
+      localStorage.removeItem(STORAGE_KEY);
+      entries = [];
+      seedData();
+      saveEntries();
+      render();
+    }
+
+    function exportMarkdown() {
+      const sorted = entries.slice().sort((a, b) => b.date.localeCompare(a.date));
+      let md = '# SureVera Dev Log\n\nExported: ' + new Date().toLocaleDateString() + '\n\n---\n\n';
+
+      sorted.forEach(entry => {
+        md += '## ' + entry.date + ' — ' + entry.title + '\n';
+        if (entry.categories && entry.categories.length) {
+          md += '**Categories:** ' + entry.categories.join(', ') + '\n';
+        }
+        if (entry.summary) {
+          md += '**Summary:** ' + entry.summary + '\n';
+        }
+        md += '\n' + (entry.details || '') + '\n\n---\n\n';
+      });
+
+      const blob = new Blob([md], { type: 'text/markdown' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'surevera-dev-log-' + new Date().toISOString().slice(0, 10) + '.md';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // ── Seed Data ──
+    function seedData() {
+      entries = [
+        {
+          id: 'seed-001',
+          date: '2026-03-19',
+          title: 'Arriotech Website + SureBite DNS + Security Audit',
+          categories: ['Infrastructure', 'Security', 'Toolkit'],
+          summary: 'Built Arriotech.com corporate site, fixed surebiteapp.com DNS/HTTPS, ran full security audit, completed all 8 "Fix Now" security items.',
+          details: `## Arriotech.com \u2014 Corporate Website (NEW)
+- Built the Arriotech corporate landing page from scratch
+- Iterated through several design approaches before landing on dark premium corporate aesthetic
+- Content focused on Arriotech\u2019s broader B2B + B2C vision
+- SureBite shown as compact product card
+- Created GitHub repo, deployed to GitHub Pages, set up GoDaddy DNS
+- arriotech.com is live
+
+## SureBite Website (surebiteapp.com)
+- Diagnosed HTTPS issue \u2014 removed extra "WebsiteBuilder Site" and "Parked" A records in GoDaddy DNS
+- Updated favicon to SureBite bite-mark logo
+
+## Security Audit
+- Installed vibe-security skill and ran full audit across both codebases
+- Identified 12 issues across Critical/High/Medium/Low severity
+- Completed all 8 "Fix Now" items: timing-safe auth (23 routes), rate limiting (11 admin endpoints), CORS restriction, Stripe error redaction, deep link validation, PDF URL validation, source maps disabled, .env.production removed from git
+- Added 3 security sections to launch checklist with detailed descriptions
+
+## Backend
+- Deployed delete-data endpoint (was untracked in git)
+
+## Mobile App
+- Committed subscription/paywall system (was uncommitted)
+- Fixed Delete My Data to clear favorites, follows, and all local data
+- Added useFocusEffect for favorite/follow state refresh`,
+          createdAt: '2026-03-19T23:00:00.000Z'
+        },
+        {
+          id: 'seed-002',
+          date: '2026-03-22',
+          title: 'Beta Testing Feedback \u2014 Multi-Provider Matching + Notes Expansion',
+          categories: ['Backend', 'Mobile App', 'Data Quality', 'UI/UX', 'Toolkit', 'Bug Fix', 'New Feature'],
+          summary: 'Major data accuracy fixes (multi-provider jurisdiction matching, grade flickering), expanded violation notes to 8 providers, built 3 new toolkit pages for city expansion outreach.',
+          details: `## Multi-Provider Jurisdiction Matching (Major Fix)
+- Discovered search results spanning multiple jurisdictions matched ALL restaurants against wrong provider\u2019s data
+- Fixed: each restaurant now matched against its own provider\u2019s data using per-restaurant bbox detection
+- Also added per-restaurant address city extraction for chain matching
+
+## Grade Flickering Fix
+- Resolved score flickering between search and detail screens
+- Mobile app now passes matchedInspectionName to detail endpoint
+- Detail endpoint looks up exact record instead of re-matching
+
+## Inspection Notes Expanded to 8 Providers
+- Boulder County CO: full violation descriptions
+- San Francisco CA: inspection_notes + suspension_notes
+- NY State: violation text + inspection comments
+- Montgomery County MD: 14 violation category columns
+
+## Mobile App \u2014 20 commits
+- "No inspection details" UX overhaul with tappable "Learn why" popup
+- Auto-load last searched city on startup
+- Dynamic search placeholder
+- Delete My Data clears all cached data
+- Detail screen: address and website/phone on separate rows
+- Hide "View Full Inspection Report" when no violations exist
+
+## Toolkit \u2014 3 New Pages
+- City Data Sources: 98 entries across all 50 states
+- Outreach Toolkit: 15 email templates with copy-to-clipboard
+- Outreach Tracker: CRUD contact tracker with 37 pre-populated health department contacts`,
+          createdAt: '2026-03-22T23:00:00.000Z'
+        },
+        {
+          id: 'seed-003',
+          date: '2026-03-23',
+          title: 'Florida Violations + Data Accuracy Audit + Cache TTL',
+          categories: ['Backend', 'Data Quality', 'Bug Fix', 'Infrastructure'],
+          summary: 'Added violation descriptions to Florida (22 counties) + 7 more providers, fixed Alameda County compliance-items issue, added 30-min cache TTL to jurisdiction cache.',
+          details: `## Florida DBPR \u2014 Full Violation Descriptions
+- Discovered 58 violation columns in CSV that were completely ignored
+- Built FL_VIOLATION_DESCRIPTIONS mapping all 58 codes
+- Reworded from compliance language ("Hands washed and clean") to issue language ("Handwashing or hygiene issue")
+
+## 7 Additional Providers with Violations
+- Sacramento County CA, Wake County NC, Minneapolis MN, Detroit MI, NY State (full text), Boulder County CO (+ status), Alameda County CA (then removed \u2014 see below)
+
+## Alameda County Fix (Oakland/Berkeley)
+- Was only fetching routine inspections (Service 111), missing reinspections (Service 131) with corrected grades
+- Violation_Description contained compliance items, not violations \u2014 removed mapping
+- Tay Ho Restaurant: C/72 \u2192 A/95 after fix
+
+## violationsAvailable Flag
+- Backend now sends flag so app distinguishes "clean inspection" vs "provider doesn\u2019t publish violations"
+- Clean: "No violations found during this inspection"
+- Missing: "Inspection details not published for this area. Tap to learn why."
+
+## Jurisdiction Cache TTL
+- Added 30-minute TTL to in-memory cache
+- Cron refreshes now propagate to all replicas within 30 minutes without redeploy
+
+## FlatList Performance
+- Added initialNumToRender, maxToRenderPerBatch, windowSize, removeClippedSubviews`,
+          createdAt: '2026-03-23T23:00:00.000Z'
+        },
+        {
+          id: 'seed-010',
+          date: '2026-03-15',
+          title: 'Search UX Overhaul + Near Me + Onboarding + Following Fixes',
+          categories: ["Mobile App", "UI/UX", "Bug Fix", "New Feature"],
+          summary: 'Major search UX improvements (X buttons, name filtering, apostrophe normalization), Near Me chip redesign with 10mi default radius, onboarding skip fix, following/favorites local-first writes, EAS build configs.',
+          details: `## Search UX
+- X button on search box only clears query text \u2014 keeps selected city and results intact
+- City chip gets an inline X for full reset (clears city, query, results, filters, cuisine)
+- With city or Near Me active, search box filters by restaurant name \u2014 no geocoding
+- Restaurant name search with no city shows a helpful prompt instead of blank results
+- Apostrophe normalization so "mcdonalds" matches "McDonald\u2019s"
+- Static placeholder "ZIP Code or Restaurant" \u2014 no more dynamic changes
+- Search box border and icon highlight accent blue on focus, stays highlighted while query has text
+- Entering a ZIP/city while Near Me is active deactivates Near Me and searches the location
+- Activating Near Me clears the search query
+
+## Near Me Chip
+- Default radius changed from 1 mile to 10 miles
+- Removed checkmark from Near Me label
+- Tapping Near Me when active now refreshes instead of toggling off
+- Refresh icon embedded inside Near Me chip on the right when active
+- Separate refresh chip removed
+- Refresh chip moved next to Near Me (before the fix above)
+
+## City / Cuisine / Filters Chips
+- Chevron added to Browse Cities, Cuisine, and Filters chips pointing right, matching text color
+- X clear button added to Cuisine chip \u2014 clears cuisine without opening the modal
+- X clear button added to Filters chip \u2014 resets all filters at once
+
+## Modals
+- X button added to top right of Filters, Supported Cities, and Cuisine modals
+- Cities modal Close button centered and full width
+- Cities modal search box: KeyboardAvoidingView so keyboard doesn\u2019t cover the input
+- Rename cuisine "Bubble Tea" \u2192 "Boba Tea"
+
+## Onboarding
+- Skip button now goes to the last disclaimer slide instead of bypassing it entirely
+
+## Following / Favorites
+- \`projectId\` added to \`getExpoPushTokenAsync\` (required in SDK 50+, was silently failing)
+- Local AsyncStorage written before API call \u2014 followed restaurants always appear in Following tab immediately
+
+## EAS / Build Config
+- Added channel to all three EAS build profiles so OTA updates are actually delivered to testers
+- Added expo-dev-client to package.json
+
+## Backend API
+- Bell County \`sourcePdfUrl\` now strips the \`?t=\` cache-busting parameter so "View Original Report" links don\u2019t 404
+
+## Repo / Infrastructure
+- API remote updated from healthbite-api to SureBite-api
+- Both GitHub repos set up cleanly \u2014 SureBite-api on main, SureBite-app on master
+- Full deployment flow documented (Railway, EAS, GitHub)
+
+## Bell County \u2014 Per-City Split
+- Replaced the single "Killeen / Temple, TX" (25mi radius) with 5 individual cities: Killeen, Temple, Belton, Harker Heights, Salado \u2014 each with their own centered coordinates and smaller radius (5\u20138mi)
+
+## Filters \u2014 Inspection Age Order
+- Changed "All time \u2192 12 months \u2192 6 months" to "All time \u2192 6 months \u2192 12 months"
+
+## Near Me + Search Field Highlight Fix
+- Tapping the search field no longer deactivates Near Me
+- Search box border/highlight only shows when there\u2019s no active Near Me and no city selected
+
+## "Burger King" Search Bug \u2014 Near Me Active
+- Moved the Near Me check before cuisine detection so typing a restaurant name while Near Me is on just filters results instead of deactivating Near Me and geocoding
+
+## "Burger King" Search Bug \u2014 No Context
+- Removed the \`wordCount >= 2\` rule from \`looksLikeZipOrCity\` so two-word restaurant names no longer get treated as city searches
+- Added \`looksLikeZipOrCity\` guard on the cuisine+location split so "burger king" doesn\u2019t get parsed as cuisine=Burgers + location="king"
+
+## Soft Hint Message
+- Replaced the big red "Couldn\u2019t load results" error with a subtle pill (info icon + muted background) when a restaurant name is typed with no location context
+- Hint clears as soon as the user starts typing again
+
+## Share Button \u2014 Invalid Date Fix
+- Replaced \`new Date(date)\` with manual YYYY-MM-DD part parsing to fix Hermes/Android "Invalid Date" bug in share text`,
+          createdAt: '2026-03-15T23:00:00.000Z'
+        },
+        {
+          id: 'seed-011',
+          date: '2026-03-16',
+          title: 'Subscription Paywall System \u2014 Full Implementation',
+          categories: ["Mobile App", "New Feature"],
+          summary: 'Built complete subscription/paywall system: RevenueCat config, subscription utilities, SubscriptionContext, PaywallScreen with CDC stats and purchase flow, trial tracking, beta-only dev tools.',
+          details: `## New Files Created
+
+## \`src/config/revenuecat.ts\`
+- RevenueCat API key placeholder (single key, platform-agnostic)
+- Entitlement ID: "premium"
+- \`FIRST_LAUNCH_KEY\` for AsyncStorage trial tracking
+- \`TRIAL_DAYS\` \u2014 reads EAS channel: 3 in production, 999 in preview/development so beta testers never hit the wall unintentionally
+
+## \`src/utils/subscription.ts\`
+- \`initRevenueCat()\` \u2014 configures the SDK on app launch
+- \`getTrialInfo()\` \u2014 reads/writes first launch date, returns daysLeft and isExpired
+- \`resetTrial()\` \u2014 resets first launch date to now (used by beta Reset Trial button)
+- \`checkSubscription()\` \u2014 checks RevenueCat entitlement status
+- \`purchaseAnnual()\` \u2014 fetches current offering and triggers purchase flow
+- \`restorePurchases()\` \u2014 restores previous purchases
+
+## \`src/contexts/SubscriptionContext.ts\`
+- Standalone context file (separate from RootNavigator to break circular dependency)
+- Provides trialDaysLeft, isSubscribed, showPaywall to any screen
+
+## \`src/screens/PaywallScreen.tsx\`
+- Full-screen paywall UI
+- SureBite logo at top (navy in light mode, white in dark mode \u2014 theme-aware)
+- CDC stat strip: 48M / 1 in 6 / Most outbreaks \u2014 sourced from CDC, works day 1 of launch with no social proof needed
+- Headline: "Be sure before you bite."
+- Subhead: "Real health grades from official government inspections \u2014 not user reviews."
+- 3 outcome-based benefit rows with icons
+- Price card: $20/year \u00b7 "Less than a coffee a month"
+- "Start My Subscription" CTA with loading spinner
+- "Cancel anytime \u00b7 Billed annually" as a prominent checkmark row (not buried in fine print)
+- "Restore Purchase" link (required by Apple App Review)
+- Close button (only visible when user is already subscribed and tapped from banner)
+- Safe area insets applied correctly for both Android nav bar and iOS home indicator
+
+## Modified Files
+
+## \`package.json\`
+- Added react-native-purchases ^8.12.0
+- Added expo-constants ~17.0.8
+
+## \`App.tsx\`
+- Wrapped \`<RootNavigator />\` in \`<SafeAreaProvider>\` so PaywallScreen (which renders outside NavigationContainer) has access to safe area insets
+
+## \`src/navigation/RootNavigator.tsx\`
+- Added subscription state: isSubscribed, trialExpired, trialDaysLeft, paywallVisible
+- Calls \`initRevenueCat()\`, \`checkSubscription()\`, \`getTrialInfo()\` on startup in parallel
+- Paywall gate: renders PaywallScreen if trial expired and not subscribed, or if paywallVisible is true
+- Wraps Tab.Navigator in \`<SubscriptionContext.Provider>\`
+- Imports SubscriptionContext from its own context file (no re-export, which was causing the createContext doesn\u2019t exist crash)
+
+## \`src/screens/HomeScreen.tsx\`
+- Imports SubscriptionContext from \`../contexts/SubscriptionContext\` (not from RootNavigator \u2014 fixes require cycle)
+- Trial countdown banner below chips row: shows days remaining, "Subscribe \u2192" tap triggers paywall
+- Banner only visible when trialDaysLeft > 0 && trialDaysLeft < 999 so beta testers never see it unless they reset their trial
+
+## \`src/screens/HelpScreen.tsx\`
+- Imports SubscriptionContext, TRIAL_DAYS, resetTrial
+- "Reset Trial (Beta Only)" \u2014 resets first_launch_date_v1 to today, confirms with Alert. Only visible when TRIAL_DAYS === 999 (non-production builds)
+- "Show Paywall (Beta Only)" \u2014 directly opens the paywall for testing. Only visible in non-production builds
+
+## Bug Fixes
+- **createContext doesn\u2019t exist crash:** Moved SubscriptionContext out of RootNavigator into its own file, removed conflicting re-export
+- **property is not configurable error:** Same fix \u2014 removing the dual import+re-export from RootNavigator
+- **SubscriptionContext doesn\u2019t exist error:** Same root cause, resolved by the context file separation
+- **Require cycle warning:** HomeScreen now imports SubscriptionContext directly from \`../contexts/SubscriptionContext\` instead of \`../navigation/RootNavigator\`
+- **Android nav bar overlapping "Restore Purchase":** Moved safe area paddingBottom from the container View to the ScrollView\u2019s contentContainerStyle so it applies at the bottom of scrollable content
+- **No SafeAreaProvider for PaywallScreen:** Added \`<SafeAreaProvider>\` to App.tsx \u2014 PaywallScreen renders before NavigationContainer which doesn\u2019t provide SafeArea on its own
+
+## Manual Steps Still Required Before Payments Work
+- Paste your RevenueCat SDK key into \`src/config/revenuecat.ts\`
+- Create product \`surebite_annual_20\` in Google Play Console ($20/yr)
+- Create Entitlement "premium" + Offering with annual package in RevenueCat dashboard
+- Test with Google Play sandbox account
+- \`eas build --profile production --platform android\` when ready to ship`,
+          createdAt: '2026-03-16T23:00:00.000Z'
+        },
+        {
+          id: 'seed-012',
+          date: '2026-03-17',
+          title: 'Landing Page + Marketing Toolkit + Privacy & Terms',
+          categories: ["Infrastructure", "Toolkit", "Business", "New Feature"],
+          summary: 'Built surebiteapp.com landing page, phone mockup tool, marketing toolkit hub, shared navigation system, screenshot builder, social media templates, QR generator, brand kit, city cards, review cards, store listing helper, privacy policy, terms of service.',
+          details: `## Landing Page (surebiteapp.com)
+- Built a complete single-page responsive landing page (index.html) for surebiteapp.com
+- Hero section with "See Beyond the Menu" tagline, App Store & Play Store buttons (placeholder links with "Coming soon" alerts)
+- Phone mockup placeholder in hero for screenshots
+- Stats bar: 90+ Cities, 1M+ Records, 100% Official Gov Data
+- "Why SureBite?" section with CDC statistics (48M Americans, 128K hospitalizations)
+- 7 feature cards: Search, Health Grades, Save Favorites, Grade Alerts, Inspection Details, Filter & Sort, Zero Personal Data
+- 4 screenshot placeholder slots
+- Grade explainer section (A/B/C/F pills with colors)
+- Cities tag cloud (26+ city names displayed)
+- Bottom CTA with download buttons
+- Footer with links to Privacy Policy, Terms of Service, Contact
+- Dark mode support matching the app\u2019s C_DARK palette
+- Open Graph meta tags for social sharing
+
+## Phone Mockup Tool
+- Built an offline HTML tool to wrap screenshots in realistic phone frames
+- Device options: iPhone 17 Pro, 16 Pro Max, 16 Pro, 16, 16e, 15 Pro, 15, 14, SE
+- Samsung: Galaxy S25 Ultra, S25, S24 Ultra, S24, S23, S23 Ultra, Z Flip 6, Z Fold 6, A54, A15
+- Google: Pixel 9 Pro, 9, 8, 8 Pro; OnePlus 12
+- Punch-hole camera cutouts on Android devices
+- Top inset option with color picker for status bar area
+- Background color options (transparent, white, navy, custom)
+- Drag & drop or browse to upload screenshots
+- Download individual PNGs or batch download all
+- Default device set to Galaxy S23 Ultra, top inset unchecked by default
+- Desktop shortcut created: "SureBite Mockup Tool"
+
+## Marketing Toolkit Hub
+- Built a hub page (toolkit.html) linking to all tools
+- Card-based grid layout with icons and descriptions
+- Desktop shortcut created: "SureBite Marketing Toolkit"
+- Portable ZIP created on Desktop for flash drive use (532KB total)
+
+## Shared Navigation System
+- Built toolkit-nav.js \u2014 shared dropdown navigation across all tool pages
+- Home button + Tools dropdown in top-right of every toolbar
+- Current page highlighted in dropdown
+- Admin Dashboard link opens in new tab with external link icon
+- Navigation updated every time a new tool was added
+
+## Dark Mode
+- Built dark-mode.js \u2014 shared dark mode system across all pages
+- Uses the app\u2019s C_DARK palette (#0D1B2E bg, #132240 surfaces, #1A3060 elevated)
+- Moon/sun toggle button in the nav bar on every page
+- Persists across pages via localStorage
+- Respects system preference (prefers-color-scheme) as default
+- Smooth transition animations
+- Dark mode styles for: cards, inputs, dropdowns, drop zones, grade pills, city tags, nav menus, feature cards, screenshot slots, buttons, keyword chips, tab buttons, copy button states
+
+## App Store Screenshot Builder
+- Upload mockup, add headline + subtitle text
+- Size presets: iPhone 6.7", 6.1", 5.5", iPad Pro 12.9", Android Phone, Google Play
+- Text position (top/bottom), background color, text color
+- Live preview canvas
+- Download single or all sizes
+- Bug fixed: file input destroyed after first upload
+
+## Social Media Template Generator
+- Size presets: Instagram Post, Instagram Story, Facebook Post, Facebook Ad, Twitter/X Post, LinkedIn Post
+- 4 layout options: Phone Left, Phone Center, Phone Right, Text Overlay
+- Background styles: solid navy, gradient, white, custom
+- SureBite logo toggle, "Download Free" CTA badge toggle
+- Live preview canvas
+- Bug fixed: download filenames cleaned up, dead code removed
+
+## Banner Ad Creator
+- 8 IAB standard sizes: Leaderboard, Medium Rectangle, Wide Skyscraper, Large Rectangle, Half Page, Billboard, Mobile Banner, Mobile Leaderboard
+- Adaptive layout per aspect ratio (wide, tall, square)
+- Upload phone mockup, headline, CTA button text
+- Background style, text color, logo toggle
+- Download single or all sizes
+- No bugs found in audit
+
+## QR Code Generator
+- Fully inline QR code encoder (no external dependencies)
+- URL input with live preview
+- Size presets: 256px, 512px, 1024px
+- Foreground/background color pickers
+- QR Only vs Branded Card output
+- Branded card: QR + orange accent line + "SureBite" + "Scan to download"
+- Preset buttons: Website, App Store, Play Store
+- Download PNG and Download SVG
+- No bugs found in audit
+
+## Brand Kit
+- Logo display on light/dark backgrounds with download buttons
+- Color palette: Primary (Navy, Dark Navy, Orange), Neutrals, Grade Colors
+- Click-to-copy hex codes with "Copied!" feedback
+- Typography samples (Inter font weights and sizes)
+- Grade badge display (A/B/C/F in solid and soft styles)
+- Bug fixed: clipboard fallback for file:// protocol
+
+## City Announcement Card Generator
+- City name + state inputs with {City}/{State} placeholder replacement
+- 6 headline templates + custom option
+- Output sizes: Instagram Post, Instagram Story, Facebook Post, Twitter/X Post
+- Background styles: Navy, Dark Navy, Orange, White
+- Toggles: logo, CTA badge, pin icon
+- Quick Generate grid with 20 popular cities
+- Download single or all sizes
+- Bugs fixed: custom headline placeholders, font-load race condition
+
+## Review / Testimonial Card Generator
+- Review text with auto-scaling font size
+- Clickable 1-5 star rating
+- Reviewer name and source (App Store, Google Play, Social Media, Direct Feedback)
+- 4 card styles: Navy, White, Gradient, Orange Accent
+- Toggles: stars, logo, quotation marks
+- 5 sample reviews to click and populate
+- Bug fixed: long review text overflow auto-shrinks to fit
+
+## Press Kit
+- App overview with stats (90+ Cities, 1M+ Records, 100% Official Data)
+- Key features bulleted list
+- Logos on light/dark backgrounds with downloads
+- Contact section
+- Copy-paste boilerplate paragraph with "Copy to Clipboard" button
+- "Download Full Press Kit" placeholder button
+- No bugs found in audit
+
+## Store Listing Helper
+- Two tabs: Apple App Store and Google Play Store
+- Apple fields: App Name (30), Subtitle (30), Keywords (100), Promotional Text (170), Description (4000), What\u2019s New (4000)
+- Google fields: App Name (30), Short Description (80), Full Description (4000), Developer Name
+- Live character counters with orange (90%) and red (over limit) warnings
+- Individual Copy buttons + Copy All per tab
+- 38 keyword suggestion chips (toggle on/off, green highlight when added)
+- Keyword sidebar hides when Google Play tab is active
+- 5 full description templates: Fear-Driven, Feature-Focused, Storytelling, Short & Punchy, Trust & Transparency
+- "Use This" button pastes into active description field, "Copy" copies to clipboard
+- All descriptions updated to 90+ cities
+- Bug fixed: keyword chip deselect now works (toggle behavior)
+- Bug fixed: dark mode overriding chip/tab active states
+
+## Link in Bio Page
+- Mobile-first Linktree-style page for Instagram/TikTok bio
+- Logo, app name, tagline, one-liner
+- 6 link buttons: App Store, Google Play, Website, Instagram, TikTok, Contact
+- Staggered fade-in animations
+- Light gradient background
+
+## Legal Reference Page
+- Comprehensive legal defense reference with real case law and statutes
+- 10 sections: First Amendment, Public Records Laws, Section 230, Truth as Defense, Tortious Interference, Anti-SLAPP, Precedent, Best Practices, What To Do If Threatened
+- Real citations: Cox Broadcasting v. Cohn, Smith v. Daily Mail, Bartnicki v. Vopper, NYT v. Sullivan, Philadelphia Newspapers v. Hepps, Zeran v. AOL, and more
+- Sources & Further Reading with links to actual statutes
+- Disclaimer banner at top
+
+## Privacy Policy Page
+- Public-facing page for App Store/Play Store submission
+- Covers: data collected, how it\u2019s used, what\u2019s NOT collected, third-party services, storage/security, user rights, children\u2019s privacy
+- Emphasizes: no PII collected, no accounts, no tracking, no ads, no data sold
+- Self-service data deletion via "Delete My Data" button in app
+- Updated children\u2019s privacy to reference self-service deletion instead of email
+- All contact emails set to support@surebiteapp.com
+- "Back to SureBite" link at top
+
+## Terms of Service Page
+- Public-facing page for App Store/Play Store submission
+- 13 sections including Data Accuracy disclaimers, Limitation of Liability, Indemnification
+- Subscription model updated: free 3-day trial, then paid annual subscription
+- Liability cap updated: limited to what user paid in the last 12 months (removed $50 minimum)
+- Governing law: Texas
+- All contact emails set to support@surebiteapp.com
+- "Back to SureBite" link at top
+
+## Admin Dashboard Link
+- Added to toolkit nav dropdown and hub page
+- Links to Railway production admin dashboard
+- Opens in new tab with external link icon
+
+## Backend \u2014 Data Deletion Endpoint
+- Created \`DELETE /api/account/delete-data\` endpoint
+- Accepts \`{ token }\` (Expo push token)
+- Deletes: NotificationLogs \u2192 RestaurantFollows \u2192 CityRequests \u2192 DeviceToken
+- Returns summary of deleted counts
+- Idempotent (returns success even if no data exists)
+
+## Mobile App \u2014 Onboarding Screen
+- Default city count updated from 37 to 90
+- New slide added: "Your Privacy Matters" \u2014 lock icon, green accent, emphasizes zero personal data collection
+
+## Mobile App \u2014 Help Screen
+- New FAQ: "Does SureBite collect my personal information?" \u2014 emphasizes no PII, no accounts, no tracking
+- New FAQ: "How do I delete my data?" \u2014 explains Delete My Data button
+- New section: "Legal" \u2014 links to Privacy Policy and Terms of Service (open in browser)
+- New section: "Contact us" \u2014 support@surebiteapp.com (opens email app) and surebiteapp.com (opens browser)
+- New button: "Delete My Data" \u2014 red trash icon with explanation subtitle
+- Delete confirmation dialog: user-friendly language explaining what gets removed
+- Success dialog: shows count of removed items in plain language
+- No-data dialog: "You\u2019re All Clear" message
+- Error dialogs: friendly, non-technical language
+- City count in FAQ updated from "35+" to "90+"
+- Added imports: Linking, AsyncStorage, API_BASE_URL
+- Added legalRow style
+
+## Mobile App \u2014 Score Explainer Screen
+- Default city count updated from 37 to 90
+
+## Full Site Audit
+- Audited all 12 tools for JavaScript bugs
+- 8 bugs found and fixed across: Store Listing, Screenshot Builder, Social Templates, City Cards, Review Cards, Brand Kit
+- QR Generator, Banner Creator, Press Kit had no bugs
+
+## Tagline
+- Updated from "Know Before You Go" to "See Beyond the Menu" across all files`,
+          createdAt: '2026-03-17T23:00:00.000Z'
+        },
+        {
+          id: 'seed-013',
+          date: '2026-03-18',
+          title: 'Website Live + GitHub Pages + Toolkit Expansion',
+          categories: ["Infrastructure", "Toolkit", "Business", "New Feature"],
+          summary: 'Published surebiteapp.com to GitHub Pages with custom domain DNS, built 10+ additional toolkit pages (content calendar, competitor board, revenue calculator, release notes, city planner, incident log, FAQ builder, canned responses, legal reference), launch checklist with 9 sections.',
+          details: `## Landing Page (surebiteapp.com) \u2014 NOW LIVE
+- Built complete single-page responsive landing page (index.html)
+- Tagline: "Be Sure Before You Bite." with "Sure" and "Bite." in orange accent
+- Hero section with large zoomed-in phone screenshot (Austin, TX search results) that extends behind white crescent curve
+- Badge: "Real Health Inspection Data"
+- Description emphasizing zero personal data collection
+- App Store + Play Store download buttons (showing "Coming soon" alerts until app is approved)
+- Stats bar: 90+ Cities, 1M+ Records, 100% Official Gov Data
+- "Why SureBite?" section with CDC statistics (48M Americans, 128K hospitalizations)
+- 7 feature cards: Search, Health Grades, Save Favorites, Grade Alerts, Inspection Details, Filter & Sort, Zero Personal Data (centered as standalone callout on last row)
+- 3 app screenshots: Austin search results, Subway restaurant detail, Subway inspection notes
+- Grade explainer (A/B/C/F pills)
+- Cities tag cloud (26+ city names)
+- Bottom CTA with download buttons
+- Footer with Privacy Policy, Terms of Service, Contact links
+- Top-left nav logo updated to surebite-header-navy-logo.png
+- Dark mode removed from landing page (light mode only for public-facing site)
+- Mobile responsive layout fixed: stacking, font scaling, button wrapping, screenshot grid
+- Open Graph meta tags for social sharing
+- Published to GitHub Pages at https://surebiteapp.com \u2014 DNS configured, waiting on HTTPS certificate
+
+## Website Hosting Setup
+- Created public GitHub repo: 886jdz/SureBite-website
+- Pushed public-facing files only: index.html, privacy-policy.html, terms-of-service.html, links.html, logos, screenshots
+- Added CNAME file for custom domain (surebiteapp.com)
+- Configured GoDaddy DNS: 4 A records pointing to GitHub Pages IPs (185.199.108-111.153)
+- Existing GoDaddy CNAME (www \u2192 surebiteapp.com) left as-is \u2014 works with A records
+- GitHub Pages enabled: deploy from main branch, root folder
+- DNS check successful \u2014 HTTPS certificate provisioning in progress
+- Toolkit files (internal tools) intentionally NOT pushed to public repo
+
+## SureBite Toolkit \u2014 Renamed & Expanded
+- Renamed from "SureBite Marketing Toolkit" to "SureBite Toolkit"
+- Updated hub page subtitle: "Everything you need to market, manage, and grow SureBite"
+- Desktop shortcut renamed to "SureBite Toolkit"
+- Hub page reorganized into 6 categories with 22 total tools
+
+## 9 New Toolkit Tools Built
+
+## Operations
+- **Launch Checklist** (launch-checklist.html) \u2014 Interactive checklist with 8 sections (iOS, Android, RevenueCat, Mobile Code, Backend, Website, Marketing, Post-Launch). Expandable sub-steps with individual checkboxes under parent items. Detailed step-by-step instructions for every major task. Progress bar, per-section counts, collapsible sections, localStorage persistence, reset button. Checkbox visibility fixed for light mode (border color #94A3B8). Website section updated with detailed GitHub Pages + GoDaddy DNS steps, email setup, and post-approval tasks.
+- **City Expansion Planner** (city-planner.html) \u2014 Table with city/state, data source type/status, population, priority, notes, status. Add/delete cities, sort by column, filter by status/priority, search, export CSV.
+- **Incident Log** (incident-log.html) \u2014 Log incidents with severity (Critical/Major/Minor/Info), category, description, impact, resolution, status, duration. Card list with expand/collapse, filters, search, timeline view, summary stats, CSV export.
+
+## Content & Growth
+- **Revenue Calculator** (revenue-calculator.html) \u2014 Input subscribers, price ($20/yr), growth rate, churn rate, commission. Shows monthly/annual revenue, net revenue, 12/24-month subscriber projections. Canvas bar chart, 12-month projection table, milestone markers ($1K/$5K/$10K/mo), quick scenario buttons.
+- **Competitor Research Board** (competitor-board.html) \u2014 Add/edit competitor cards with name, category, platform, pricing, star rating, reviews, coverage, features, strengths, weaknesses, SureBite advantage. Pre-populated with Yelp, Google Maps, Hazel Analytics, iwaspoisoned.com. Grid view + side-by-side comparison view.
+- **Release Notes Writer** (release-notes.html) \u2014 Create release entries with version, date, platform, categorized changes (New Feature/Improvement/Bug Fix/New City/Other). Live preview in App Store and Play Store formats with character counters. Templates, release history, export all.
+- **Content Calendar** (content-calendar.html) \u2014 Monthly calendar grid with day navigation, click-to-add content items with platform/type/status. Color-coded platform badges on calendar days. List view toggle, filters, upcoming 7-day sidebar, quick-add templates (City Launch, App Update, Health Tip Tuesday, Testimonial Thursday), monthly summary.
+
+## Support
+- **FAQ Builder** (faq-builder.html) \u2014 Add/edit/reorder FAQ entries with categories. Pre-populated with 8 existing SureBite FAQs. Live preview in 3 formats (App accordion, Website HTML, Plain Text). Copy buttons, export JSON, filter by category, search.
+- **Canned Response Templates** (canned-responses.html) \u2014 13 pre-written support email templates across 6 categories: Data Accuracy (3), Restaurant Owner Complaints (2), Subscription & Billing (3), Privacy (2), Feature Requests (2), General (1). Category tabs, search, copy/edit/reset per template, add custom templates.
+
+## Navigation Updated
+- Dropdown reorganized into 6 categorized sections with category headers: Marketing, Content & Growth, Operations, Support, Brand & Legal, External
+- Compact styling with smaller text, scrollable menu for long lists
+- All 22 tools accessible from any page
+
+## Dark Mode Fixes
+- Fixed 3 files using \`body.dark-mode\` instead of \`[data-theme="dark"]\`: launch-checklist.html, content-calendar.html, incident-log.html
+- Added dual selector (\`body.dark-mode\`, \`[data-theme="dark"]\`) to all dark mode CSS rules in those files
+- Launch checklist dark mode updated to use app\u2019s C_DARK palette (#0D1B2E, #132240, #1A3060)
+- Launch checklist checkbox borders fixed for visibility in both themes
+
+## Privacy Policy Page
+- Logo updated to surebite-header-navy-logo.png, sized to 40px height
+- "Back to SureBite" link at top
+- Removed email-based data deletion option \u2014 self-service "Delete My Data" button is the sole method
+- Updated children\u2019s privacy section to reference self-service deletion instead of email
+- All contact emails set to support@surebiteapp.com
+
+## Terms of Service Page
+- Logo updated to surebite-header-navy-logo.png, sized to 40px height
+- "Back to SureBite" link at top
+- Subscription model updated: free 3-day trial, then $20/year annual subscription
+- Liability cap simplified: limited to amount paid in last 12 months (removed $50 minimum)
+- All contact emails set to support@surebiteapp.com
+
+## Backend \u2014 Data Deletion Endpoint
+- Created \`DELETE /api/account/delete-data\` at \`src/app/api/account/delete-data/route.ts\`
+- Accepts \`{ token }\` (Expo push token)
+- Deletes in order: NotificationLogs \u2192 RestaurantFollows \u2192 CityRequests \u2192 DeviceToken
+- Returns summary of deleted counts
+- Idempotent \u2014 returns success even if no data exists
+- Required for Apple App Store compliance (section 5.1.1)
+
+## Mobile App \u2014 Onboarding Screen
+- Default city count updated from 37 \u2192 90
+- Tagline updated from "Know Before You Go" \u2192 "Be Sure Before You Bite"
+- New slide: "Your Privacy Matters" \u2014 lock icon, green accent
+- Privacy slide text: "Most apps collect your personal data. SureBite doesn\u2019t. No name. No email. No phone number. No account. No ads. No trackers. Nothing sold to third parties. We believe you should be able to check a restaurant\u2019s health grade without giving up your privacy. Your favorites stay on your device \u2014 we can\u2019t see them, and neither can anyone else."
+- Back button added to all slides (top-left, same style as Skip on top-right)
+- Now 6 slides total (was 5)
+
+## Mobile App \u2014 Help Screen
+- New FAQ: "Does SureBite collect my personal information?" \u2014 emphasizes zero PII, no accounts, no tracking, no ads
+- New FAQ: "How do I delete my data?" \u2014 explains Delete My Data button
+- New section: "Legal" \u2014 links to Privacy Policy and Terms of Service (open in browser)
+- New button: "Delete My Data" \u2014 red trash icon with description subtitle
+- Confirmation dialog: user-friendly language listing what gets removed
+- Success dialog: shows count of removed items (e.g., "We removed 3 followed restaurants and 5 notifications")
+- No-data dialog: "You\u2019re All Clear \u2014 You don\u2019t have any data stored with SureBite."
+- Error/no-connection dialogs with friendly language
+- New section: "Contact us" \u2014 support@surebiteapp.com (opens email) + surebiteapp.com (opens browser)
+- New beta-only button: "Hide Trial Banner" \u2014 sets first_launch_date to now, giving 999 days left which hides the trial banner for clean screenshots
+- New beta-only button: "Show Onboarding" \u2014 clears onboarding_v1_done key, restart app to see onboarding
+- City count in FAQ updated from "35+" \u2192 "90+"
+- Added imports: Linking, AsyncStorage, API_BASE_URL
+- Added legalRow style
+
+## Mobile App \u2014 Score Explainer Screen
+- Default city count updated from 37 \u2192 90
+
+## Phone Mockup Tool Updates
+- Top inset unchecked by default
+- Default device set to Galaxy S23 Ultra
+
+## Store Listing Helper Updates
+- 12 new keyword suggestion chips added (food inspection, restaurant safety, health department, food poisoning, restaurant reviews, where to eat, food hygiene rating, restaurant finder, food safety app, dining guide, travel food, family dining \u2014 38 total)
+- Keyword chip toggle behavior fixed \u2014 clicking a selected chip now removes it from the keywords field
+- Keyword suggestions sidebar hides when Google Play tab is active
+- 5 full description templates added: Fear-Driven/Urgency, Feature-Focused/Clean, Storytelling/Emotional, Short & Punchy (Play Store optimized), Trust & Transparency
+- "Use This" button pastes into active description field, "Copy" copies to clipboard
+- All descriptions updated to 90+ cities
+
+## City Count Updated Everywhere
+- Backend coverage areas: 96 cities actual count
+- All references updated from "37+" to "90+" across: landing page, store listing, screenshot builder, links page, press kit, onboarding screen, help screen FAQ, score explainer screen
+
+## Legal Reference Page
+- Added to toolkit and navigation
+- 10 sections with real case law and statutes
+
+## Admin Dashboard Link
+- Added to toolkit nav and hub page
+- Opens Railway production admin dashboard in new tab
+
+## Decisions Made
+- Landing page is light mode only (no dark mode toggle)
+- Public website repo is fine to keep public \u2014 only HTML/CSS, no secrets
+- Keep personal email on developer accounts (GitHub, Railway, etc.), use support@surebiteapp.com only for public-facing
+- Tagline: "Be Sure Before You Bite." \u2014 "Sure" and "Bite." in orange
+- 3 screenshots on landing page (not 4) \u2014 Austin search, restaurant detail, inspection notes
+- Zero Personal Data feature card centered as standalone on last row
+- Website published before app launch \u2014 needed for App Store/Play Store Privacy Policy URL
+- Data deletion is self-service only via in-app button \u2014 no email-based deletion process needed
+- Liability cap = amount paid in last 12 months (no $50 minimum)
+- Subscription: free 3-day trial \u2192 $20/year`,
+          createdAt: '2026-03-18T23:00:00.000Z'
+        },
+        {
+          id: 'seed-014',
+          date: '2026-03-23',
+          title: 'Florida Violations + Data Accuracy Audit + Cache TTL + Infrastructure Diagram',
+          categories: ["Backend", "Data Quality", "Bug Fix", "Infrastructure", "Toolkit"],
+          summary: 'Added violation descriptions to Florida (22 counties) + 7 more providers, fixed Alameda County compliance-items issue, added 30-min cache TTL, built interactive infrastructure diagram for toolkit.',
+          details: `## Backend \u2014 12 commits
+
+## Multi-Provider Jurisdiction Matching (Major Architecture Fix)
+Discovered and resolved a fundamental issue where searches spanning multiple provider jurisdictions matched ALL restaurants against the wrong provider\u2019s data.
+
+**The problem:** ZIP 78613 (Cedar Park/Williamson County) pulls restaurants in a wide radius including Austin. All restaurants were matched against Williamson County data \u2014 so Austin restaurants like Honest Mary\u2019s showed a B (Williamson County) instead of A/92 (Austin Public Health).
+
+**The fix** (evolved through 4 commits):
+- Per-restaurant address city extraction \u2014 parses city from each restaurant\u2019s OSM address
+- Per-restaurant provider detection \u2014 \`detectProviderByCoords()\` (instant bbox check) determines correct provider
+- Multi-provider data loading \u2014 secondary providers\u2019 inspection data loaded from jurisdiction cache on demand
+- Each restaurant now matched against its own provider\u2019s data, not the search center\u2019s
+
+**Impact:** Any search near a provider boundary now shows correct grades from the correct jurisdiction.
+
+## Grade Flickering Fix (Search \u2192 Detail)
+Resolved score flickering where tapping a restaurant showed one grade then changed to another.
+
+**Root cause:** Two different matching functions \u2014 \`bestMatchFast\` (search) vs \`bestMatchInspection\` (detail) \u2014 produced different results for chains.
+
+**The fix:** Mobile app now passes \`matchedInspectionName\` to the detail endpoint, which looks up that exact record first instead of re-matching. Guarantees same grade on both screens.
+
+## Inspection Notes/Violations \u2014 Massive Expansion
+
+**Florida DBPR (22 counties):**
+- Discovered 58 violation columns in the CSV that were completely ignored
+- Built \`FL_VIOLATION_DESCRIPTIONS\` mapping all 58 codes to human-readable descriptions
+- Built \`buildFloridaNotes()\` function that outputs: violation descriptions + count summary + disposition
+- Later reworded all 55 descriptions from compliance language ("Hands washed and clean") to issue language ("Handwashing or hygiene issue") after audit revealed users confused violations with compliments
+
+**7 Additional Providers:**
+- Sacramento County, CA \u2014 Violation_Description field from ArcGIS
+- Alameda County, CA \u2014 Added then removed (see Alameda fix below)
+- Wake County, NC \u2014 DESCRIPTION field from inspection layer
+- Minneapolis, MN \u2014 FoodCodeText + InspectorComments
+- Detroit, MI \u2014 Priority/Foundation/Core violation counts
+- NY State \u2014 Full violation text + inspection comments (was counts only)
+- Boulder County, CO \u2014 violationstatus appended to violation text
+
+**ArcGIS fetcher upgrades:**
+- Added violations field support to ArcGIS provider type
+- Added \`additionalNotesFields\` for ArcGIS (same pattern as Socrata)
+- Added \`violationCountFields\` for count-based providers (Detroit)
+- Violation aggregation across multiple rows per facility
+
+**Notes coverage:** 4 providers \u2192 15 providers + 22 Florida counties = 37 provider instances with violation data.
+
+## Alameda County Fix (Oakland/Berkeley)
+- **Stale grades:** Was only fetching Service 111 (routine inspections). Restaurants that passed reinspection (Service 131) still showed the old Yellow/C grade. Now includes both routine AND reinspection results.
+- **Misleading notes:** Violation_Description in Alameda\u2019s dataset contains compliance checklist items ("Proper cooling methods", "Food in good condition"), NOT violations. Removed the mapping to prevent confusing users \u2014 Tay Ho Restaurant was showing C/72 with all-positive notes.
+- **Result:** Tay Ho now shows A/95 (correct reinspection grade) with no misleading notes.
+
+## violationsAvailable Flag
+Added a \`violationsAvailable\` boolean to the search response so the mobile app can distinguish between:
+- "Provider publishes violations but this restaurant was clean" \u2192 "No violations found during this inspection."
+- "Provider doesn\u2019t publish violations" \u2192 "Inspection details not published for this area. Tap to learn why."
+
+## Jurisdiction Cache TTL (Infrastructure Fix)
+Added 30-minute TTL to the in-memory jurisdiction cache.
+
+**The problem:** In-memory cache loaded at startup and never expired. Cron refreshes wrote to Postgres, but running replicas served stale data until the next Railway deploy. This caused inconsistencies where the search endpoint (fresh) and detail endpoint (stale replica) returned different grades/notes.
+
+**The fix:** Each in-memory entry now tracks \`_loadedAt\`. After 30 minutes, the next read re-fetches from Postgres, picking up cron updates. All replicas serve fresh data within 30 minutes of any refresh \u2014 no redeploy needed.
+
+## Build Fix
+Fixed TypeScript compilation error \u2014 missing \`violationsAvailable\` property in the timeout fallback return object. This had broken the Railway deploy, causing several cities to return 0 results.
+
+## Mobile App \u2014 19 commits
+
+## "No Inspection Details" UX Overhaul
+- Replaced "No violations recorded" with tappable "Inspection details not published for this area. Tap to learn why."
+- Popup explains limitation + mentions active health department partnership efforts
+- Shortened popup from 4 sentences to 3 concise sentences
+- Entire line tappable in accent color
+- "View Full Inspection Report" button hidden when no violations exist
+- Added FAQ entry for missing inspection details
+- New: Distinguishes clean inspections ("No violations found during this inspection.") from missing data ("Inspection details not published for this area.")
+
+## Auto-Load Last Search on Startup
+- Caches last search (city dropdown, text search, or Near Me) to AsyncStorage
+- On launch, auto-loads cached search \u2014 user sees restaurants instantly
+- X button on city chip clears cache
+- Delete My Data also clears cached search
+
+## Search UX
+- Dynamic placeholder: "ZIP Code" when no location, "ZIP Code or Restaurant" when location active
+- Improved hint message when user types without location context
+
+## Delete My Data \u2014 Full Cleanup
+- Now clears ALL cached data: push token, favorites, follows, last search, last area, location cache, recent searches
+
+## Detail Screen Layout
+- Address + distance on first row, Website + Call on second row (cleaner layout)
+
+## FlatList Performance
+- Added \`initialNumToRender={15}\`, \`maxToRenderPerBatch={10}\`, \`windowSize={5}\`, \`removeClippedSubviews\` to fix VirtualizedList slow update warning on large result sets (1000+ restaurants)
+
+## Grade Flickering Iterations
+Went through several approaches to fix grade flickering between search and detail screens:
+- Suppress snapshot grade (blank until detail loads) \u2014 too slow
+- Show snapshot, silently overwrite \u2014 still visible flash
+- Pin matched inspection name \u2014 detail endpoint uses same record as search
+- Final approach: combination of pinned inspection name + multi-provider matching on the backend ensures both screens use the same data source and same record
+
+## Data Accuracy Audit
+Ran audit across 12 cities checking grades, notes quality, and consistency:
+- Minneapolis: Good \u2014 real violation descriptions with inspector comments
+- Chicago: Good \u2014 detailed violation descriptions
+- Florida: Fixed \u2014 reworded compliance language to issue language
+- Alameda County: Fixed \u2014 removed misleading compliance items, added reinspections
+- Sacramento: Working \u2014 45 of 187 graded restaurants have violation notes (rest are clean)
+- Several cities (Raleigh, Las Vegas, Seattle, Austin, Detroit, Boulder): Were showing 0 results due to failed deploy \u2014 fixed with build error resolution
+
+## Railway Crons
+- Identified missing cron services for wcchd-refresh (Williamson County) and sc-refresh (South Carolina)
+- User created both on Railway
+- Multiple manual refreshes run for: Florida (34 counties), Alameda County, Sacramento County
+
+**Status:** Major data accuracy improvements deployed. Multi-provider matching, grade consistency, violation notes expansion, and cache TTL all landed. Beta testing continues with significantly higher data quality across all supported cities.`,
+          createdAt: '2026-03-24T04:00:00.000Z'
+        },
+        {
+          id: 'seed-015',
+          date: '2026-03-24',
+          title: 'Violation Notes Audit + Alameda Fix + Infrastructure Diagram + Dev Log',
+          categories: ['Backend', 'Data Quality', 'Toolkit', 'Infrastructure', 'Bug Fix'],
+          summary: 'Completed provider-wide violation data audit, fixed Alameda County compliance-items issue and stale reinspection grades, reworded Florida violation descriptions, added 30-min cache TTL to jurisdiction cache, built interactive infrastructure diagram and dev log for toolkit.',
+          details: `## Provider Violation Data Audit
+- Ran comprehensive audit across ALL providers checking for unmapped violation/notes fields
+- Found 8 providers with available violation data that was not being captured
+- Total unmapped fields identified: 52 fields across 8 providers
+
+## 7 New Providers with Violation Data
+- **Sacramento County, CA:** \`Violation_Description\` from ArcGIS
+- **Alameda County, CA:** Added then removed (see fix below)
+- **Wake County, NC:** \`DESCRIPTION\` field from inspection layer
+- **Minneapolis, MN:** \`FoodCodeText\` + \`InspectorComments\`
+- **Detroit, MI:** Priority/Foundation/Core violation counts
+- **NY State:** Full violation text + inspection comments (was counts only)
+- **Boulder County, CO:** \`violationstatus\` appended to violation text
+- ArcGIS fetcher upgraded: violations field support, additionalNotesFields, violationCountFields
+
+## Alameda County Fix (Oakland/Berkeley)
+- **Stale grades:** Was only fetching Service 111 (routine inspections), missing Service 131 (reinspections) with corrected Green grades
+- **Misleading notes:** \`Violation_Description\` contained compliance checklist items ("Proper cooling methods", "Food in good condition") \u2014 NOT violations. Users saw positive statements for restaurants with C/F grades
+- Removed violations mapping for Alameda \u2014 compliance items should not display as violations
+- **Result:** Tay Ho Restaurant fixed from C/72 to A/95
+
+## Florida Violation Descriptions Reworded
+- Original DBPR violation codes described standards ("Hands washed and clean, good hygienic practices")
+- Users confused these as compliments, not violations
+- Reworded all 55 descriptions to clearly read as issues ("Handwashing or hygiene issue")
+- Covers all 22 Florida counties
+
+## violationsAvailable Flag
+- Backend now sends \`violationsAvailable\` boolean in search response
+- App distinguishes between:
+  - Clean inspection: "No violations found during this inspection."
+  - Provider doesn't publish: "Inspection details not published for this area. Tap to learn why."
+
+## Jurisdiction Cache TTL (Infrastructure Fix)
+- In-memory cache previously never expired \u2014 cron refreshes didn't propagate to running replicas
+- Added 30-minute TTL: each entry tracks \`_loadedAt\`, re-reads from Postgres after expiry
+- All replicas now serve fresh data within 30 minutes of any refresh, no redeploy needed
+- Fixed two TypeScript build errors from missing \`_loadedAt\` on timeout fallback and disableJurisdictionCache
+
+## Interactive Infrastructure Diagram (New Toolkit Page)
+- 8 color-coded layers: Client Apps \u2192 API Gateway \u2192 Routes \u2192 Core Libraries \u2192 Providers \u2192 Storage \u2192 Cron Jobs \u2192 External Services
+- 30+ clickable component nodes with slide-in detail panels
+- "How It All Works" plain-English summary for newcomers
+- 12-step request lifecycle walkthrough ("What happens when you search 78613?")
+- Quick reference stats bar
+- Glossary of 15 key technical terms
+- Export/Print button that expands all sections and injects component details inline
+- Search bar to filter across all components
+- Dark mode support
+
+## Dev Log (New Toolkit Page)
+- Full CRUD daily update tracker with localStorage persistence
+- Pre-populated with all 8 daily updates (March 15\u201324)
+- Imported content from desktop .docx and .pdf files
+- Category tags, search/filter, export as markdown
+- Restore button to reload seed data
+- Cleaned up all PDF-extracted text (broken lines, formatting artifacts)
+- Removed Edit/Delete buttons \u2014 entries are permanent records
+
+## Toolkit Updates
+- Infrastructure diagram added to nav dropdown + home page
+- Dev Log added to nav dropdown + home page
+- Both pages include dark mode and shared toolkit navigation
+
+**Status:** Violation notes coverage expanded from 8 to 37 provider instances. Data accuracy significantly improved with Alameda reinspection fix and Florida description rewording. Toolkit now includes comprehensive infrastructure documentation and full project history.`,
+          createdAt: '2026-03-25T04:00:00.000Z'
+        },
+        {
+          id: 'seed-016',
+          date: '2026-03-25',
+          title: 'Hotels Feature Launch + Cincinnati + Navigation Restructure + Outreach Tracker Upgrade',
+          categories: ['Backend', 'Mobile App', 'New Feature', 'Infrastructure', 'Toolkit', 'Data Quality'],
+          summary: 'Added full hotel/lodging support (Florida, 34 counties), new Cincinnati provider, restructured app navigation with Home dashboard + separate Restaurants/Hotels tabs, enhanced outreach tracker with email drafting and priority scoring.',
+          details: `## Hotel/Lodging Data Research \u2014 Multi-State Scan
+
+Scanned every state and major city\u2019s open data portals, ArcGIS endpoints, Socrata catalogs, and health department websites looking for publicly accessible hotel/lodging inspection data with numeric scores or letter grades.
+
+### States/Cities Found Viable (4 states, 60+ cities)
+
+**Florida (34 counties)** \u2014 BEST SOURCE
+- Florida DBPR publishes lodging inspections in the same format as food inspections
+- 7 district CSV files at \`myfloridalicense.com\` (\`{1-7}ldinspi.csv\`)
+- 19,926 lodging inspection records across all districts
+- Inspection types include "Routine - Lodging" with HIGH/INTERMED/BASIC violation counts
+- 44 lodging-specific violation codes (fire safety, sanitation, structural, guest services, pool/spa)
+- Score formula: \`100 - HIGH*3 - INTERMED*2 - BASIC*1\` (same as food)
+- Covers 34 counties: Miami-Dade, Broward, Palm Beach, Hillsborough (Tampa), Orange (Orlando), Duval (Jacksonville), Pinellas (St. Pete), Lee (Fort Myers), Polk, Brevard, Pasco, Volusia (Daytona), Seminole, Sarasota, Manatee, Osceola (Kissimmee), Collier (Naples), Alachua (Gainesville), Escambia (Pensacola), St. Lucie, Okaloosa (Destin), Leon (Tallahassee), St. Johns (St. Augustine), Marion (Ocala), Indian River (Vero Beach), Clay, Nassau, Putnam, Flagler, Hernando, Citrus, Highlands, Sumter, Charlotte
+
+**New York State (5 cities)**
+- NY DOH Socrata dataset \`jcb4-hcyb\` ("Hotel/Motel Inspections")
+- ~25,000 hotel/motel records across all NY counties (excludes NYC boroughs which have separate system)
+- Fields: critical/noncritical violation counts, inspection comments, sleeping rooms count, building type, pool status
+- Synthetic score: \`100 - critical*5 - critNotCorrected*3 - noncritical*1\`
+- Coverage areas: New York City, Albany, Buffalo, Rochester, Syracuse
+
+**Georgia (Statewide)**
+- Tyler Technologies \`ga.healthinspections.us\` API has "Tourist Accommodation" permit type
+- Direct 0-100 numeric scores from the Tyler Tech API
+- Paginated API: 5 facilities per page, up to 25k facilities
+- Covers all Georgia counties: Atlanta, Savannah, and all tourist accommodation facilities statewide
+- This is notable because Tyler Tech data is usually portal-only with a 225-record cap \u2014 GA\u2019s API is an exception
+
+**Arlington, TX (1 city)**
+- City of Arlington ArcGIS MapServer layer 9 (Hotel Sanitation Inspections)
+- Score = \`(RoomsPassed / RoomsInspected) * 100\`
+- ~216 records, filtered to "Hotel Sanitation Inspection" type
+
+### States/Cities Scanned But NOT Viable for Hotels
+- **Most states** \u2014 health departments either don\u2019t inspect hotels (separate agency), don\u2019t publish lodging data publicly, or only have it behind Tyler Tech portals with 225-record caps
+- **California** \u2014 hotel inspections handled by counties individually; no statewide dataset; most CA county health depts only inspect food, not lodging
+- **Texas (other than Arlington)** \u2014 DSHS doesn\u2019t publish hotel inspections; city-level only, and Arlington was the only city found with an open ArcGIS layer
+- **Nevada (Las Vegas/Clark County)** \u2014 SNHD inspects hotels but data is in the same LIVES ZIP as restaurants; lodging-specific filtering not yet implemented
+- **Tennessee, Virginia, North Carolina, Colorado, Ohio** \u2014 all on Tyler Tech MyHealthDepartment with 225-record hard cap, no API
+- **Most other states** \u2014 hotel inspections not published as open data
+
+## Hotel/Lodging Support \u2014 Full Stack Implementation
+
+### Backend (Phase 1)
+- **Florida Lodging Refresh endpoint** (\`POST /api/admin/florida-lodging-refresh\`)
+  - Parses 7 district lodging CSV files (\`{1-7}ldinspi.csv\`)
+  - 44 lodging-specific violation code descriptions
+  - Same score formula as food (100 - HIGH*3 - INTERMED*2 - BASIC*1)
+  - Disposition caps: "Emergency order" \u2192 max 65; "Warning Issued" \u2192 max 85
+  - Provider IDs with \`-lodging\` suffix (e.g., \`fl-miami-dade-lodging\`)
+- **NY State Lodging provider** (\`ny-state-lodging.ts\`) \u2014 fetches Socrata \`jcb4-hcyb\`, synthesizes score, deduplicates by \`nys_health_operation_id\`
+- **Georgia Lodging Refresh endpoint** (\`POST /api/admin/georgia-lodging-refresh\`) \u2014 paginates Tyler Tech API, filters "Tourist Accommodation" permits, 10 pages concurrent
+- **Arlington TX Lodging** \u2014 ArcGIS provider with computed score from rooms-passed ratio
+- **34 Florida + 1 Georgia + 1 NY State + 1 Arlington = 37 lodging provider entries** in registry
+- **3 new provider types** in TypeScript: \`FloridaLodgingProvider\`, \`NyStateLodgingProvider\`, \`GeorgiaLodgingProvider\`
+- **Provider detection updated** \u2014 \`detectProviderByCoords\` and \`detectProvider\` accept category filter, food skips lodging and vice versa
+- **Search endpoints** accept \`?type=hotel\` parameter
+- **\`fetchHotelsFromOSM()\`** \u2014 Overpass queries for \`tourism=hotel|motel|hostel|guest_house\`
+- **Hotel Overpass results** cached with "hotel:" key prefix to avoid collisions
+- **8 lodging coverage areas** for top FL tourist markets: Miami, Fort Lauderdale, Orlando, Tampa, Jacksonville, Key West, Daytona Beach, St. Petersburg
+- **Total lodging coverage:** 60+ cities across 4 states
+
+### Mobile App (Phase 2)
+- **Hotels tab** added to bottom navigation (bed icon)
+- **\`HotelsScreen\`** wraps \`HomeScreen\` with \`mode="hotel"\`
+- **\`HomeScreen\`** accepts mode prop, adapts all UI text/icons for hotels
+- Cuisine chip hidden in hotel mode
+- Empty state: "Find safe places to stay" with bed icon
+- Placeholder: "ZIP Code or Hotel" when location active
+
+## Navigation Restructure
+
+### New Tab Order: Home | Restaurants | Hotels | Favorites | Help
+- **Home** \u2014 New \`DashboardScreen\` as the front door
+- **Restaurants** \u2014 Existing search experience moved to its own tab (\`RestaurantsScreen\` wrapper)
+- **Hotels** \u2014 Hotel search tab
+- **Favorites** \u2014 Unchanged
+- **Help** \u2014 Unchanged
+
+### Home Dashboard Design
+- Headline: "Be sure before you..."
+- **Bite** card \u2014 "Health grades and inspection details for restaurants near you"
+- **Stay** card \u2014 "Health grades and inspection details for hotels near you"
+- CDC stat: "48M Americans get foodborne illness each year"
+- NPMA stat: "1 in 7 travelers encountered bed bugs in hotels last year"
+- **How it works** section: Search \u2192 See the grade \u2192 Read details (3 icon cards)
+- Stats row: 90+ Cities, 1M+ Records, 100% Official Data
+- Attribution footer
+
+## Cincinnati, OH \u2014 New Provider
+- Socrata dataset \`rg6p-b3h3\` (Cincinnati Food Safety Program)
+- 5,716 inspection records, updated daily
+- Violation-per-row grouped by \`license_no\`
+- Pass-fail scoring: No Violations \u2192 A/95, Minor \u2192 B/80, Not In Compliance \u2192 F/60
+- Violation descriptions + violation comments mapped to notes
+- Added to registry + coverage areas
+- Extended socrata.ts pass-fail handler with Cincinnati \`action_status\` values
+
+## Build Fix
+- Fixed TypeScript error: missing \`_loadedAt\` on \`disableJurisdictionCache\` function (broke Railway deploy)
+
+## Outreach Tracker Enhancements
+- **Email Draft Generator** \u2014 "Email" button on each contact, opens modal with all 15 templates auto-populated with contact data, Copy to Clipboard + Open in Mail
+- **Priority Scoring** \u2014 1-100 score based on metro population + violation data availability + outreach status, color-coded column
+- **Follow-Up Reminders** \u2014 Alert cards at top showing overdue contacts with "Draft Follow-Up" quick action
+- **Response Logging** \u2014 Interaction timeline per contact (Sent Initial, Received Response, Phone Call, Meeting) with dates and notes
+
+## Toolkit Updates
+- **Interactive Infrastructure Diagram** \u2014 Export/Print button added, expands all sections for PDF export
+- **Dev Log** \u2014 New toolkit page with all daily updates, Restore button, removed Edit/Delete buttons, cleaned up PDF formatting
+- Both added to nav dropdown + home page
+
+**Status:** Hotel/lodging feature fully implemented end-to-end (backend + mobile). App now supports both restaurants (90+ cities) and hotels (Florida, 34 counties). Navigation restructured with clean Home dashboard. Cincinnati added as new city. Outreach tracker significantly upgraded for health department partnership outreach.`,
+          createdAt: '2026-03-25T23:00:00.000Z'
+        },
+        {
+          id: 'seed-017',
+          date: '2026-03-25',
+          title: 'SureBite \u2192 SureVera Full Rebrand',
+          categories: ['Mobile App', 'Backend', 'Toolkit', 'Infrastructure', 'Business'],
+          summary: 'Complete rebrand from SureBite to SureVera across mobile app (11 source files + config), backend API (14 source files), all 33 toolkit pages, Arriotech website, and rebrand tracking checklist. New name, tagline, domain, email, deep link scheme.',
+          details: `## Why the Rebrand
+The app expanded from restaurants-only to restaurants + hotels. "SureBite" no longer represents the full product. "SureVera" (vera = truth/verify in Latin/Italian) better captures the broader mission \u2014 verifying safety across categories, not just food. New tagline: **"Be Sure. Verify."**
+
+## Tyler Technologies Platform Alliance
+- Created **4 email templates** in the Outreach Toolkit for Tyler Tech outreach:
+  1. Platform Alliance Application Email \u2014 initial outreach explaining SureVera and requesting MyHealthDepartment API access
+  2. Follow-Up Email (2 weeks) \u2014 polite check-in with offer to demo
+  3. Alternate Contact Email \u2014 fallback if Platform Alliance doesn\u2019t respond
+  4. Demo/Meeting Request \u2014 scheduling email with agenda items
+- Created **one-pager / strategy notes** section with 8 tactical tips (start with Alliance form, lead with their clients\u2019 benefit, frame as read-only, mention compliance, be patient, fallback ask)
+- Contact info compiled: Platform Alliance URL, phone numbers, address, Environmental Health product page
+- Context: Tyler owns MyHealthDepartment.com \u2014 used by 30+ health departments. One partnership unlocks hundreds of thousands of restaurant AND hotel inspection records across TN, VA, HI, CO, OR, 10+ TX cities, Orange/Riverside/Sonoma CA, LA, RI, GA
+
+## New Brand Identity
+| Old | New |
+|---|---|
+| SureBite | SureVera |
+| Be Sure Before You Bite | Be Sure. Verify. |
+| surebiteapp.com | surevera.app |
+| sureveraapp.com (redirect) | surevera.app |
+| support@surebiteapp.com | support@sureveraapp.com |
+| surebite:// (deep links) | surevera:// |
+| com.h886jdz.surebite | com.h886jdz.surevera |
+
+Railway URL (\`surebite-api-production-fb8f.up.railway.app\`) intentionally unchanged \u2014 internal, users never see it.
+
+## Phase 1: Mobile App Rebrand (Automated)
+
+### Config Files
+- \`app.json\`: name \u2192 "SureVera", scheme \u2192 "surevera", bundleIdentifier \u2192 "com.h886jdz.surevera", android package \u2192 "com.h886jdz.surevera"
+- \`src/config/api.ts\`: Railway URL kept as-is (internal)
+- Icon/splash paths NOT updated yet (waiting for new logo assets)
+
+### Screen Text Updates (11 files)
+- **RootNavigator.tsx** \u2014 Logo imports (\`surevera-header-white-logo.png\`, \`surevera-white-logo.png\`), deep link prefix (\`surevera://\`), disclaimer text ("not SureVera\u2019s opinion")
+- **DashboardScreen.tsx** \u2014 Headline: "Be sure before you..." \u2192 "Be Sure. Verify."
+- **HomeScreen.tsx** \u2014 Coverage text: "SureVera covers 40+ cities"
+- **HelpScreen.tsx** \u2014 15+ replacements: all FAQ text, privacy/terms URLs \u2192 surevera.app, email \u2192 support@sureveraapp.com, website \u2192 surevera.app
+- **OnboardingScreen.tsx** \u2014 Tagline \u2192 "Be Sure. Verify.", body text rewritten for restaurants + hotels, all "SureBite" \u2192 "SureVera"
+- **ScoreExplainerScreen.tsx** \u2014 3 replacements (displays, covers, not responsible)
+- **PaywallScreen.tsx** \u2014 Logo imports updated, tagline \u2192 "Be Sure. Verify."
+- **RestaurantDetailScreen.tsx** \u2014 Share text ("Checked with SureVera"), attribution, limitation text
+- **backend.ts** \u2014 JSDoc comment updated
+
+## Phase 2: Backend API Rebrand (Automated)
+
+### Functional Changes
+- **bellCountyParser.ts** \u2014 User-Agent: "SureVera data pipeline"
+- **stripe/create-checkout/route.ts** \u2014 CORS origin \u2192 \`https://surevera.app\`, success/cancel fallback URLs \u2192 \`surevera.app\`
+- **admin/login/page.tsx** + **dashboard/layout.tsx** \u2014 Logo src \u2192 \`/surevera-logo.png\`, alt \u2192 "SureVera"
+- **notify-city-launch/route.ts** \u2014 Push notification text: "SureVera now covers..." / "is now on SureVera!"
+
+### Comment Updates
+- \`nearbyRestaurants.ts\` \u2014 "SureVera-estimated scores"
+- \`dashboard/page.tsx\` \u2014 "SureVera admin dashboard", "where SureVera currently serves"
+- \`city-requests/route.ts\` \u2014 "SureVera to support a city"
+- \`audit-all/route.ts\` \u2014 "SUREVERA_SECRET"
+- 7 admin refresh routes reviewed \u2014 Railway URLs left as-is
+
+## Phase 3: Toolkit Rebrand (Automated \u2014 33 files)
+
+### Marketing Tools (8 files)
+- **store-listing.html** \u2014 All 30+ "SureBite" refs in 5 description templates, input defaults, footer
+- **banner-creator.html** \u2014 Headline default, download filenames (\`surevera-banner-\`)
+- **screenshot-builder.html** \u2014 Headline default
+- **social-templates.html** \u2014 Headline, download filenames (\`surevera-\`)
+- **city-cards.html** \u2014 Canvas tagline text, download filenames
+- **review-cards.html** \u2014 Canvas logo src, download filename
+- **qr-generator.html** \u2014 Default URL, preset buttons, canvas title, download filenames (PNG + SVG)
+- **mockup-tool.html** \u2014 Title, footer
+
+### Core Pages (8 files)
+- **index.html** \u2014 Title, meta tags, nav logo, hero tagline, all body text, contact email
+- **toolkit.html** \u2014 Logo, heading, description, footer
+- **links.html** \u2014 Tagline, URLs, email
+- **press-kit.html** \u2014 Logo, tagline, downloads, contact
+- **brand-kit.html** \u2014 Logo previews, tagline, download links
+- **legal-reference.html** \u2014 40+ legal text replacements
+- **privacy-policy.html** \u2014 All brand refs + URLs + email (entity name "Arrio Technologies LLC" unchanged)
+- **terms-of-service.html** \u2014 All brand refs including uppercase "SUREVERA" in liability caps + URLs + email
+
+### Operations (8 files)
+- **outreach-toolkit.html** \u2014 All email templates, email signatures (\`arriotech.com | surevera.app\`)
+- **outreach-tracker.html** \u2014 Email templates, signatures, storage key, download filename
+- **canned-responses.html** \u2014 13 support email templates updated, storage key
+- **city-planner.html**, **content-calendar.html**, **release-notes.html**, **incident-log.html**, **competitor-board.html** \u2014 Storage keys, download filenames, logo, any brand text
+
+### Support (2 files)
+- **faq-builder.html** \u2014 FAQ answer text, storage key, download filename
+- **revenue-calculator.html** \u2014 Logo
+
+### Infrastructure (3 files)
+- **infrastructure.html** \u2014 20+ component descriptions, glossary definitions, folder paths (\`surevera-website/\`), GoDaddy/DNS refs, contact email. Railway URLs unchanged.
+- **dev-log.html** \u2014 Page chrome only (logo, storage key, download filename). Historical entries preserved as-is.
+- **launch-checklist.html** \u2014 Storage keys, bundle IDs, URLs, emails, deep link scheme, tool references, subscription group name
+
+### Scripts (2 files)
+- **toolkit-nav.js** \u2014 Comment header
+- **dark-mode.js** \u2014 Storage key (\`surevera-toolkit-dark-mode\`)
+
+## Arriotech Website (Automated)
+- **index.html** \u2014 Product card: "SureVera", link \u2192 \`surevera.app\`, icon src \u2192 \`surevera-icon.png\`
+
+## Rebrand Tracking Checklist (New Toolkit Page)
+- Created \`rebrand-checklist.html\` \u2014 interactive checklist with 14 sections matching all 7 phases
+- Progress bar, expandable sub-steps, localStorage persistence, dark mode support
+- Added to toolkit nav under Operations > "SureVera Rebrand"
+- Pre-checked all automated items on first load via AUTOMATED_DEFAULTS
+- All remaining manual tasks have detailed step-by-step instructions
+
+## What\u2019s Left (Manual Tasks)
+- New SureVera logo assets (5 files \u2014 header-navy, header-white, white, icon, splash)
+- \`app.json\` icon/splash paths (after logos arrive)
+- \`google-services.json\` / Firebase project update
+- Hotel-specific onboarding slide and FAQ entries
+- Website: new repo (SureVera-website), GoDaddy DNS, domain forwarding
+- Arriotech: logo image files
+- GitHub repo renames (SureVera-app, SureVera-api)
+- Native rebuild (\`expo prebuild --clean\` + EAS builds)
+- Home screen redesign
+- Full verification pass
+
+## Remaining "surebite" References (Intentional)
+- Railway URLs (\`surebite-api-production-fb8f.up.railway.app\`) \u2014 working infrastructure, not user-facing
+- Dev log historical entries \u2014 preserving history
+- Rebrand checklist instructional text \u2014 describes old \u2192 new changes
+- \`CNAME\` file \u2014 still serving surebiteapp.com until new website repo is live
+
+## Files Modified Count
+- Mobile app: 11 source files + app.json
+- Backend API: 14 source files
+- Toolkit: 33 HTML files + 2 JS files
+- Arriotech: 1 HTML file
+- New file: rebrand-checklist.html
+- Memory: MEMORY.md updated with rebrand status`,
+          createdAt: '2026-03-25T23:59:00.000Z'
+        }
+      ];
+    }
+
+    init();
+  </script>
+  <script src="dark-mode.js"></script>
+  <script src="toolkit-nav.js"></script>
+</body>
+</html>

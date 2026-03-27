@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SureVera Rebrand Checklist — SureVera</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy: #1B3A6B;
+      --dark-navy: #0D1B2E;
+      --orange: #E8612A;
+      --bg: #F4F5F7;
+      --card-bg: #FFFFFF;
+      --text: #1a1a1a;
+      --text-secondary: #6B7280;
+      --border: #E5E7EB;
+      --checked-text: #9CA3AF;
+      --progress-bg: #E5E7EB;
+      --section-hover: #F9FAFB;
+      --reset-bg: #FEE2E2;
+      --reset-text: #DC2626;
+      --footer-bg: #F9FAFB;
+      --footer-text: #9CA3AF;
+      --checkbox-border: #94A3B8;
+    }
+
+    body.dark-mode, [data-theme="dark"],
+    [data-theme="dark"] body,
+    [data-theme="dark"] {
+      --bg: #0D1B2E;
+      --card-bg: #132240;
+      --text: #FFFFFF;
+      --text-secondary: #8B9EC7;
+      --border: rgba(255,255,255,0.20);
+      --checked-text: #5A6E99;
+      --progress-bg: #1A3060;
+      --section-hover: #1A3060;
+      --reset-bg: #2D0A0A;
+      --reset-text: #F87171;
+      --footer-bg: #0A1422;
+      --footer-text: #5A6E99;
+      --checkbox-border: #8B9EC7;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    .toolbar {
+      background: linear-gradient(135deg, #0D1B2E 0%, #1B3A6B 100%);
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+    }
+
+    .progress-wrapper {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+
+    .progress-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+
+    .progress-label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .progress-pct {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--orange);
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: var(--progress-bg);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--orange), #F28C5E);
+      border-radius: 999px;
+      transition: width 0.4s ease;
+      width: 0%;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 1.5rem 1rem 3rem;
+    }
+
+    .intro-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .intro-card h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    .intro-card p {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+    .intro-card .detail-row {
+      display: flex;
+      gap: 0.5rem;
+      align-items: baseline;
+      margin-top: 0.35rem;
+    }
+    .intro-card .detail-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      min-width: 90px;
+    }
+    .intro-card .detail-value {
+      font-size: 0.8rem;
+      color: var(--text);
+    }
+    .intro-card code {
+      font-size: 0.78rem;
+      background: var(--section-hover);
+      padding: 0.1rem 0.35rem;
+      border-radius: 4px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      color: var(--orange);
+      border: 1px solid var(--border);
+    }
+
+    .section-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      margin-bottom: 1rem;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.25rem;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.15s;
+    }
+
+    .section-header:hover {
+      background: var(--section-hover);
+    }
+
+    .section-header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .section-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .section-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .section-count {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    .section-chevron {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      transition: transform 0.2s;
+      margin-left: 0.75rem;
+    }
+
+    .section-card.collapsed .section-chevron {
+      transform: rotate(-90deg);
+    }
+
+    .section-card.collapsed .section-items {
+      display: none;
+    }
+
+    .section-items {
+      border-top: 1px solid var(--border);
+      padding: 0.5rem 0;
+    }
+
+    .checklist-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.6rem 1.25rem;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+
+    .checklist-item:hover {
+      background: var(--section-hover);
+    }
+
+    .checklist-item input[type="checkbox"] {
+      display: none;
+    }
+
+    .custom-check {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--checkbox-border);
+      border-radius: 5px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1px;
+      transition: all 0.15s;
+      cursor: pointer;
+    }
+
+    .checklist-item.checked .custom-check {
+      background: var(--orange);
+      border-color: var(--orange);
+    }
+
+    .custom-check svg {
+      width: 12px;
+      height: 12px;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+
+    .checklist-item.checked .custom-check svg {
+      opacity: 1;
+    }
+
+    .item-text {
+      font-size: 0.875rem;
+      color: var(--text);
+      transition: all 0.2s;
+      line-height: 1.5;
+    }
+
+    .item-text code {
+      font-size: 0.8rem;
+      background: var(--section-hover);
+      padding: 0.1rem 0.35rem;
+      border-radius: 4px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      color: var(--orange);
+      border: 1px solid var(--border);
+    }
+
+    .checklist-item.checked .item-text {
+      text-decoration: line-through;
+      color: var(--checked-text);
+    }
+
+    .checklist-item.checked .item-text code {
+      opacity: 0.5;
+    }
+
+    .item-expand-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-secondary);
+      font-size: 0.7rem;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      margin-left: 0.5rem;
+      transition: all 0.15s;
+      font-family: inherit;
+      white-space: nowrap;
+    }
+    .item-expand-btn:hover { background: var(--section-hover); color: var(--text); }
+
+    .sub-steps {
+      margin-left: 2.75rem;
+      padding: 0.25rem 0 0.5rem;
+      display: none;
+    }
+    .sub-steps.open { display: block; }
+
+    .sub-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      padding: 0.35rem 0;
+      cursor: pointer;
+    }
+    .sub-step:hover { opacity: 0.85; }
+
+    .sub-check {
+      width: 16px;
+      height: 16px;
+      border: 1.5px solid var(--checkbox-border);
+      border-radius: 4px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 2px;
+      transition: all 0.15s;
+    }
+    .sub-step.checked .sub-check {
+      background: var(--orange);
+      border-color: var(--orange);
+    }
+    .sub-check svg {
+      width: 10px;
+      height: 10px;
+      opacity: 0;
+    }
+    .sub-step.checked .sub-check svg { opacity: 1; }
+
+    .sub-step-text {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+    .sub-step.checked .sub-step-text {
+      text-decoration: line-through;
+      color: var(--checked-text);
+    }
+
+    .sub-step-progress {
+      font-size: 0.65rem;
+      color: var(--text-secondary);
+      margin-left: auto;
+      white-space: nowrap;
+    }
+
+    .reset-wrapper {
+      text-align: center;
+      margin-top: 2rem;
+    }
+
+    .reset-btn {
+      background: var(--reset-bg);
+      color: var(--reset-text);
+      border: none;
+      padding: 0.6rem 1.5rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: opacity 0.15s;
+    }
+
+    .reset-btn:hover {
+      opacity: 0.85;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      font-size: 0.8rem;
+      color: var(--footer-text);
+      background: var(--footer-bg);
+      border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 600px) {
+      .toolbar { padding: 1rem; }
+      .progress-wrapper { padding: 0.75rem 1rem; }
+      .container { padding: 1rem 0.75rem 2rem; }
+      .section-header { padding: 0.85rem 1rem; }
+      .checklist-item { padding: 0.5rem 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="toolbar">
+    <img src="surevera-header-white-logo.png" alt="SureVera" style="height:32px">
+    <div style="width:1px;height:24px;background:rgba(255,255,255,0.2)"></div>
+    <span style="font-size:0.85rem;font-weight:500;color:rgba(255,255,255,0.6)">SureVera Rebrand</span>
+  </div>
+
+  <div class="progress-wrapper">
+    <div class="progress-header">
+      <span class="progress-label">Rebrand Progress &mdash; SureBite &rarr; SureVera</span>
+      <span class="progress-pct" id="progressPct">0%</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+  </div>
+
+  <div class="container" id="checklistContainer">
+    <!-- Intro card rendered before sections -->
+    <div class="intro-card">
+      <h2>SureBite &rarr; SureVera Rebrand</h2>
+      <p>The app has expanded from restaurants-only to restaurants + hotels. "SureBite" no longer represents the full product. Rebranding to <b>SureVera</b> (<i>vera</i> = truth/verify in Latin/Italian) before the Tyler Technologies Platform Alliance application.</p>
+      <div style="margin-top:0.75rem">
+        <div class="detail-row"><span class="detail-label">New name:</span><span class="detail-value"><b>SureVera</b></span></div>
+        <div class="detail-row"><span class="detail-label">Tagline:</span><span class="detail-value"><b>Be Sure. Verify.</b></span></div>
+        <div class="detail-row"><span class="detail-label">Domain:</span><span class="detail-value"><code>surevera.app</code></span></div>
+        <div class="detail-row"><span class="detail-label">Redirect:</span><span class="detail-value"><code>sureveraapp.com</code> &rarr; <code>surevera.app</code></span></div>
+        <div class="detail-row"><span class="detail-label">Email:</span><span class="detail-value"><code>support@sureveraapp.com</code></span></div>
+        <div class="detail-row"><span class="detail-label">Deep links:</span><span class="detail-value"><code>surevera://</code></span></div>
+        <div class="detail-row"><span class="detail-label">Railway URL:</span><span class="detail-value">Keep current (internal, users never see it)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">SureVera Rebrand Checklist &mdash; runs entirely in your browser</div>
+
+  <script>
+    const STORAGE_KEY = 'surevera_rebrand_checklist';
+    const COLLAPSED_KEY = 'surevera_rebrand_collapsed';
+
+    const sections = [
+      {
+        id: 'prereqs', title: 'Pre-requisites (Manual)', icon: '\u2705', color: '#DCFCE7',
+        items: [
+          { text: 'New SureVera logos received (header-navy, header-white, icon, splash screen)', steps: [
+            'You need 5 logo files in total. Use Canva, Figma, or your designer:',
+            '<b>surevera-header-navy-logo.png</b> \u2014 wide horizontal logo with navy text on transparent background (used in paywall light mode). Same dimensions as the current surebite-header-navy-logo.png.',
+            '<b>surevera-header-white-logo.png</b> \u2014 wide horizontal logo with white text on transparent background (used in app header bars). Same dimensions as surebite-header-white-logo.png.',
+            '<b>surevera-white-logo.png</b> \u2014 small square white logo on transparent background (used in nav header right side, ~32x32 display). Same dimensions as surebite-white-logo.png.',
+            '<b>SureVera app icon</b> \u2014 square icon, 1024\u00d71024px, no transparency, no rounded corners (Apple adds rounding automatically). This replaces "SureBite logo design in navy and white.png".',
+            '<b>SureVera splash screen</b> \u2014 logo centered on white background, same dimensions as "splashscreen-logo navy.png". Used as the launch screen when the app opens.',
+            'Export all as PNG. Place them in <code>Dev/restaurant-health-app/assets/</code>.',
+          ]},
+          { text: 'New app screenshots showing hotel tab + new layout', steps: [
+            'Wait until all code changes are deployed and the app is running with SureVera branding',
+            'Open the app in iOS Simulator (iPhone 15 Pro Max for 6.7" screenshots)',
+            'Take screenshots of: Home screen, Restaurant search results, Restaurant detail with grade, Hotel search results, Hotel detail, Favorites, Help screen',
+            'Use the SureVera Mockup Tool (<code>mockup-tool.html</code>) to wrap in device frames',
+            'Use the Screenshot Builder (<code>screenshot-builder.html</code>) to add headlines and branding',
+            'Save for App Store (6.7", 6.1") and Play Store (1080\u00d71920)',
+          ]},
+          { text: 'GoDaddy DNS for surevera.app (4 A records \u2192 GitHub Pages)', steps: [
+            'Log in to GoDaddy \u2192 My Products \u2192 find <code>surevera.app</code> \u2192 DNS',
+            'Delete any existing A records for <code>@</code>',
+            'Add 4 A records, all for Host <code>@</code>, pointing to GitHub Pages IPs:',
+            '<code>185.199.108.153</code>',
+            '<code>185.199.109.153</code>',
+            '<code>185.199.110.153</code>',
+            '<code>185.199.111.153</code>',
+            'Add a CNAME record: Host = <code>www</code>, Value = <code>886jdz.github.io</code>',
+            'DNS propagation can take 10 min to 48 hours. Check with <code>dig surevera.app</code> in Terminal.',
+          ]},
+          { text: 'GoDaddy forwarding: sureveraapp.com \u2192 surevera.app', steps: [
+            'Log in to GoDaddy \u2192 My Products \u2192 find <code>sureveraapp.com</code> \u2192 DNS',
+            'Scroll down to the "Forwarding" section',
+            'Click "Add Forwarding" under Domain',
+            'Forward to: <code>https://surevera.app</code>',
+            'Forward type: <b>Permanent (301)</b>',
+            'Settings: Forward only (not masking)',
+            'Save. Test by visiting <code>http://sureveraapp.com</code> in a browser \u2014 it should redirect to <code>https://surevera.app</code>.',
+          ]},
+          { text: 'Set up email: support@sureveraapp.com', steps: [
+            '<b>Option A \u2014 GoDaddy email forwarding (free):</b>',
+            'Go to GoDaddy \u2192 My Products \u2192 sureveraapp.com \u2192 DNS \u2192 scroll to "Email Forwarding"',
+            'Add: <code>support</code> \u2192 forward to your personal email',
+            'Test by sending an email to <code>support@sureveraapp.com</code>',
+            '<b>Option B \u2014 Google Workspace ($7/mo):</b>',
+            'Go to workspace.google.com \u2192 sign up with sureveraapp.com',
+            'Add MX records to GoDaddy DNS as Google instructs',
+            'This gives you a full inbox you can send FROM as support@sureveraapp.com',
+            '<b>Either way:</b> make sure you can both receive AND reply from this address before updating the app/website.',
+          ]},
+        ]
+      },
+      {
+        id: 'app-config', title: 'Phase 1a: Mobile App \u2014 Config Files', icon: '\u2699\uFE0F', color: '#E0F2F1',
+        items: [
+          '<code>app.json</code>: name \u2192 "SureVera"',
+          '<code>app.json</code>: scheme \u2192 "surevera"',
+          '<code>app.json</code>: bundleIdentifier \u2192 "com.h886jdz.surevera"',
+          '<code>app.json</code>: android package \u2192 "com.h886jdz.surevera"',
+          { text: '<code>app.json</code>: icon + splash paths updated to new SureVera logos', steps: [
+            'After you have the new logo files in <code>assets/</code>, open <code>app.json</code>',
+            'Change <code>"icon": "./assets/SureBite logo design in navy and white.png"</code> \u2192 <code>"icon": "./assets/surevera-icon.png"</code> (or whatever you named the new app icon)',
+            'Change <code>"image": "./assets/splashscreen-logo navy.png"</code> \u2192 <code>"image": "./assets/surevera-splash.png"</code> (under both <code>splash</code> and <code>android.splash</code>)',
+            'Change <code>"foregroundImage": "./assets/SureBite logo design in navy and white.png"</code> \u2192 <code>"foregroundImage": "./assets/surevera-icon.png"</code> (under <code>android.adaptiveIcon</code>)',
+            'Save the file. These changes require a native rebuild (not OTA).',
+          ]},
+          { text: '<code>google-services.json</code>: update package_name (may need new Firebase project)', steps: [
+            'Open <code>Dev/restaurant-health-app/google-services.json</code>',
+            'The current <code>package_name</code> is <code>com.h886jdz.surebite</code> \u2014 this must match the new package name <code>com.h886jdz.surevera</code>',
+            '<b>Option A \u2014 Update existing Firebase project:</b>',
+            'Go to console.firebase.google.com \u2192 your project (surebite-61da9)',
+            'Project Settings \u2192 Your apps \u2192 Add app \u2192 Android',
+            'Enter package name: <code>com.h886jdz.surevera</code>',
+            'Download the new <code>google-services.json</code> and replace the one in <code>Dev/restaurant-health-app/</code>',
+            '<b>Option B \u2014 Create new Firebase project:</b>',
+            'Create a new project named "surevera" at console.firebase.google.com',
+            'Add an Android app with package <code>com.h886jdz.surevera</code>',
+            'Download <code>google-services.json</code> and replace',
+            '<b>Either way:</b> if you use Firebase Cloud Messaging for push notifications, make sure the server key is updated in your backend too.',
+          ]},
+          '<code>src/config/api.ts</code>: keep Railway URL as-is (internal)',
+        ]
+      },
+      {
+        id: 'app-logos', title: 'Phase 1b: Mobile App \u2014 Logo Assets', icon: '\uD83C\uDFA8', color: '#F3E5F5',
+        items: [
+          { text: 'Replace <code>assets/surebite-header-navy-logo.png</code> \u2192 <code>surevera-header-navy-logo.png</code>', steps: [
+            'Copy your new navy header logo to <code>Dev/restaurant-health-app/assets/surevera-header-navy-logo.png</code>',
+            'You can delete the old <code>surebite-header-navy-logo.png</code> file',
+            'The code already references the new filename (updated by Claude)',
+          ]},
+          { text: 'Replace <code>assets/surebite-header-white-logo.png</code> \u2192 <code>surevera-header-white-logo.png</code>', steps: [
+            'Copy your new white header logo to <code>Dev/restaurant-health-app/assets/surevera-header-white-logo.png</code>',
+            'You can delete the old <code>surebite-header-white-logo.png</code> file',
+            'The code already references the new filename (updated by Claude)',
+          ]},
+          { text: 'Replace <code>assets/surebite-white-logo.png</code> \u2192 <code>surevera-white-logo.png</code>', steps: [
+            'Copy your new small white logo to <code>Dev/restaurant-health-app/assets/surevera-white-logo.png</code>',
+            'You can delete the old <code>surebite-white-logo.png</code> file',
+            'The code already references the new filename (updated by Claude)',
+          ]},
+          { text: 'Replace <code>assets/SureBite logo design in navy and white.png</code> \u2192 new SureVera icon', steps: [
+            'Copy your new 1024\u00d71024 app icon to <code>Dev/restaurant-health-app/assets/</code> (name it <code>surevera-icon.png</code> or similar)',
+            'Update the icon path in <code>app.json</code> to match (see Phase 1a config task)',
+            'You can delete the old "SureBite logo design in navy and white.png" file after updating app.json',
+          ]},
+          { text: 'Replace <code>assets/splashscreen-logo navy.png</code> \u2192 new SureVera splash', steps: [
+            'Copy your new splash screen logo to <code>Dev/restaurant-health-app/assets/</code> (name it <code>surevera-splash.png</code> or similar)',
+            'Update the splash image path in <code>app.json</code> (both <code>splash.image</code> and <code>android.splash.image</code>)',
+            'You can delete the old "splashscreen-logo navy.png" after updating app.json',
+          ]},
+        ]
+      },
+      {
+        id: 'app-screens', title: 'Phase 1c: Mobile App \u2014 Screen Text Updates', icon: '\uD83D\uDCF1', color: '#E8EAF6',
+        items: [
+          { text: '<code>RootNavigator.tsx</code>: Logo imports + deep link prefix + disclaimer text', steps: [
+            'Update logo imports: <code>surebite-header-white-logo</code> \u2192 <code>surevera-header-white-logo</code>',
+            'Update logo imports: <code>surebite-white-logo</code> \u2192 <code>surevera-white-logo</code>',
+            'Deep link prefix: <code>"surebite://"</code> \u2192 <code>"surevera://"</code>',
+            'Deep link comment updated',
+            'Disclaimer text: "not SureBite\'s opinion" \u2192 "not SureVera\'s opinion"',
+          ]},
+          { text: '<code>DashboardScreen.tsx</code>: Headline text', steps: [
+            '"Be sure before you..." \u2192 "Be Sure. Verify."',
+          ]},
+          { text: '<code>HomeScreen.tsx</code>: Coverage text', steps: [
+            '"SureBite covers..." \u2192 "SureVera covers..."',
+          ]},
+          { text: '<code>HelpScreen.tsx</code>: ~15 references', steps: [
+            'All "SureBite" \u2192 "SureVera" in FAQ answers',
+            '"Does SureBite collect..." \u2192 "Does SureVera collect..."',
+            '"About SureBite" \u2192 "About SureVera"',
+            'Privacy policy URL: <code>surebiteapp.com</code> \u2192 <code>surevera.app</code>',
+            'Terms of service URL: <code>surebiteapp.com</code> \u2192 <code>surevera.app</code>',
+            'Email: <code>support@surebiteapp.com</code> \u2192 <code>support@sureveraapp.com</code>',
+            'Website: <code>surebiteapp.com</code> \u2192 <code>surevera.app</code>',
+            'Add hotel-specific FAQ entries',
+          ]},
+          { text: '<code>OnboardingScreen.tsx</code>: Tagline + body text', steps: [
+            '"Be Sure Before You Bite" \u2192 "Be Sure. Verify."',
+            'Body text rewritten for restaurants + hotels',
+            '"SureBite shows..." \u2192 "SureVera shows..."',
+            '"SureBite doesn\'t" \u2192 "SureVera doesn\'t"',
+            '"not SureBite\'s opinion" \u2192 "not SureVera\'s opinion"',
+            'Add hotel-focused onboarding slide',
+          ]},
+          { text: '<code>ScoreExplainerScreen.tsx</code>: Educational text', steps: [
+            '"SureBite displays..." \u2192 "SureVera displays..."',
+            '"SureBite currently covers..." \u2192 "SureVera currently covers..."',
+            '"SureBite is not responsible..." \u2192 "SureVera is not responsible..."',
+          ]},
+          { text: '<code>PaywallScreen.tsx</code>: Logo imports + tagline', steps: [
+            'Logo import: <code>surebite-header-navy-logo</code> \u2192 <code>surevera-header-navy-logo</code>',
+            'Logo import: <code>surebite-header-white-logo</code> \u2192 <code>surevera-header-white-logo</code>',
+            'Tagline: "Be sure before you bite." \u2192 "Be Sure. Verify."',
+            'Benefits text updated for restaurants + hotels',
+          ]},
+          { text: '<code>RestaurantDetailScreen.tsx</code>: Share + attribution text', steps: [
+            'Share text: "Checked with SureBite" \u2192 "Checked with SureVera"',
+            'Attribution: "Not SureBite\'s opinion" \u2192 "Not SureVera\'s opinion"',
+            '"not a SureBite limitation" \u2192 "not a SureVera limitation"',
+          ]},
+          '<code>src/api/backend.ts</code>: Comment "SureBite" \u2192 "SureVera"',
+        ]
+      },
+      {
+        id: 'app-onboarding', title: 'Phase 1d: Onboarding Overhaul', icon: '\uD83D\uDC4B', color: '#FFF3E0',
+        items: [
+          'Slide 1: "Be Sure. Verify." \u2014 SureVera intro (restaurants + hotels)',
+          'Slide 2: Restaurant health grades',
+          'Slide 3: Hotel health grades (NEW)',
+          'Slide 4: Privacy commitment',
+          'Slide 5: Data disclaimer',
+        ]
+      },
+      {
+        id: 'app-paywall', title: 'Phase 1e: Paywall Update', icon: '\uD83D\uDCB3', color: '#FEF3C7',
+        items: [
+          'New tagline: "Be Sure. Verify."',
+          'Benefits mention both restaurants AND hotels',
+          'Keep CDC + NPMA stats',
+        ]
+      },
+      {
+        id: 'app-help', title: 'Phase 1f: FAQ / Help Screen Update', icon: '\u2753', color: '#EDE9FE',
+        items: [
+          'All SureBite \u2192 SureVera in FAQ text',
+          'Add hotel-specific FAQ entries',
+          'Update "What does SureVera do?" for both categories',
+          'Update all URLs to surevera.app',
+          'Update email to support@sureveraapp.com',
+        ]
+      },
+      {
+        id: 'app-native', title: 'Phase 1g: iOS/Android Native Rebuild', icon: '\uD83D\uDD28', color: '#FEE2E2',
+        items: [
+          { text: 'Run <code>npx expo prebuild --clean</code> to regenerate native projects', steps: [
+            'Open Terminal and <code>cd</code> into <code>Dev/restaurant-health-app/</code>',
+            'Run: <code>npx expo prebuild --clean</code>',
+            'This regenerates the <code>ios/</code> and <code>android/</code> folders with the new bundle ID (<code>com.h886jdz.surevera</code>), new scheme (<code>surevera</code>), and new app name',
+            'If prompted about overwriting, choose yes \u2014 <code>--clean</code> deletes and recreates from scratch',
+            'Verify the output mentions the new package name and bundle identifier',
+          ]},
+          { text: 'New EAS build for iOS', steps: [
+            'Make sure you\'re logged into EAS: <code>eas whoami</code> (if not: <code>eas login</code>)',
+            'Run: <code>eas build --platform ios --profile production</code>',
+            'EAS will ask about the new bundle ID \u2014 confirm <code>com.h886jdz.surevera</code>',
+            'You may need to create a new App Store app entry in App Store Connect with the new bundle ID',
+            'Wait for the build to complete (check status at expo.dev or watch the terminal)',
+            'Download the .ipa when ready for TestFlight upload',
+          ]},
+          { text: 'New EAS build for Android', steps: [
+            'Run: <code>eas build --platform android --profile production</code>',
+            'EAS will ask about the new package name \u2014 confirm <code>com.h886jdz.surevera</code>',
+            'Make sure your <code>google-services.json</code> is updated with the new package name first',
+            'Wait for the build to complete',
+            'Download the .aab for Play Store upload',
+          ]},
+          { text: 'Test deep links: <code>surevera://restaurant/...</code>', steps: [
+            '<b>iOS Simulator:</b> Run <code>npx uri-scheme open "surevera://restaurant/node:12345678" --ios</code>',
+            '<b>Android Emulator:</b> Run <code>adb shell am start -d "surevera://restaurant/node:12345678"</code>',
+            'The app should open directly to the RestaurantDetail screen',
+            'If it doesn\'t open, verify the scheme in <code>app.json</code> is <code>"surevera"</code> and you ran prebuild',
+            '<b>On real device:</b> Text yourself the link <code>surevera://restaurant/node:12345678</code> and tap it',
+          ]},
+        ]
+      },
+      {
+        id: 'backend', title: 'Phase 2: Backend API Rebrand', icon: '\u2699\uFE0F', color: '#E0F2F1',
+        items: [
+          '<code>nearbyRestaurants.ts</code>: Comment "SureBite-estimated" \u2192 "SureVera-estimated"',
+          '<code>bellCountyParser.ts</code>: User-Agent \u2192 "healthbite-api/1.0 (SureVera data pipeline)"',
+          { text: '<code>stripe/create-checkout/route.ts</code>: CORS + URLs', steps: [
+            'CORS origin: <code>surebiteapp.com</code> \u2192 <code>surevera.app</code>',
+            'Success URL fallback: <code>surebite.com</code> \u2192 <code>surevera.app</code>',
+            'Cancel URL fallback: <code>surebite.com</code> \u2192 <code>surevera.app</code>',
+            'Comment: "SureBite landing page" \u2192 "SureVera landing page"',
+          ]},
+          '<code>admin/dashboard/page.tsx</code>: "SureBite admin dashboard" \u2192 "SureVera admin dashboard"',
+          '<code>admin/dashboard/page.tsx</code>: "where SureBite currently serves" \u2192 "where SureVera currently serves"',
+          '<code>admin/dashboard/layout.tsx</code>: logo src + alt text \u2192 SureVera',
+          '<code>admin/login/page.tsx</code>: logo src \u2192 <code>/surevera-logo.png</code>, alt \u2192 "SureVera"',
+          '<code>webhooks/stripe/route.ts</code>: comment URL (keep Railway URL as-is)',
+          '<code>city-requests/route.ts</code>: comment "SureBite" \u2192 "SureVera"',
+          '<code>notify-city-launch/route.ts</code>: push notification text \u2192 "SureVera now covers..."',
+          '<code>audit-all/route.ts</code>: comment "SUREBITE_SECRET" \u2192 "SUREVERA_SECRET"',
+          'Update comments in 7 admin refresh routes (anchorage, florida, san-antonio, sc, snhd, wcchd, check-score-changes)',
+          { text: '<code>public/surebite-logo.png</code> \u2192 <code>surevera-logo.png</code>', steps: [
+            'Copy your new SureVera logo to <code>Dev/healthbite-api/public/surevera-logo.png</code>',
+            'This is used on the admin login page and admin dashboard header',
+            'You can delete the old <code>public/surebite-logo.png</code>',
+            'The code already references <code>/surevera-logo.png</code> (updated by Claude)',
+            'Push to GitHub \u2192 Railway auto-deploys',
+          ]},
+          { text: '<code>public/surebite-header-white-logo.png</code> \u2192 <code>surevera-header-white-logo.png</code>', steps: [
+            'Copy your new white header logo to <code>Dev/healthbite-api/public/surevera-header-white-logo.png</code>',
+            'You can delete the old <code>public/surebite-header-white-logo.png</code>',
+            'Push to GitHub \u2192 Railway auto-deploys',
+          ]},
+        ]
+      },
+      {
+        id: 'website', title: 'Phase 3: Website (surevera.app)', icon: '\uD83C\uDF10', color: '#E8EAF6',
+        items: [
+          { text: 'Create new repo + hosting', steps: [
+            'Go to github.com \u2192 New repository \u2192 name it <code>SureVera-website</code> (public)',
+            'On your Mac, open Terminal:',
+            '<code>cp -r "/Users/jarvis/Desktop/Healthscore App/surebite-landing" ~/Desktop/SureVera-website</code>',
+            '<code>cd ~/Desktop/SureVera-website</code>',
+            'Edit the <code>CNAME</code> file: change contents to <code>surevera.app</code>',
+            '<code>git init && git add . && git commit -m "SureVera website"</code>',
+            '<code>git remote add origin https://github.com/886jdz/SureVera-website.git</code>',
+            '<code>git branch -M main && git push -u origin main</code>',
+            'In GitHub: repo Settings \u2192 Pages \u2192 Source: "Deploy from branch" \u2192 main / root \u2192 Save',
+            'Wait 2\u20133 minutes, then verify it\'s live at <code>https://886jdz.github.io/SureVera-website/</code>',
+            'The GoDaddy DNS (from pre-requisites) will point <code>surevera.app</code> to this repo',
+            'In GitHub Pages settings, check "Enforce HTTPS" once DNS has propagated',
+          ]},
+          { text: 'Global find-replace across all HTML files', steps: [
+            'In Terminal, <code>cd</code> into the new <code>SureVera-website</code> folder',
+            'Run these sed commands (macOS syntax):',
+            '<code>find . -name "*.html" -exec sed -i "" "s/SureBite/SureVera/g" {} +</code>',
+            '<code>find . -name "*.html" -exec sed -i "" "s/surebiteapp\\.com/surevera.app/g" {} +</code>',
+            '<code>find . -name "*.html" -exec sed -i "" "s/support@surebiteapp\\.com/support@sureveraapp.com/g" {} +</code>',
+            '<code>find . -name "*.html" -exec sed -i "" "s/Be Sure Before You Bite/Be Sure. Verify./g" {} +</code>',
+            '<code>find . -name "*.html" -exec sed -i "" "s/surebite-header/surevera-header/g" {} +</code>',
+            '<code>find . -name "*.html" -exec sed -i "" "s/surebite-logo/surevera-logo/g" {} +</code>',
+            '<code>find . -name "*.html" -exec sed -i "" "s/surebite-white/surevera-white/g" {} +</code>',
+            'Also update <code>toolkit-nav.js</code> and <code>dark-mode.js</code>:',
+            '<code>sed -i "" "s/SureBite/SureVera/g" toolkit-nav.js dark-mode.js</code>',
+            '<code>sed -i "" "s/surebite/surevera/g" toolkit-nav.js dark-mode.js</code>',
+            'Verify with: <code>grep -ri "surebite" *.html *.js | grep -v "surebite-api-production"</code> \u2014 should return nothing (Railway URLs are OK)',
+          ]},
+          { text: 'Manual page updates', steps: [
+            '<b>index.html:</b> Update the hero section tagline to "Be Sure. Verify.", replace screenshot images with new ones showing hotel tab, update all <code>&lt;meta&gt;</code> tags (og:title, og:description, twitter:title)',
+            '<b>privacy-policy.html:</b> Read through carefully \u2014 has 16 legal refs. Make sure "SureVera" reads correctly in all legal contexts. Don\'t change the meaning of any clause.',
+            '<b>terms-of-service.html:</b> Read through carefully \u2014 has 41 refs. Same care as privacy policy. Especially check the entity name ("Arrio Technologies LLC") is still correct.',
+            '<b>toolkit-nav.js:</b> The admin dashboard link URL can stay as the Railway URL (internal tool)',
+            '<b>dev-log.html:</b> Add a new entry at the top: "2026-03-25 \u2014 Rebranded from SureBite to SureVera." Keep "SureBite" in older historical entries \u2014 don\'t rewrite history.',
+            '<b>outreach-toolkit.html:</b> Update Tyler Technologies email templates to reference SureVera',
+            '<b>infrastructure.html:</b> Update component descriptions that mention SureBite',
+          ]},
+          { text: 'Replace all surebite-*.png with surevera-*.png logo assets', steps: [
+            'In the website folder, rename or replace these image files:',
+            '<code>surebite-header-white-logo.png</code> \u2192 <code>surevera-header-white-logo.png</code>',
+            '<code>surebite-header-navy-logo.png</code> \u2192 <code>surevera-header-navy-logo.png</code> (if exists)',
+            '<code>surebite-logo.png</code> \u2192 <code>surevera-logo.png</code> (if exists)',
+            '<code>surebite-white-logo.png</code> \u2192 <code>surevera-white-logo.png</code> (if exists)',
+            'Use your new SureVera logo files \u2014 same dimensions as the originals',
+            'Check for any other <code>surebite-*.png</code> files: <code>ls *surebite*</code>',
+          ]},
+          { text: 'Update favicon.png', steps: [
+            'Replace <code>favicon.png</code> with a small SureVera icon (typically 32\u00d732 or 64\u00d764)',
+            'Can be a simplified/cropped version of your app icon',
+          ]},
+          { text: 'Verify surevera.app loads with HTTPS', steps: [
+            'Open <code>https://surevera.app</code> in your browser',
+            'Check for the padlock icon in the address bar',
+            'If no padlock: go to GitHub repo Settings \u2192 Pages \u2192 check "Enforce HTTPS" (may take a few minutes after DNS propagates)',
+            'If the page doesn\'t load at all: check DNS with <code>dig surevera.app</code> \u2014 should show the 4 GitHub Pages IPs',
+          ]},
+          { text: 'Verify sureveraapp.com redirects to surevera.app', steps: [
+            'Open <code>http://sureveraapp.com</code> in your browser',
+            'It should redirect to <code>https://surevera.app</code>',
+            'If not redirecting: check GoDaddy forwarding settings (see pre-requisites)',
+            'Also test <code>https://sureveraapp.com</code> and <code>http://www.sureveraapp.com</code>',
+          ]},
+          { text: 'Verify privacy policy loads at new URL', steps: [
+            'Open <code>https://surevera.app/privacy-policy.html</code>',
+            'Verify all text says "SureVera" (not "SureBite")',
+            'Verify the contact email shows <code>support@sureveraapp.com</code>',
+            'This URL is what Apple and Google check during app review',
+          ]},
+          { text: 'Verify terms of service loads at new URL', steps: [
+            'Open <code>https://surevera.app/terms-of-service.html</code>',
+            'Verify all text says "SureVera" and entity name "Arrio Technologies LLC" is correct',
+            'Verify the contact email shows <code>support@sureveraapp.com</code>',
+          ]},
+        ]
+      },
+      {
+        id: 'arriotech', title: 'Phase 4: Arriotech Website', icon: '\uD83C\uDFE2', color: '#E0F2F1',
+        items: [
+          { text: 'Update product card: SureBite \u2192 SureVera', steps: [
+            'Open the Arriotech website repo on your Mac (the GitHub Pages site for arriotech.com or similar)',
+            'Find the product card for SureBite in <code>index.html</code>',
+            'Change the product name from "SureBite" to "SureVera"',
+            'Update the description to mention restaurants + hotels',
+            'Update the tagline to "Be Sure. Verify."',
+          ]},
+          { text: 'Update link: surebiteapp.com \u2192 surevera.app', steps: [
+            'In the Arriotech <code>index.html</code>, find the link to <code>surebiteapp.com</code>',
+            'Change it to <code>https://surevera.app</code>',
+            'Verify the link opens correctly after pushing',
+          ]},
+          { text: 'Replace <code>surebite-icon.png</code> \u2192 <code>surevera-icon.png</code>', steps: [
+            'Copy your new SureVera icon into the Arriotech repo\'s images/assets folder',
+            'Name it <code>surevera-icon.png</code>',
+            'Update the <code>&lt;img src="..."&gt;</code> reference in <code>index.html</code>',
+            'Delete the old <code>surebite-icon.png</code>',
+          ]},
+          { text: 'Replace <code>surebite-logo-full.png</code> \u2192 <code>surevera-logo-full.png</code>', steps: [
+            'Copy your new SureVera full logo into the Arriotech repo',
+            'Name it <code>surevera-logo-full.png</code>',
+            'Update the <code>&lt;img src="..."&gt;</code> reference in <code>index.html</code>',
+            'Delete the old <code>surebite-logo-full.png</code>',
+          ]},
+          { text: 'Push to GitHub Pages', steps: [
+            '<code>cd</code> into the Arriotech repo folder',
+            '<code>git add . && git commit -m "Rebrand SureBite to SureVera"</code>',
+            '<code>git push</code>',
+            'Wait 1\u20132 minutes for GitHub Pages to rebuild',
+            'Verify the live site shows "SureVera" with the new logo and link',
+          ]},
+        ]
+      },
+      {
+        id: 'github', title: 'Phase 5: GitHub Repo Renames', icon: '\uD83D\uDD17', color: '#F3E5F5',
+        items: [
+          { text: '886jdz/SureBite-app \u2192 886jdz/SureVera-app', steps: [
+            'Go to github.com/886jdz/SureBite-app',
+            'Click Settings (top right of repo page)',
+            'Under "Repository name", change to <code>SureVera-app</code>',
+            'Click "Rename"',
+            'GitHub automatically sets up a redirect from the old URL \u2014 existing clones and links will still work',
+            'On your Mac, update the remote: <code>git remote set-url origin https://github.com/886jdz/SureVera-app.git</code>',
+          ]},
+          { text: '886jdz/SureBite-api \u2192 886jdz/SureVera-api', steps: [
+            'Go to github.com/886jdz/SureBite-api',
+            'Click Settings \u2192 change name to <code>SureVera-api</code> \u2192 Rename',
+            'GitHub auto-redirects the old URL',
+            '<b>Railway:</b> Railway connects via GitHub App integration, not URL \u2014 the auto-deploy should continue working. Verify by pushing a small change and checking Railway logs.',
+            'On your Mac: <code>git remote set-url origin https://github.com/886jdz/SureVera-api.git</code>',
+          ]},
+          { text: '886jdz/SureBite-website \u2192 archive (new repo for surevera.app)', steps: [
+            'Go to github.com/886jdz/SureBite-website (the old surebiteapp.com site)',
+            'Click Settings \u2192 scroll to bottom \u2192 "Archive this repository"',
+            'This makes it read-only. The new <code>SureVera-website</code> repo replaces it.',
+            'If GitHub Pages was enabled on the old repo, go to Settings \u2192 Pages \u2192 disable it so the old site stops serving',
+          ]},
+          { text: 'Verify Railway auto-deploy still works (GitHub auto-redirects)', steps: [
+            'After renaming SureBite-api \u2192 SureVera-api, go to your Railway dashboard',
+            'Check the service for the API \u2014 it should still show as connected to the GitHub repo',
+            'Push a small commit (like a comment change) and verify Railway triggers a deploy',
+            'If Railway lost the connection: go to Railway service Settings \u2192 reconnect to the renamed GitHub repo',
+          ]},
+        ]
+      },
+      {
+        id: 'home-redesign', title: 'Phase 6: Home Screen Redesign', icon: '\uD83C\uDFA8', color: '#FFF3E0',
+        items: [
+          { text: 'Design new home screen layout', steps: [
+            'This is a separate design task \u2014 discuss with Claude when you\'re ready',
+            'Browse other health/safety apps for inspiration (Yelp, Google Maps, Airbnb)',
+            'Key goal: "Be Sure. Verify." as the headline, with clear restaurant + hotel entry points',
+            'Consider showing stats (90+ cities, 1M+ records) prominently',
+            'Consider a "What\'s new" or "Recently inspected" section',
+          ]},
+          { text: 'Replace "Be sure before you... Bite / Stay" with "Be Sure. Verify."', steps: [
+            'The DashboardScreen headline already says "Be Sure. Verify." (updated by Claude)',
+            'The card titles "Bite" and "Stay" may need updating depending on your new design',
+            'Work with Claude to implement the new layout once you\'ve decided on the design direction',
+          ]},
+          { text: 'Updated cards for restaurants + hotels', steps: [
+            'Current cards say "Bite" (restaurants) and "Stay" (hotels) with descriptions',
+            'Consider whether you want to keep these as navigation cards or redesign entirely',
+            'The CDC stat (48M foodborne illness) and NPMA stat (1 in 7 bed bugs) can stay or move',
+          ]},
+          { text: 'Take new screenshots with redesigned home screen', steps: [
+            'Wait until the home screen redesign is implemented and looking good',
+            'Open in iOS Simulator (iPhone 15 Pro Max for 6.7" screenshots)',
+            'Take screenshots of the new home screen, restaurant flow, and hotel flow',
+            'Process through Mockup Tool + Screenshot Builder',
+            'These screenshots will be used for the website hero section and App Store listing',
+          ]},
+        ]
+      },
+      {
+        id: 'verification', title: 'Phase 7: Cleanup & Verification', icon: '\uD83D\uDD0D', color: '#FEF3C7',
+        items: [
+          { text: 'Search entire codebase for remaining "surebite" (case-insensitive)', steps: [
+            'In Terminal, run from the project root:',
+            '<code>grep -ri "surebite" Dev/restaurant-health-app/src/ Dev/healthbite-api/src/ --include="*.ts" --include="*.tsx" | grep -v "surebite-api-production"</code>',
+            'This should return zero results (Railway URLs are expected and OK)',
+            'Also check <code>app.json</code>: <code>grep -i surebite Dev/restaurant-health-app/app.json</code> \u2014 only the icon/splash paths should remain (if you haven\'t renamed those yet)',
+            'Check the website repo too: <code>grep -ri "surebite" ~/Desktop/SureVera-website/ --include="*.html" --include="*.js" | grep -v "surebite-api-production"</code>',
+          ]},
+          { text: 'Test deep links: <code>surevera://restaurant/...</code>', steps: [
+            'On a real device or simulator with the new build installed:',
+            '<b>iOS:</b> <code>npx uri-scheme open "surevera://restaurant/node:12345678" --ios</code>',
+            '<b>Android:</b> <code>adb shell am start -d "surevera://restaurant/node:12345678"</code>',
+            'The app should open directly to RestaurantDetail',
+            'If it doesn\'t work, make sure you ran <code>npx expo prebuild --clean</code> and rebuilt',
+          ]},
+          { text: 'Verify surevera.app loads with HTTPS', steps: [
+            'Open <code>https://surevera.app</code> in Chrome',
+            'Look for the padlock icon in the address bar',
+            'Click the padlock to verify the certificate is issued to surevera.app',
+            'Test a few pages: /privacy-policy.html, /terms-of-service.html, /toolkit.html',
+          ]},
+          { text: 'Verify sureveraapp.com redirects to surevera.app', steps: [
+            'Open <code>http://sureveraapp.com</code> \u2014 should redirect to <code>https://surevera.app</code>',
+            'Open <code>https://sureveraapp.com</code> \u2014 should also redirect',
+            'Open <code>http://www.sureveraapp.com</code> \u2014 should also redirect',
+          ]},
+          { text: 'Verify privacy policy and terms load at new URLs', steps: [
+            'Open <code>https://surevera.app/privacy-policy.html</code> \u2014 should load with all "SureVera" text',
+            'Open <code>https://surevera.app/terms-of-service.html</code> \u2014 same',
+            'These are the URLs referenced in the app (HelpScreen) and App Store/Play Store listings',
+          ]},
+          { text: 'Test OTA update (text changes)', steps: [
+            'Text changes (SureBite \u2192 SureVera in screens) can be pushed as an OTA update to existing users',
+            'Run: <code>eas update --branch production --message "SureVera rebrand"</code>',
+            'Open the app on a device that had the old version \u2014 it should pull the OTA update and show "SureVera" text',
+            'Note: OTA only works for JS/text changes. Logo + bundle ID changes require a new native build.',
+          ]},
+          { text: 'New EAS build (native changes)', steps: [
+            'After logos are in place and app.json is fully updated (icon, splash, scheme, bundle ID):',
+            '<code>npx expo prebuild --clean</code>',
+            '<code>eas build --platform ios --profile production</code>',
+            '<code>eas build --platform android --profile production</code>',
+            'Upload iOS .ipa to TestFlight \u2192 test \u2192 submit to App Store',
+            'Upload Android .aab to Play Console \u2192 test \u2192 submit to Play Store',
+          ]},
+          { text: 'Test all toolkit pages', steps: [
+            'Open <code>https://surevera.app/toolkit.html</code>',
+            'Click through every page in the nav dropdown',
+            'Verify no page says "SureBite" (except historical dev-log entries and Railway URLs)',
+            'Test the rebrand checklist page specifically \u2014 verify progress saves',
+          ]},
+          { text: 'Verify Stripe checkout CORS works with new domain', steps: [
+            'Go to <code>https://surevera.app</code> and find the "Feature Your Restaurant" page (if it exists)',
+            'Try to initiate a Stripe checkout',
+            'Open browser DevTools \u2192 Console. Look for CORS errors.',
+            'The backend CORS is now set to <code>https://surevera.app</code> (updated by Claude)',
+            'If you see CORS errors, check that the request is coming from exactly <code>https://surevera.app</code> (not www, not http)',
+            'Also verify in Stripe Dashboard that your webhook endpoint is still working (it uses the Railway URL which didn\'t change)',
+          ]},
+          { text: 'Update CLAUDE.md and memory files', steps: [
+            'Ask Claude to update CLAUDE.md with the new brand name, URLs, and contact info',
+            'Claude has already updated memory/MEMORY.md with rebrand status',
+            'After everything is verified, ask Claude to mark the rebrand as complete in memory',
+          ]},
+          { text: 'Run app end-to-end: full test', steps: [
+            'Open the app (new build with SureVera branding)',
+            'Home screen: verify "Be Sure. Verify." headline, SureVera logo in header',
+            'Tap Restaurants tab \u2192 search a city \u2192 see results with grades',
+            'Tap a restaurant \u2192 verify detail page says "SureVera" in share/attribution',
+            'Tap Hotels tab \u2192 search a city \u2192 see results with grades',
+            'Tap a hotel \u2192 verify detail page',
+            'Tap Favorites \u2192 verify saved items load',
+            'Tap Help \u2192 verify FAQ says "SureVera", links go to surevera.app, email is support@sureveraapp.com',
+            'Tap privacy policy link \u2192 opens <code>https://surevera.app/privacy-policy.html</code>',
+            'Tap contact email \u2192 opens compose to <code>support@sureveraapp.com</code>',
+            'Test dark mode toggle \u2192 verify logo looks correct in both themes',
+          ]},
+        ]
+      },
+    ];
+
+    // Load state
+    function loadChecked() {
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch { return {}; }
+    }
+    function saveChecked(state) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+    function loadCollapsed() {
+      try { return JSON.parse(localStorage.getItem(COLLAPSED_KEY)) || {}; } catch { return {}; }
+    }
+    function saveCollapsed(state) {
+      localStorage.setItem(COLLAPSED_KEY, JSON.stringify(state));
+    }
+
+    // Pre-checked items: completed by Claude during automated rebrand (2026-03-25)
+    const AUTOMATED_DEFAULTS = {
+      // Phase 1a: Config files
+      'app-config:0': true,  // app.json name
+      'app-config:1': true,  // app.json scheme
+      'app-config:2': true,  // app.json bundleIdentifier
+      'app-config:3': true,  // app.json android package
+      // app-config:4 = icon+splash paths (needs new logos)
+      // app-config:5 = google-services.json (needs Firebase)
+      'app-config:6': true,  // api.ts keep Railway URL
+
+      // Phase 1c: Screen text updates — RootNavigator
+      'app-screens:0:0': true, // logo import header-white
+      'app-screens:0:1': true, // logo import white
+      'app-screens:0:2': true, // deep link prefix
+      'app-screens:0:3': true, // deep link comment
+      'app-screens:0:4': true, // disclaimer text
+
+      // DashboardScreen
+      'app-screens:1:0': true, // headline
+
+      // HomeScreen
+      'app-screens:2:0': true, // coverage text
+
+      // HelpScreen
+      'app-screens:3:0': true, // FAQ answers
+      'app-screens:3:1': true, // "Does SureVera collect"
+      'app-screens:3:2': true, // "About SureVera"
+      'app-screens:3:3': true, // privacy URL
+      'app-screens:3:4': true, // terms URL
+      'app-screens:3:5': true, // email
+      'app-screens:3:6': true, // website
+      // app-screens:3:7 = hotel FAQ entries (future)
+
+      // OnboardingScreen
+      'app-screens:4:0': true, // tagline
+      'app-screens:4:1': true, // body text rewritten
+      'app-screens:4:2': true, // SureBite → SureVera
+      'app-screens:4:3': true, // SureBite doesn't
+      'app-screens:4:4': true, // not SureVera's opinion
+      // app-screens:4:5 = hotel onboarding slide (future)
+
+      // ScoreExplainerScreen
+      'app-screens:5:0': true, // displays
+      'app-screens:5:1': true, // covers
+      'app-screens:5:2': true, // not responsible
+
+      // PaywallScreen
+      'app-screens:6:0': true, // navy logo import
+      'app-screens:6:1': true, // white logo import
+      'app-screens:6:2': true, // tagline
+      // app-screens:6:3 = benefits text (future)
+
+      // RestaurantDetailScreen
+      'app-screens:7:0': true, // share text
+      'app-screens:7:1': true, // attribution
+      'app-screens:7:2': true, // limitation text
+
+      // backend.ts
+      'app-screens:8': true, // comment
+
+      // Phase 1d: Onboarding overhaul
+      'app-onboarding:0': true, // slide 1 tagline
+      'app-onboarding:1': true, // slide 2 restaurants
+      // app-onboarding:2 = hotel slide (future)
+      'app-onboarding:3': true, // slide 4 privacy
+      'app-onboarding:4': true, // slide 5 disclaimer
+
+      // Phase 1e: Paywall
+      'app-paywall:0': true,  // tagline
+      // app-paywall:1 = benefits for both (future)
+      'app-paywall:2': true,  // keep CDC+NPMA
+
+      // Phase 1f: Help/FAQ
+      'app-help:0': true,  // all SureBite → SureVera
+      // app-help:1 = hotel FAQ entries (future)
+      // app-help:2 = what does SureVera do (future)
+      'app-help:3': true,  // URLs updated
+      'app-help:4': true,  // email updated
+
+      // Phase 2: Backend
+      'backend:0': true,  // nearbyRestaurants.ts
+      'backend:1': true,  // bellCountyParser.ts User-Agent
+      'backend:2:0': true, // CORS origin
+      'backend:2:1': true, // success URL
+      'backend:2:2': true, // cancel URL
+      'backend:2:3': true, // comment
+      'backend:3': true,  // dashboard comment
+      'backend:4': true,  // dashboard text
+      'backend:5': true,  // dashboard layout logo
+      'backend:6': true,  // login page logo
+      'backend:7': true,  // webhooks comment (Railway URL kept)
+      'backend:8': true,  // city-requests comment
+      'backend:9': true,  // notify-city-launch push text
+      'backend:10': true, // audit-all comment
+      'backend:11': true, // admin refresh route comments reviewed (Railway URLs kept)
+      // backend:12 = public logo PNGs (needs new logos)
+      // backend:13 = public header logo (needs new logos)
+    };
+
+    let checkedState = loadChecked();
+    // Merge automated defaults (don't overwrite user's manual changes)
+    let defaultsApplied = localStorage.getItem(STORAGE_KEY + '_defaults_v1');
+    if (!defaultsApplied) {
+      Object.keys(AUTOMATED_DEFAULTS).forEach(k => {
+        if (checkedState[k] === undefined) checkedState[k] = AUTOMATED_DEFAULTS[k];
+      });
+      saveChecked(checkedState);
+      localStorage.setItem(STORAGE_KEY + '_defaults_v1', 'true');
+    }
+    let collapsedState = loadCollapsed();
+
+    function itemKey(sectionId, idx) {
+      return sectionId + ':' + idx;
+    }
+    function subKey(sectionId, idx, subIdx) {
+      return sectionId + ':' + idx + ':' + subIdx;
+    }
+    function getItemText(item) {
+      return typeof item === 'string' ? item : item.text;
+    }
+    function getItemSteps(item) {
+      return (typeof item === 'object' && item.steps) ? item.steps : null;
+    }
+
+    function getTotalCounts() {
+      let total = 0, done = 0;
+      sections.forEach(s => {
+        s.items.forEach((item, i) => {
+          var steps = getItemSteps(item);
+          if (steps) {
+            steps.forEach((_, si) => { total++; if (checkedState[subKey(s.id, i, si)]) done++; });
+          } else {
+            total++;
+            if (checkedState[itemKey(s.id, i)]) done++;
+          }
+        });
+      });
+      return { total, done };
+    }
+
+    function getSectionCounts(sectionId, items) {
+      let total = 0, done = 0;
+      items.forEach((item, i) => {
+        var steps = getItemSteps(item);
+        if (steps) {
+          steps.forEach((_, si) => { total++; if (checkedState[subKey(sectionId, i, si)]) done++; });
+        } else {
+          total++;
+          if (checkedState[itemKey(sectionId, i)]) done++;
+        }
+      });
+      return { total, done };
+    }
+
+    function updateProgress() {
+      const { total, done } = getTotalCounts();
+      const pct = total === 0 ? 0 : Math.round((done / total) * 100);
+      document.getElementById('progressPct').textContent = pct + '%';
+      document.getElementById('progressFill').style.width = pct + '%';
+    }
+
+    function render() {
+      const container = document.getElementById('checklistContainer');
+      // Preserve the intro card
+      const intro = container.querySelector('.intro-card');
+      container.innerHTML = '';
+      if (intro) container.appendChild(intro);
+
+      sections.forEach(section => {
+        const { total, done } = getSectionCounts(section.id, section.items);
+        const isCollapsed = collapsedState[section.id] || false;
+
+        const card = document.createElement('div');
+        card.className = 'section-card' + (isCollapsed ? ' collapsed' : '');
+
+        const header = document.createElement('div');
+        header.className = 'section-header';
+        header.innerHTML = `
+          <div class="section-header-left">
+            <div class="section-icon" style="background:${section.color}">${section.icon}</div>
+            <span class="section-title">${section.title}</span>
+          </div>
+          <div style="display:flex;align-items:center">
+            <span class="section-count">${done} / ${total} completed</span>
+            <span class="section-chevron">\u25BC</span>
+          </div>
+        `;
+        header.addEventListener('click', () => {
+          collapsedState[section.id] = !collapsedState[section.id];
+          saveCollapsed(collapsedState);
+          render();
+        });
+
+        const itemsDiv = document.createElement('div');
+        itemsDiv.className = 'section-items';
+
+        section.items.forEach((rawItem, idx) => {
+          const text = getItemText(rawItem);
+          const steps = getItemSteps(rawItem);
+          const key = itemKey(section.id, idx);
+
+          if (steps) {
+            const subDone = steps.filter((_, si) => checkedState[subKey(section.id, idx, si)]).length;
+            const allDone = subDone === steps.length;
+            const expandKey = 'expand:' + key;
+            const isExpanded = !!collapsedState[expandKey];
+
+            const wrapper = document.createElement('div');
+
+            const item = document.createElement('div');
+            item.className = 'checklist-item' + (allDone ? ' checked' : '');
+            item.style.cursor = 'default';
+            item.innerHTML = `
+              <div class="custom-check">
+                <svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="2,6 5,9 10,3"/>
+                </svg>
+              </div>
+              <span class="item-text">${text}</span>
+              <span class="sub-step-progress">${subDone}/${steps.length}</span>
+              <button class="item-expand-btn">${isExpanded ? 'Hide steps \u25B2' : 'Show steps \u25BC'}</button>
+            `;
+            item.querySelector('.item-expand-btn').addEventListener('click', (e) => {
+              e.stopPropagation();
+              collapsedState[expandKey] = !collapsedState[expandKey];
+              saveCollapsed(collapsedState);
+              render();
+            });
+            item.querySelector('.custom-check').addEventListener('click', (e) => {
+              e.stopPropagation();
+              const newState = !allDone;
+              steps.forEach((_, si) => {
+                checkedState[subKey(section.id, idx, si)] = newState;
+              });
+              saveChecked(checkedState);
+              if (newState && !isExpanded) {
+                collapsedState[expandKey] = true;
+                saveCollapsed(collapsedState);
+              }
+              render();
+              updateProgress();
+            });
+            item.querySelector('.item-text').addEventListener('click', () => {
+              collapsedState[expandKey] = !collapsedState[expandKey];
+              saveCollapsed(collapsedState);
+              render();
+            });
+
+            const subDiv = document.createElement('div');
+            subDiv.className = 'sub-steps' + (isExpanded ? ' open' : '');
+
+            steps.forEach((stepText, si) => {
+              const sk = subKey(section.id, idx, si);
+              const isSubChecked = !!checkedState[sk];
+
+              const step = document.createElement('label');
+              step.className = 'sub-step' + (isSubChecked ? ' checked' : '');
+              step.innerHTML = `
+                <input type="checkbox" style="display:none" ${isSubChecked ? 'checked' : ''}>
+                <div class="sub-check">
+                  <svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="2,6 5,9 10,3"/>
+                  </svg>
+                </div>
+                <span class="sub-step-text">${stepText}</span>
+              `;
+              step.querySelector('input').addEventListener('change', (e) => {
+                checkedState[sk] = e.target.checked;
+                saveChecked(checkedState);
+                render();
+                updateProgress();
+              });
+              subDiv.appendChild(step);
+            });
+
+            wrapper.appendChild(item);
+            wrapper.appendChild(subDiv);
+            itemsDiv.appendChild(wrapper);
+          } else {
+            const isChecked = !!checkedState[key];
+
+            const item = document.createElement('label');
+            item.className = 'checklist-item' + (isChecked ? ' checked' : '');
+
+            item.innerHTML = `
+              <input type="checkbox" ${isChecked ? 'checked' : ''}>
+              <div class="custom-check">
+                <svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="2,6 5,9 10,3"/>
+                </svg>
+              </div>
+              <span class="item-text">${text}</span>
+            `;
+
+            item.querySelector('input').addEventListener('change', (e) => {
+              checkedState[key] = e.target.checked;
+              saveChecked(checkedState);
+              render();
+              updateProgress();
+            });
+
+            itemsDiv.appendChild(item);
+          }
+        });
+
+        card.appendChild(header);
+        card.appendChild(itemsDiv);
+        container.appendChild(card);
+      });
+
+      // Reset button
+      const resetDiv = document.createElement('div');
+      resetDiv.className = 'reset-wrapper';
+      resetDiv.innerHTML = '<button class="reset-btn">Reset All Progress</button>';
+      resetDiv.querySelector('button').addEventListener('click', () => {
+        if (confirm('Are you sure you want to reset all rebrand checklist progress? This cannot be undone.')) {
+          checkedState = {};
+          collapsedState = {};
+          saveChecked(checkedState);
+          saveCollapsed(collapsedState);
+          render();
+          updateProgress();
+        }
+      });
+      container.appendChild(resetDiv);
+
+      updateProgress();
+    }
+
+    render();
+  </script>
+  <script src="dark-mode.js"></script>
+  <script src="toolkit-nav.js"></script>
+</body>
+</html>

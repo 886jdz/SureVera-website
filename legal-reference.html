@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SureVera Legal Reference & Defense</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #F1F5F9;
+      color: #1E293B;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Toolbar */
+    .toolbar {
+      background: linear-gradient(135deg, #0D1B2E 0%, #1B3A6B 100%);
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .toolbar .divider { width: 1px; height: 24px; background: rgba(255,255,255,0.2); }
+    .toolbar .tool-label { font-size: 0.85rem; font-weight: 500; color: rgba(255,255,255,0.6); }
+
+    /* Layout */
+    .container { max-width: 860px; margin: 0 auto; padding: 2.5rem 1.5rem 1rem; }
+
+    /* Disclaimer Banner */
+    .disclaimer-banner {
+      background: linear-gradient(135deg, #FFF7ED 0%, #FEF3C7 100%);
+      border: 1px solid #F59E0B;
+      border-left: 4px solid #E8612A;
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+    .disclaimer-banner .warn-icon {
+      font-size: 1.3rem;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+    .disclaimer-banner p {
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: #92400E;
+      line-height: 1.5;
+    }
+
+    /* Section Cards */
+    .card {
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 16px;
+      padding: 2.25rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.03);
+    }
+    .card h2 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #1B3A6B;
+      margin-bottom: 0.5rem;
+    }
+    .card h2 .section-num {
+      color: #E8612A;
+      font-weight: 800;
+      margin-right: 0.25rem;
+    }
+    .card .section-intro {
+      font-size: 0.95rem;
+      color: #475569;
+      margin-bottom: 1.25rem;
+      line-height: 1.7;
+    }
+    .card p {
+      font-size: 0.93rem;
+      color: #334155;
+      margin-bottom: 0.75rem;
+      line-height: 1.7;
+    }
+    .card ul {
+      list-style: none;
+      padding: 0;
+      margin-bottom: 1rem;
+    }
+    .card ul li {
+      font-size: 0.93rem;
+      color: #334155;
+      padding: 0.4rem 0 0.4rem 1.5rem;
+      position: relative;
+      line-height: 1.65;
+    }
+    .card ul li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.85rem;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #1B3A6B;
+    }
+
+    /* Case Citations */
+    .case-cite {
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      border-left: 3px solid #1B3A6B;
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin: 1rem 0;
+    }
+    .case-cite .case-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.35rem;
+    }
+    .case-cite .gavel-icon {
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+    .case-cite .case-name {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #1B3A6B;
+      font-style: italic;
+    }
+    .case-cite .case-ref {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #64748B;
+      margin-left: 1.4rem;
+    }
+    .case-cite .case-summary {
+      font-size: 0.85rem;
+      color: #475569;
+      margin-top: 0.35rem;
+      margin-left: 1.4rem;
+      line-height: 1.55;
+    }
+
+    /* Statute Citations */
+    .statute-cite {
+      background: #F0F9FF;
+      border: 1px solid #BAE6FD;
+      border-left: 3px solid #0284C7;
+      border-radius: 8px;
+      padding: 0.85rem 1.25rem;
+      margin: 0.75rem 0;
+    }
+    .statute-cite .statute-name {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #0C4A6E;
+    }
+    .statute-cite .statute-desc {
+      font-size: 0.84rem;
+      color: #475569;
+      margin-top: 0.25rem;
+      line-height: 1.55;
+    }
+
+    /* Orange Callout */
+    .callout-orange {
+      background: linear-gradient(135deg, #FFF7ED 0%, #FEF3C7 100%);
+      border: 1px solid #FDBA74;
+      border-left: 3px solid #E8612A;
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin: 1rem 0;
+    }
+    .callout-orange p {
+      font-size: 0.88rem;
+      color: #9A3412;
+      font-weight: 500;
+      margin-bottom: 0;
+    }
+
+    /* Checklist */
+    .checklist {
+      list-style: none;
+      padding: 0;
+    }
+    .checklist li {
+      font-size: 0.93rem;
+      color: #334155;
+      padding: 0.5rem 0 0.5rem 2rem;
+      position: relative;
+      line-height: 1.65;
+    }
+    .checklist li::before {
+      content: '\2713';
+      position: absolute;
+      left: 0;
+      top: 0.5rem;
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      background: #E8612A;
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Sources Section */
+    .source-link {
+      display: block;
+      font-size: 0.88rem;
+      color: #1B3A6B;
+      text-decoration: none;
+      padding: 0.4rem 0;
+      border-bottom: 1px solid #F1F5F9;
+      transition: color 0.2s;
+    }
+    .source-link:hover { color: #E8612A; }
+    .source-link span.label {
+      font-weight: 600;
+      color: #334155;
+    }
+
+    /* Table of Contents */
+    .toc {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+    }
+    @media (max-width: 640px) { .toc { grid-template-columns: 1fr; } }
+    .toc a {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.88rem;
+      color: #1B3A6B;
+      text-decoration: none;
+      padding: 0.5rem 0.75rem;
+      border-radius: 8px;
+      transition: background 0.2s;
+    }
+    .toc a:hover { background: #F1F5F9; }
+    .toc a .toc-num {
+      font-weight: 700;
+      color: #E8612A;
+      font-size: 0.82rem;
+      width: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 2rem 1.5rem;
+      font-size: 0.82rem;
+      color: #94A3B8;
+      border-top: 1px solid #E2E8F0;
+      margin-top: 1rem;
+    }
+
+    /* Smooth scrolling */
+    html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+  </style>
+</head>
+<body>
+
+<!-- Toolbar -->
+<div class="toolbar">
+  <img src="surevera-header-white-logo.png" alt="SureVera" style="height:32px">
+  <div class="divider" style="width:1px;height:24px;background:rgba(255,255,255,0.2)"></div>
+  <span class="tool-label" style="font-size:0.85rem;font-weight:500;color:rgba(255,255,255,0.6)">Legal Reference</span>
+</div>
+
+<div class="container">
+
+  <!-- Disclaimer Banner -->
+  <div class="disclaimer-banner">
+    <span class="warn-icon">&#9888;</span>
+    <p>This page is for informational and educational purposes only. It is not legal advice. Consult a qualified attorney for legal guidance specific to your situation.</p>
+  </div>
+
+  <!-- Table of Contents -->
+  <div class="card">
+    <h2>Legal Reference &amp; Defense Guide</h2>
+    <p style="color:#64748B; font-size:0.9rem; margin-bottom:1.25rem;">A comprehensive reference covering the legal foundations that protect SureVera's right to republish official, public government health inspection data.</p>
+    <div class="toc">
+      <a href="#overview"><span class="toc-num">1.</span> Overview &mdash; Why SureVera Is Protected</a>
+      <a href="#first-amendment"><span class="toc-num">2.</span> First Amendment Protection</a>
+      <a href="#foia"><span class="toc-num">3.</span> Freedom of Information &amp; Public Records</a>
+      <a href="#section230"><span class="toc-num">4.</span> Section 230 Immunity</a>
+      <a href="#truth-defense"><span class="toc-num">5.</span> Truth as a Defamation Defense</a>
+      <a href="#tortious"><span class="toc-num">6.</span> Tortious Interference</a>
+      <a href="#anti-slapp"><span class="toc-num">7.</span> Anti-SLAPP Protections</a>
+      <a href="#precedent"><span class="toc-num">8.</span> Precedent &mdash; Similar Services</a>
+      <a href="#best-practices"><span class="toc-num">9.</span> Best Practices</a>
+      <a href="#if-threatened"><span class="toc-num">10.</span> What To Do If Threatened</a>
+    </div>
+  </div>
+
+  <!-- Section 1: Overview -->
+  <div class="card" id="overview">
+    <h2><span class="section-num">1.</span> Why SureVera Is Legally Protected &mdash; Overview</h2>
+    <p class="section-intro">SureVera surfaces official government health inspection data &mdash; public records generated by city and county health departments. It does not create ratings, opinions, or reviews. This distinction is critical, because the legal protections for republishing truthful government records are among the strongest in American law.</p>
+    <ul>
+      <li><strong>Health inspection data is public record</strong> under both federal and state law. Health departments collect and publish this information specifically so that the public can access it.</li>
+      <li><strong>SureVera does not create opinions.</strong> The letter grades (A, B, C, F) come directly from official government inspection records. SureVera is a conduit, not a creator.</li>
+      <li><strong>The First Amendment</strong> protects the right to publish truthful information obtained from public records. The Supreme Court has affirmed this protection repeatedly.</li>
+      <li><strong>Section 230 of the Communications Decency Act</strong> provides additional immunity for platforms that republish third-party content, including government data.</li>
+      <li><strong>Truth is an absolute defense</strong> to defamation in every U.S. jurisdiction. Accurately reporting what a government record says cannot constitute defamation.</li>
+      <li><strong>Anti-SLAPP statutes</strong> in many states provide a mechanism to quickly dismiss frivolous lawsuits aimed at silencing protected speech about public concerns like food safety.</li>
+    </ul>
+    <div class="callout-orange">
+      <p>Bottom line: Multiple overlapping layers of federal and state law protect SureVera's core activity of making government health inspection data accessible to the public.</p>
+    </div>
+  </div>
+
+  <!-- Section 2: First Amendment -->
+  <div class="card" id="first-amendment">
+    <h2><span class="section-num">2.</span> First Amendment Protection</h2>
+    <p class="section-intro">The First Amendment to the U.S. Constitution prohibits the government from abridging the freedom of speech or of the press. The Supreme Court has held that this protection extends to the publication of truthful, lawfully obtained information &mdash; particularly information from public records and on matters of public concern.</p>
+
+    <p>Health inspection data is squarely a matter of public concern. Food safety directly affects every person who eats at a restaurant. The public has a recognized interest in knowing whether the places they eat have passed or failed government safety inspections.</p>
+
+    <div class="case-cite">
+      <div class="case-header">
+        <span class="gavel-icon">&#9878;</span>
+        <span class="case-name">Cox Broadcasting Corp. v. Cohn</span>
+      </div>
+      <div class="case-ref">420 U.S. 469 (1975) &mdash; Supreme Court of the United States</div>
+      <div class="case-summary">The Court held that the First and Fourteenth Amendments prohibit states from imposing liability for the publication of truthful information contained in official court records that are open to public inspection. This established a broad principle that publishing information from public records is constitutionally protected.</div>
+    </div>
+
+    <div class="case-cite">
+      <div class="case-header">
+        <span class="gavel-icon">&#9878;</span>
+        <span class="case-name">Smith v. Daily Mail Publishing Co.</span>
+      </div>
+      <div class="case-ref">443 U.S. 97 (1979) &mdash; Supreme Court of the United States</div>
+      <div class="case-summary">The Court held that a state cannot punish the truthful publication of lawfully obtained information absent a need to further a state interest of the highest order. This case established a near-absolute protection for publishing truthful, lawfully obtained information.</div>
+    </div>
+
+    <div class="case-cite">
+      <div class="case-header">
+        <span class="gavel-icon">&#9878;</span>
+        <span class="case-name">Bartnicki v. Vopper</span>
+      </div>
+      <div class="case-ref">532 U.S. 514 (2001) &mdash; Supreme Court of the United States</div>
+      <div class="case-summary">The Court further affirmed the protection of publishing information of public concern, holding that a radio commentator could not be held liable for broadcasting an illegally intercepted phone call, because the commentator had obtained the recording lawfully and the content was a matter of public concern. SureVera's position is even stronger &mdash; its data is obtained from records that are intentionally made public.</div>
+    </div>
+
+    <p>Taken together, these cases establish that SureVera's publication of truthful government health inspection data is protected by the First Amendment. The data is lawfully obtained from public records, and food safety is unquestionably a matter of public concern.</p>
+  </div>
+
+  <!-- Section 3: FOIA & Public Records -->
+  <div class="card" id="foia">
+    <h2><span class="section-num">3.</span> Freedom of Information &amp; Public Records Laws</h2>
+    <p class="section-intro">Health inspection records are public records under both federal and state law. Numerous statutes require government agencies to make these records available to the public, and many health departments are affirmatively required to publish inspection results.</p>
+
+    <div class="statute-cite">
+      <div class="statute-name">Federal Freedom of Information Act (FOIA) &mdash; 5 U.S.C. &sect; 552</div>
+      <div class="statute-desc">Enacted in 1966, FOIA establishes the public's right to request access to records from federal agencies. It created the presumption that government records should be accessible to the public, a principle that has shaped transparency law at every level of government.</div>
+    </div>
+
+    <p>Every state has its own public records law, commonly referred to as "Sunshine Laws" or "Open Records Acts." These laws grant the public the right to access government records, including health inspection reports. Examples include:</p>
+
+    <div class="statute-cite">
+      <div class="statute-name">California Public Records Act &mdash; Cal. Gov. Code &sect;&sect; 6250&ndash;6270</div>
+      <div class="statute-desc">Declares that access to information concerning the conduct of the people's business is a fundamental right of every person in the state.</div>
+    </div>
+
+    <div class="statute-cite">
+      <div class="statute-name">Texas Public Information Act &mdash; Tex. Gov. Code &sect;&sect; 552.001&ndash;552.353</div>
+      <div class="statute-desc">Provides that government information is public information and must be available to the public during normal business hours.</div>
+    </div>
+
+    <div class="statute-cite">
+      <div class="statute-name">New York Freedom of Information Law (FOIL) &mdash; N.Y. Pub. Off. Law &sect;&sect; 84&ndash;90</div>
+      <div class="statute-desc">Establishes that government records are presumptively open for public inspection and copying.</div>
+    </div>
+
+    <p>Beyond general public records laws, many jurisdictions specifically mandate the public disclosure of restaurant inspection results:</p>
+
+    <ul>
+      <li><strong>New York City:</strong> Local Law 112 of 2010 established the mandatory restaurant letter grading system, requiring that inspection results be posted publicly at the establishment and published online by the Department of Health and Mental Hygiene.</li>
+      <li><strong>Los Angeles County:</strong> The Los Angeles County Department of Public Health has required restaurants to display letter grade cards since 1998, and inspection data is published in a public online database.</li>
+      <li><strong>Many cities and counties</strong> publish inspection data through open data portals (Socrata, ArcGIS) specifically intended for public access and third-party use.</li>
+    </ul>
+
+    <div class="callout-orange">
+      <p>The data SureVera displays is already publicly available &mdash; published by government agencies that are legally required to make it accessible. SureVera simply makes it easier for consumers to find and understand.</p>
+    </div>
+  </div>
+
+  <!-- Section 4: Section 230 -->
+  <div class="card" id="section230">
+    <h2><span class="section-num">4.</span> Section 230 of the Communications Decency Act</h2>
+    <p class="section-intro">Section 230 provides broad immunity to online platforms that host or republish content created by third parties. Since SureVera republishes data generated by government health departments (third-party information content providers), Section 230 provides an additional layer of legal protection.</p>
+
+    <div class="statute-cite">
+      <div class="statute-name">47 U.S.C. &sect; 230(c)(1)</div>
+      <div class="statute-desc">"No provider or user of an interactive computer service shall be treated as the publisher or speaker of any information provided by another information content provider."</div>
+    </div>
+
+    <p>Under Section 230, SureVera cannot be held liable as if it were the creator of the inspection data. The government health departments that conduct inspections and assign grades are the "information content providers." SureVera is a platform that makes this third-party government data accessible in a user-friendly format.</p>
+
+    <p>This means that if a restaurant is unhappy with its health grade, its dispute is with the health department that issued the grade &mdash; not with SureVera for displaying it.</p>
+
+    <div class="case-cite">
+      <div class="case-header">
+        <span class="gavel-icon">&#9878;</span>
+        <span class="case-name">Zeran v. America Online, Inc.</span>
+      </div>
+      <div class="case-ref">129 F.3d 327 (4th Cir. 1997) &mdash; United States Court of Appeals, Fourth Circuit</div>
+      <div class="case-summary">One of the first major Section 230 cases, the court broadly interpreted the statute's immunity provision, holding that Section 230 creates a federal immunity to any cause of action that would make service providers liable for information originating with a third-party user of the service. The court emphasized that Congress intended broad immunity to promote the free exchange of information online.</div>
+    </div>
+
+    <div class="case-cite">
+      <div class="case-header">
+        <span class="gavel-icon">&#9878;</span>
+        <span class="case-name">Batzel v. Smith</span>
+      </div>
+      <div class="case-ref">333 F.3d 1018 (9th Cir. 2003) &mdash; United States Court of Appeals, Ninth Circuit</div>
+      <div class="case-summary">The court held that Section 230 immunity applies when a service provider publishes information provided by another party. Selecting and editing third-party content for publication does not transform the service provider into an "information content provider" who loses immunity.</div>
+    </div>
+
+    <p>Section 230 immunity is not absolute &mdash; it does not protect against violations of federal criminal law or intellectual property claims. However, for the core activity of republishing government health inspection data, Section 230 provides strong protection against state-law claims such as defamation or tortious interference.</p>
+  </div>
+
+  <!-- Section 5: Truth Defense -->
+  <div class="card" id="truth-defense">
+    <h2><span class="section-num">5.</span> Truth as an Absolute Defense to Defamation</h2>
+    <p class="section-intro">In every U.S. jurisdiction, truth is an absolute defense to a defamation claim. If SureVera accurately reports what an official government inspection record states, it cannot be liable for defamation &mdash; regardless of whether the information is unflattering to a business.</p>
+
+    <p>SureVera does not characterize, editorialize, or offer opinions about restaurants. It displays the grade and data that the government health department assigned. The statement "Restaurant X received a grade of C from the [City] Health Department" is either true or it is not. If it is true, defamation is impossible as a matter of law.</p>
+
+    <div class="case-cite">
+      <div class="case-header">
+        <span class="gavel-icon">&#9878;</span>
+        <span class="case-name">New York Times Co. v. Sullivan</span>
+      </div>
+      <div class="case-ref">376 U.S. 254 (1964) &mdash; Supreme Court of the United States</div>
+      <div class="case-summary">This landmark decision established that a public official (and later extended to public figures and matters of public concern) must prove "actual malice" &mdash; knowledge of falsity or reckless disregard for the truth &mdash; to prevail in a defamation action. The case set a high constitutional bar for defamation claims involving matters of public interest.</div>
+    </div>
+
+    <div class="case-cite">
+      <div class="case-header">
+        <span class="gavel-icon">&#9878;</span>
+        <span class="case-name">Philadelphia Newspapers, Inc. v. Hepps</span>
+      </div>
+      <div class="case-ref">475 U.S. 767 (1986) &mdash; Supreme Court of the United States</div>
+      <div class="case-summary">The Court held that in defamation cases involving matters of public concern, the plaintiff bears the burden of proving that the statements at issue are false. This means a restaurant suing SureVera would have to prove that SureVera's reporting of inspection data is inaccurate &mdash; a burden that is virtually impossible to meet when SureVera faithfully reports official records.</div>
+    </div>
+
+    <p>For a restaurant to succeed in a defamation claim against SureVera, it would need to prove that SureVera published false information. Since SureVera reports data directly from government inspection records, the restaurant's actual dispute would be with the health department that issued the finding &mdash; not with SureVera for making it accessible.</p>
+  </div>
+
+  <!-- Section 6: Tortious Interference -->
+  <div class="card" id="tortious">
+    <h2><span class="section-num">6.</span> Tortious Interference &mdash; Why It Doesn't Apply</h2>
+    <p class="section-intro">A restaurant might attempt to claim that SureVera committed "tortious interference with business relations" by displaying a low health grade that allegedly caused the restaurant to lose customers. This claim would fail for multiple reasons.</p>
+
+    <p>To establish tortious interference with business relations, a plaintiff must generally prove:</p>
+
+    <ul>
+      <li><strong>Improper or wrongful conduct</strong> by the defendant</li>
+      <li><strong>Intent to harm</strong> the plaintiff's business relationship</li>
+      <li><strong>Actual causation</strong> &mdash; that the defendant's conduct caused the harm</li>
+      <li><strong>Damages</strong> &mdash; actual economic loss</li>
+    </ul>
+
+    <p>SureVera's activity fails to satisfy these elements:</p>
+
+    <ul>
+      <li><strong>No improper conduct:</strong> Publishing truthful public records is lawful, constitutionally protected activity. It is the opposite of "improper or wrongful."</li>
+      <li><strong>No intent to harm:</strong> SureVera has no intent to harm any specific restaurant. It provides neutral, equal access to public data for all restaurants in its coverage area. A restaurant with an A grade benefits from SureVera's visibility just as much as a restaurant with an F grade is exposed by it.</li>
+      <li><strong>Causation lies elsewhere:</strong> If customers avoid a restaurant after seeing its health grade, the cause of that business loss is the restaurant's own health violations &mdash; not SureVera's reporting. SureVera did not create the violations; the health department documented them.</li>
+    </ul>
+
+    <p>The analogy is straightforward: a newspaper that reports on a restaurant's failed health inspection cannot be sued for tortious interference. The same principle applies to SureVera, which is simply making the same public information available in a different format.</p>
+
+    <div class="case-cite">
+      <div class="case-header">
+        <span class="gavel-icon">&#9878;</span>
+        <span class="case-name">Blatty v. New York Times Co.</span>
+      </div>
+      <div class="case-ref">42 Cal.3d 1033 (1986) &mdash; Supreme Court of California</div>
+      <div class="case-summary">The court held that the First Amendment protects publishers from tortious interference claims based on the content of their publications. When the alleged interference consists of protected speech, constitutional protections bar the tortious interference claim.</div>
+    </div>
+  </div>
+
+  <!-- Section 7: Anti-SLAPP -->
+  <div class="card" id="anti-slapp">
+    <h2><span class="section-num">7.</span> Anti-SLAPP Protections</h2>
+    <p class="section-intro">Anti-SLAPP (Strategic Lawsuits Against Public Participation) statutes exist in many states to protect individuals and organizations from meritless lawsuits designed to silence speech on matters of public concern. If a restaurant files a frivolous lawsuit to intimidate SureVera into removing inspection data, Anti-SLAPP laws may provide a fast path to dismissal &mdash; and recovery of attorney fees.</p>
+
+    <p>Anti-SLAPP statutes typically allow a defendant to file a special motion to strike at the outset of the case. If the court finds that the lawsuit targets protected speech and the plaintiff cannot demonstrate a probability of prevailing, the case is dismissed early &mdash; before the defendant incurs the full cost of litigation. Most Anti-SLAPP statutes also award attorney fees to the prevailing defendant.</p>
+
+    <p>Health and food safety are clearly matters of public concern, which is the core requirement for Anti-SLAPP protection to apply. Publishing government health inspection data is quintessential speech in the public interest.</p>
+
+    <p><strong>States with notable Anti-SLAPP statutes:</strong></p>
+
+    <div class="statute-cite">
+      <div class="statute-name">California &mdash; Code of Civil Procedure &sect; 425.16</div>
+      <div class="statute-desc">One of the strongest and most frequently invoked Anti-SLAPP statutes in the country. Protects acts in furtherance of the right of free speech in connection with a public issue. Provides mandatory attorney fee awards to prevailing defendants.</div>
+    </div>
+
+    <div class="statute-cite">
+      <div class="statute-name">Texas &mdash; Texas Citizens Participation Act, Tex. Civ. Prac. &amp; Rem. Code &sect;&sect; 27.001&ndash;27.011</div>
+      <div class="statute-desc">Broadly protects the right of free speech, right to petition, and right of association. Provides for early dismissal and mandatory attorney fee awards.</div>
+    </div>
+
+    <div class="statute-cite">
+      <div class="statute-name">New York &mdash; Civil Rights Law &sect;&sect; 70-a, 76-a</div>
+      <div class="statute-desc">New York's Anti-SLAPP law was significantly strengthened in 2020. It now covers any communication in a public forum in connection with an issue of public interest, and provides for recovery of attorney fees and costs.</div>
+    </div>
+
+    <p>Other states with Anti-SLAPP protections include Washington, Oregon, Nevada, Florida, Louisiana, Maine, Indiana, Vermont, Connecticut, Massachusetts, Maryland, Virginia, Colorado, Arizona, and the District of Columbia. The specific scope and strength of these statutes varies by state.</p>
+
+    <div class="callout-orange">
+      <p>If a restaurant files a meritless lawsuit to silence SureVera, Anti-SLAPP laws may enable SureVera to get the case dismissed quickly and require the restaurant to pay SureVera's attorney fees.</p>
+    </div>
+  </div>
+
+  <!-- Section 8: Precedent -->
+  <div class="card" id="precedent">
+    <h2><span class="section-num">8.</span> Precedent &mdash; Similar Services</h2>
+    <p class="section-intro">SureVera is not the first service to publish information about businesses that those businesses might prefer to keep quiet. Courts have consistently protected services that publish truthful information about businesses, including review platforms, consumer advocacy organizations, and government grading systems.</p>
+
+    <p><strong>Yelp</strong></p>
+    <p>Yelp has been sued numerous times by businesses claiming that negative reviews caused them to lose revenue. Courts have consistently ruled in Yelp's favor, upholding both First Amendment protections and Section 230 immunity. SureVera's position is even stronger than Yelp's, because Yelp publishes user-generated opinions while SureVera publishes objective government data.</p>
+
+    <div class="case-cite">
+      <div class="case-header">
+        <span class="gavel-icon">&#9878;</span>
+        <span class="case-name">Hassell v. Bird</span>
+      </div>
+      <div class="case-ref">5 Cal.5th 522 (2018) &mdash; Supreme Court of California</div>
+      <div class="case-summary">The California Supreme Court held that Yelp could not be ordered to remove a user's review, even after a defamation judgment against the reviewer, because of Section 230 immunity. The court reinforced that platforms that host third-party content are not liable for that content.</div>
+    </div>
+
+    <p><strong>New York City Restaurant Letter Grading</strong></p>
+    <p>When New York City launched its mandatory restaurant letter grading system in 2010, the restaurant industry challenged it. The New York State Restaurant Association filed suit arguing the grading system was arbitrary and harmful to businesses.</p>
+
+    <div class="case-cite">
+      <div class="case-header">
+        <span class="gavel-icon">&#9878;</span>
+        <span class="case-name">New York State Restaurant Association v. New York City Board of Health</span>
+      </div>
+      <div class="case-ref">556 F.3d 114 (2d Cir. 2009) &mdash; United States Court of Appeals, Second Circuit (related litigation on prior letter grading proposals); subsequent state court proceedings upheld the 2010 system</div>
+      <div class="case-summary">Courts upheld New York City's authority to require letter grade posting and public disclosure of restaurant inspection results. The courts recognized the compelling public interest in food safety transparency. If the government itself can mandate the publication of restaurant grades, there is no legal basis to prevent a private party from republishing that same information.</div>
+    </div>
+
+    <p><strong>Consumer Advocacy Organizations</strong></p>
+    <p>Organizations like Consumer Reports and the Better Business Bureau have published performance data and evaluations of businesses for decades. This activity is well-established as protected speech. SureVera's model is even more straightforward: rather than creating its own evaluations, it surfaces official government findings.</p>
+
+    <p><strong>Google Maps</strong></p>
+    <p>Google Maps displays health inspection data for restaurants in certain markets, sourcing from government records. This is the same fundamental activity SureVera performs, applied by one of the world's largest technology companies.</p>
+  </div>
+
+  <!-- Section 9: Best Practices -->
+  <div class="card" id="best-practices">
+    <h2><span class="section-num">9.</span> Best Practices for SureVera's Legal Protection</h2>
+    <p class="section-intro">While SureVera's legal position is strong, following these best practices will further minimize risk and strengthen defensibility.</p>
+
+    <ul class="checklist">
+      <li><strong>Always clearly state the data source.</strong> Every displayed grade should indicate its origin (e.g., "Data sourced from [City/County] Health Department").</li>
+      <li><strong>Include disclaimers.</strong> Make clear that grades reflect official government findings, not SureVera's opinion or rating.</li>
+      <li><strong>Keep data current and accurate.</strong> Regularly refresh data from government sources. Stale or inaccurate data weakens the truth defense.</li>
+      <li><strong>Provide links to original sources</strong> where possible, so users can verify information independently.</li>
+      <li><strong>Do not editorialize.</strong> Avoid adding subjective commentary or opinions to health grades. Let the government data speak for itself.</li>
+      <li><strong>Maintain records of data sources and refresh dates.</strong> Document when data was fetched, from which endpoint, and in what format. This creates an evidence trail.</li>
+      <li><strong>Display match confidence.</strong> When matching restaurants to inspection records, do not show uncertain matches. Only display grades when the match is confident.</li>
+      <li><strong>Form an LLC or corporation.</strong> Operate through a business entity to provide personal liability protection for the founders.</li>
+      <li><strong>Obtain appropriate insurance.</strong> General liability insurance and Errors &amp; Omissions (E&amp;O) insurance can provide defense coverage and financial protection.</li>
+      <li><strong>Have an attorney review your Terms of Service and Privacy Policy.</strong> These documents should include appropriate disclaimers, limitation of liability provisions, and dispute resolution clauses.</li>
+      <li><strong>Respond promptly to data accuracy complaints.</strong> If a restaurant contacts SureVera claiming the displayed data is inaccurate, investigate promptly. Correct genuine errors quickly, and document the resolution.</li>
+    </ul>
+  </div>
+
+  <!-- Section 10: If Threatened -->
+  <div class="card" id="if-threatened">
+    <h2><span class="section-num">10.</span> What To Do If Threatened With a Lawsuit</h2>
+    <p class="section-intro">If SureVera receives a legal threat from a restaurant, the following steps are recommended.</p>
+
+    <ul>
+      <li><strong>Do not panic.</strong> The legal foundation for SureVera's activity is very strong, supported by constitutional protections, federal statute, and extensive case law.</li>
+      <li><strong>Do not remove data in response to threats.</strong> Removing data after a threat could be seen as an admission and could set a precedent that encourages future threats. The data is truthful public information and SureVera has every right to display it.</li>
+      <li><strong>Document all communications.</strong> Save every email, letter, voicemail, and record of interaction. These records may be important if the matter proceeds to litigation.</li>
+      <li><strong>Contact an attorney experienced in First Amendment or media law.</strong> A specialized attorney can assess the specific threat and recommend the most effective response.</li>
+      <li><strong>Check if Anti-SLAPP protections apply</strong> in the relevant jurisdiction. If they do, a special motion to strike may be the fastest and least expensive path to resolution.</li>
+      <li><strong>Verify data accuracy.</strong> Confirm that the data displayed for the threatening restaurant is accurate and current. If there is a genuine error, correct it &mdash; but do so because accuracy matters, not because of the threat.</li>
+    </ul>
+
+    <p><strong>Organizations that may provide assistance:</strong></p>
+    <ul>
+      <li><strong>Electronic Frontier Foundation (EFF)</strong> &mdash; <a href="https://www.eff.org" target="_blank" rel="noopener" style="color:#1B3A6B;">eff.org</a> &mdash; defends civil liberties in the digital world, including free speech online</li>
+      <li><strong>Reporters Committee for Freedom of the Press</strong> &mdash; <a href="https://www.rcfp.org" target="_blank" rel="noopener" style="color:#1B3A6B;">rcfp.org</a> &mdash; provides legal resources and defense for those exercising press freedoms</li>
+      <li><strong>American Civil Liberties Union (ACLU)</strong> &mdash; <a href="https://www.aclu.org" target="_blank" rel="noopener" style="color:#1B3A6B;">aclu.org</a> &mdash; local chapters may assist with First Amendment defense</li>
+    </ul>
+  </div>
+
+  <!-- Sources & Further Reading -->
+  <div class="card" id="sources">
+    <h2>Sources &amp; Further Reading</h2>
+    <p style="color:#64748B; font-size:0.9rem; margin-bottom:1.25rem;">Links to the statutes, cases, and resources referenced on this page.</p>
+
+    <p style="font-weight:600; color:#1B3A6B; margin-bottom:0.5rem; margin-top:1rem;">Federal Statutes</p>
+    <a class="source-link" href="https://www.law.cornell.edu/uscode/text/5/552" target="_blank" rel="noopener"><span class="label">Freedom of Information Act</span> &mdash; 5 U.S.C. &sect; 552</a>
+    <a class="source-link" href="https://www.law.cornell.edu/uscode/text/47/230" target="_blank" rel="noopener"><span class="label">Section 230, Communications Decency Act</span> &mdash; 47 U.S.C. &sect; 230</a>
+
+    <p style="font-weight:600; color:#1B3A6B; margin-bottom:0.5rem; margin-top:1.5rem;">Supreme Court Cases</p>
+    <a class="source-link" href="https://supreme.justia.com/cases/federal/us/376/254/" target="_blank" rel="noopener"><span class="label">New York Times Co. v. Sullivan</span> &mdash; 376 U.S. 254 (1964)</a>
+    <a class="source-link" href="https://supreme.justia.com/cases/federal/us/420/469/" target="_blank" rel="noopener"><span class="label">Cox Broadcasting Corp. v. Cohn</span> &mdash; 420 U.S. 469 (1975)</a>
+    <a class="source-link" href="https://supreme.justia.com/cases/federal/us/443/97/" target="_blank" rel="noopener"><span class="label">Smith v. Daily Mail Publishing Co.</span> &mdash; 443 U.S. 97 (1979)</a>
+    <a class="source-link" href="https://supreme.justia.com/cases/federal/us/475/767/" target="_blank" rel="noopener"><span class="label">Philadelphia Newspapers, Inc. v. Hepps</span> &mdash; 475 U.S. 767 (1986)</a>
+    <a class="source-link" href="https://supreme.justia.com/cases/federal/us/532/514/" target="_blank" rel="noopener"><span class="label">Bartnicki v. Vopper</span> &mdash; 532 U.S. 514 (2001)</a>
+
+    <p style="font-weight:600; color:#1B3A6B; margin-bottom:0.5rem; margin-top:1.5rem;">Federal Circuit Court Cases</p>
+    <a class="source-link" href="https://law.justia.com/cases/federal/appellate-courts/F3/129/327/587790/" target="_blank" rel="noopener"><span class="label">Zeran v. America Online, Inc.</span> &mdash; 129 F.3d 327 (4th Cir. 1997)</a>
+    <a class="source-link" href="https://law.justia.com/cases/federal/appellate-courts/F3/333/1018/576592/" target="_blank" rel="noopener"><span class="label">Batzel v. Smith</span> &mdash; 333 F.3d 1018 (9th Cir. 2003)</a>
+
+    <p style="font-weight:600; color:#1B3A6B; margin-bottom:0.5rem; margin-top:1.5rem;">State Court Cases</p>
+    <a class="source-link" href="https://law.justia.com/cases/california/supreme-court/3d/42/1033.html" target="_blank" rel="noopener"><span class="label">Blatty v. New York Times Co.</span> &mdash; 42 Cal.3d 1033 (1986)</a>
+    <a class="source-link" href="https://law.justia.com/cases/california/supreme-court/2018/s235968.html" target="_blank" rel="noopener"><span class="label">Hassell v. Bird</span> &mdash; 5 Cal.5th 522 (2018)</a>
+
+    <p style="font-weight:600; color:#1B3A6B; margin-bottom:0.5rem; margin-top:1.5rem;">Anti-SLAPP Statutes</p>
+    <a class="source-link" href="https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?sectionNum=425.16.&lawCode=CCP" target="_blank" rel="noopener"><span class="label">California Anti-SLAPP</span> &mdash; Code of Civil Procedure &sect; 425.16</a>
+    <a class="source-link" href="https://statutes.capitol.texas.gov/Docs/CP/htm/CP.27.htm" target="_blank" rel="noopener"><span class="label">Texas Citizens Participation Act</span> &mdash; Civ. Prac. &amp; Rem. Code Ch. 27</a>
+    <a class="source-link" href="https://www.nysenate.gov/legislation/laws/CVR/76-A" target="_blank" rel="noopener"><span class="label">New York Anti-SLAPP</span> &mdash; Civil Rights Law &sect;&sect; 70-a, 76-a</a>
+
+    <p style="font-weight:600; color:#1B3A6B; margin-bottom:0.5rem; margin-top:1.5rem;">State Public Records Laws</p>
+    <a class="source-link" href="https://leginfo.legislature.ca.gov/faces/codes_displayText.xhtml?division=7.&chapter=3.5.&lawCode=GOV&article=1." target="_blank" rel="noopener"><span class="label">California Public Records Act</span> &mdash; Gov. Code &sect;&sect; 6250&ndash;6270</a>
+    <a class="source-link" href="https://statutes.capitol.texas.gov/Docs/GV/htm/GV.552.htm" target="_blank" rel="noopener"><span class="label">Texas Public Information Act</span> &mdash; Gov. Code Ch. 552</a>
+    <a class="source-link" href="https://www.nysenate.gov/legislation/laws/PBO/87" target="_blank" rel="noopener"><span class="label">New York FOIL</span> &mdash; Pub. Off. Law &sect;&sect; 84&ndash;90</a>
+
+    <p style="font-weight:600; color:#1B3A6B; margin-bottom:0.5rem; margin-top:1.5rem;">Organizations &amp; Resources</p>
+    <a class="source-link" href="https://www.eff.org" target="_blank" rel="noopener"><span class="label">Electronic Frontier Foundation (EFF)</span></a>
+    <a class="source-link" href="https://www.rcfp.org" target="_blank" rel="noopener"><span class="label">Reporters Committee for Freedom of the Press</span></a>
+    <a class="source-link" href="https://www.aclu.org" target="_blank" rel="noopener"><span class="label">American Civil Liberties Union (ACLU)</span></a>
+    <a class="source-link" href="https://anti-slapp.org" target="_blank" rel="noopener"><span class="label">Public Participation Project</span> &mdash; Anti-SLAPP resource center</a>
+  </div>
+
+</div>
+
+<!-- Footer -->
+<div class="footer">SureVera Legal Reference &mdash; For informational purposes only, not legal advice</div>
+
+<script src="dark-mode.js"></script>
+<script src="toolkit-nav.js"></script>
+</body>
+</html>

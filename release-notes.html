@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SureVera Release Notes</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #F1F5F9;
+      color: #1E293B;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Toolbar */
+    .toolbar {
+      background: linear-gradient(135deg, #0D1B2E 0%, #1B3A6B 100%);
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .toolbar .divider { width: 1px; height: 24px; background: rgba(255,255,255,0.2); }
+    .toolbar .tool-label { font-size: 0.85rem; font-weight: 500; color: rgba(255,255,255,0.6); }
+
+    /* Layout */
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem 1rem; }
+
+    .main-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    @media (max-width: 960px) {
+      .main-layout { grid-template-columns: 1fr; }
+    }
+
+    /* Cards */
+    .card {
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.03);
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #1B3A6B;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Form fields */
+    .field-group { margin-bottom: 1.25rem; }
+    .field-group:last-child { margin-bottom: 0; }
+
+    .field-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #1B3A6B;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.35rem;
+      display: block;
+    }
+
+    .field-input, .field-select, .field-textarea {
+      width: 100%;
+      padding: 0.65rem 0.85rem;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      color: #1E293B;
+      background: #F8FAFC;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+    .field-input:focus, .field-select:focus, .field-textarea:focus {
+      border-color: #1B3A6B;
+      box-shadow: 0 0 0 3px rgba(27,58,107,0.08);
+      background: #FFFFFF;
+    }
+    .field-textarea {
+      resize: vertical;
+      min-height: 80px;
+      line-height: 1.6;
+    }
+
+    .row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .row-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1rem;
+    }
+
+    /* Change items */
+    .change-item {
+      display: grid;
+      grid-template-columns: 150px 1fr 36px;
+      gap: 0.5rem;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+    .change-item .field-select,
+    .change-item .field-input {
+      margin-bottom: 0;
+    }
+
+    .btn-remove {
+      width: 32px;
+      height: 32px;
+      border: none;
+      border-radius: 8px;
+      background: #FEE2E2;
+      color: #DC2626;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+    .btn-remove:hover { background: #FECACA; }
+
+    /* Buttons */
+    .btn {
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .btn-primary {
+      background: #1B3A6B;
+      color: #FFFFFF;
+    }
+    .btn-primary:hover { background: #0D1B2E; }
+
+    .btn-orange {
+      background: #E8612A;
+      color: #FFFFFF;
+    }
+    .btn-orange:hover { background: #D4551F; }
+
+    .btn-outline {
+      background: #FFFFFF;
+      color: #1B3A6B;
+      border: 1.5px solid #CBD5E1;
+    }
+    .btn-outline:hover { border-color: #1B3A6B; }
+
+    .btn-ghost {
+      background: transparent;
+      color: #64748B;
+      padding: 0.4rem 0.8rem;
+    }
+    .btn-ghost:hover { background: #F1F5F9; color: #1B3A6B; }
+
+    .btn-sm { padding: 0.4rem 0.8rem; font-size: 0.78rem; }
+
+    .btn-row {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    /* Template buttons */
+    .template-row {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+    }
+    .template-btn {
+      padding: 0.4rem 0.9rem;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 999px;
+      background: #FFFFFF;
+      color: #64748B;
+      font-family: inherit;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .template-btn:hover {
+      border-color: #E8612A;
+      color: #E8612A;
+    }
+
+    /* Preview tabs */
+    .preview-tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 2px solid #E2E8F0;
+      margin-bottom: 1rem;
+    }
+    .preview-tab {
+      padding: 0.55rem 1.2rem;
+      border: none;
+      background: none;
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #94A3B8;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: all 0.2s;
+    }
+    .preview-tab:hover { color: #1B3A6B; }
+    .preview-tab.active {
+      color: #1B3A6B;
+      border-bottom-color: #E8612A;
+    }
+
+    .preview-box {
+      background: #F8FAFC;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 10px;
+      padding: 1.25rem;
+      font-size: 0.88rem;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      min-height: 200px;
+      max-height: 400px;
+      overflow-y: auto;
+      color: #334155;
+    }
+
+    .preview-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 0.75rem;
+    }
+
+    .char-counter {
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: #94A3B8;
+    }
+    .char-counter.warning { color: #E8612A; }
+    .char-counter.over { color: #DC2626; font-weight: 700; }
+
+    /* History section */
+    .history-section {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem 2rem;
+    }
+
+    .history-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #1B3A6B;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .history-item {
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 12px;
+      margin-bottom: 0.75rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+      overflow: hidden;
+    }
+
+    .history-header {
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .history-header:hover { background: #F8FAFC; }
+
+    .history-meta {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .history-version {
+      font-weight: 700;
+      color: #1B3A6B;
+      font-size: 0.95rem;
+    }
+    .history-date {
+      font-size: 0.8rem;
+      color: #94A3B8;
+    }
+    .history-platform {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      background: #EFF6FF;
+      color: #1B3A6B;
+    }
+
+    .history-actions {
+      display: flex;
+      gap: 0.4rem;
+      align-items: center;
+    }
+
+    .history-expand {
+      font-size: 0.8rem;
+      color: #94A3B8;
+      transition: transform 0.2s;
+    }
+    .history-item.expanded .history-expand { transform: rotate(180deg); }
+
+    .history-body {
+      display: none;
+      padding: 0 1.25rem 1rem;
+      border-top: 1px solid #E2E8F0;
+    }
+    .history-item.expanded .history-body { display: block; padding-top: 1rem; }
+
+    .history-changes {
+      font-size: 0.85rem;
+      line-height: 1.7;
+      color: #475569;
+      white-space: pre-wrap;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 2.5rem 1rem;
+      color: #94A3B8;
+      font-size: 0.9rem;
+    }
+
+    /* Category badges */
+    .cat-badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      margin-right: 0.3rem;
+    }
+    .cat-feature { background: #DBEAFE; color: #1E40AF; }
+    .cat-improvement { background: #E0E7FF; color: #3730A3; }
+    .cat-bugfix { background: #FEE2E2; color: #991B1B; }
+    .cat-city { background: #D1FAE5; color: #065F46; }
+    .cat-other { background: #F1F5F9; color: #475569; }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #0D1B2E;
+      color: #FFFFFF;
+      padding: 0.75rem 1.5rem;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 200;
+    }
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 3rem;
+      padding: 1.5rem;
+      text-align: center;
+      font-size: 0.75rem;
+      color: #94A3B8;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <img src="surevera-header-white-logo.png" alt="SureVera" style="height: 28px;">
+    <div class="divider"></div>
+    <span class="tool-label">Release Notes</span>
+  </div>
+
+  <!-- Main content -->
+  <div class="container">
+    <!-- Templates -->
+    <div class="template-row">
+      <span style="font-size:0.8rem;font-weight:600;color:#64748B;margin-right:0.25rem;">Templates:</span>
+      <button class="template-btn" onclick="applyTemplate('cities')">New Cities</button>
+      <button class="template-btn" onclick="applyTemplate('bugfix')">Bug Fixes</button>
+      <button class="template-btn" onclick="applyTemplate('major')">Major Update</button>
+    </div>
+
+    <div class="main-layout">
+      <!-- Left: Editor -->
+      <div class="editor-col">
+        <div class="card">
+          <div class="card-title">Release Details</div>
+          <div class="row-3">
+            <div class="field-group">
+              <label class="field-label">Version</label>
+              <input type="text" id="version" class="field-input" placeholder="1.2.0">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Release Date</label>
+              <input type="date" id="releaseDate" class="field-input">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Platform</label>
+              <select id="platform" class="field-select">
+                <option value="Both">Both</option>
+                <option value="iOS">iOS</option>
+                <option value="Android">Android</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title" style="justify-content:space-between;">
+            Changes
+            <button class="btn btn-sm btn-primary" onclick="addChangeItem()">+ Add Item</button>
+          </div>
+          <div id="changesList"></div>
+        </div>
+
+        <div class="btn-row" style="margin-bottom:1rem;">
+          <button class="btn btn-orange" onclick="saveRelease()">Save Release</button>
+          <button class="btn btn-outline" onclick="clearForm()">Clear Form</button>
+        </div>
+      </div>
+
+      <!-- Right: Preview -->
+      <div class="preview-col">
+        <div class="card" style="position:sticky;top:80px;">
+          <div class="card-title">Live Preview</div>
+          <div class="preview-tabs">
+            <button class="preview-tab active" onclick="switchPreviewTab('appstore', this)">App Store</button>
+            <button class="preview-tab" onclick="switchPreviewTab('playstore', this)">Play Store</button>
+          </div>
+          <div class="preview-box" id="previewBox"></div>
+          <div class="preview-footer">
+            <span class="char-counter" id="charCounter">0 / 4,000</span>
+            <button class="btn btn-sm btn-outline" onclick="copyPreview()">Copy</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- History -->
+  <div class="history-section">
+    <div class="history-title">
+      Release History
+      <button class="btn btn-sm btn-ghost" onclick="exportAllNotes()">Export All</button>
+    </div>
+    <div id="historyList">
+      <div class="empty-state">No saved releases yet. Create your first one above.</div>
+    </div>
+  </div>
+
+  <div class="footer">SureVera Release Notes — runs entirely in your browser</div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ---- State ----
+    let currentTab = 'appstore';
+    let editingIndex = null; // null = new, number = editing existing
+
+    const CATEGORY_LABELS = {
+      'feature': 'New Feature',
+      'improvement': 'Improvement',
+      'bugfix': 'Bug Fix',
+      'city': 'New City',
+      'other': 'Other'
+    };
+
+    const CATEGORY_EMOJI = {
+      'feature': '',
+      'improvement': '',
+      'bugfix': '',
+      'city': '',
+      'other': ''
+    };
+
+    // ---- Init ----
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('releaseDate').valueAsDate = new Date();
+      addChangeItem();
+      renderHistory();
+      updatePreview();
+    });
+
+    // ---- Change Items ----
+    function addChangeItem(category = 'feature', text = '') {
+      const list = document.getElementById('changesList');
+      const item = document.createElement('div');
+      item.className = 'change-item';
+      item.innerHTML = `
+        <select class="field-select change-cat" onchange="updatePreview()">
+          <option value="feature" ${category === 'feature' ? 'selected' : ''}>New Feature</option>
+          <option value="improvement" ${category === 'improvement' ? 'selected' : ''}>Improvement</option>
+          <option value="bugfix" ${category === 'bugfix' ? 'selected' : ''}>Bug Fix</option>
+          <option value="city" ${category === 'city' ? 'selected' : ''}>New City</option>
+          <option value="other" ${category === 'other' ? 'selected' : ''}>Other</option>
+        </select>
+        <input type="text" class="field-input change-text" placeholder="Describe the change..." value="${escapeAttr(text)}" oninput="updatePreview()">
+        <button class="btn-remove" onclick="removeChangeItem(this)" title="Remove">&times;</button>
+      `;
+      list.appendChild(item);
+      updatePreview();
+    }
+
+    function removeChangeItem(btn) {
+      const list = document.getElementById('changesList');
+      if (list.children.length > 1) {
+        btn.closest('.change-item').remove();
+        updatePreview();
+      }
+    }
+
+    function getChanges() {
+      const items = document.querySelectorAll('.change-item');
+      const changes = [];
+      items.forEach(item => {
+        const cat = item.querySelector('.change-cat').value;
+        const text = item.querySelector('.change-text').value.trim();
+        if (text) changes.push({ category: cat, text });
+      });
+      return changes;
+    }
+
+    // ---- Preview ----
+    function switchPreviewTab(tab, btn) {
+      currentTab = tab;
+      document.querySelectorAll('.preview-tab').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+      updatePreview();
+    }
+
+    function updatePreview() {
+      const version = document.getElementById('version').value.trim();
+      const changes = getChanges();
+      const limit = currentTab === 'appstore' ? 4000 : 500;
+
+      let text = '';
+      if (currentTab === 'appstore') {
+        text = formatAppStore(version, changes);
+      } else {
+        text = formatPlayStore(version, changes);
+      }
+
+      document.getElementById('previewBox').textContent = text;
+
+      const counter = document.getElementById('charCounter');
+      const len = text.length;
+      counter.textContent = `${len.toLocaleString()} / ${limit.toLocaleString()}`;
+      counter.className = 'char-counter';
+      if (len > limit) counter.classList.add('over');
+      else if (len > limit * 0.9) counter.classList.add('warning');
+    }
+
+    function formatAppStore(version, changes) {
+      if (changes.length === 0) return 'Add changes above to see a preview.';
+
+      const grouped = groupByCategory(changes);
+      const lines = [];
+
+      if (version) lines.push(`Version ${version}\n`);
+
+      const order = ['feature', 'city', 'improvement', 'bugfix', 'other'];
+      const sectionNames = {
+        'feature': 'NEW',
+        'improvement': 'IMPROVEMENTS',
+        'bugfix': 'BUG FIXES',
+        'city': 'NEW CITIES',
+        'other': 'OTHER'
+      };
+
+      for (const cat of order) {
+        if (grouped[cat] && grouped[cat].length > 0) {
+          lines.push(sectionNames[cat]);
+          grouped[cat].forEach(c => {
+            lines.push(`- ${c.text}`);
+          });
+          lines.push('');
+        }
+      }
+
+      return lines.join('\n').trim();
+    }
+
+    function formatPlayStore(version, changes) {
+      if (changes.length === 0) return 'Add changes above to see a preview.';
+
+      const lines = [];
+      const grouped = groupByCategory(changes);
+      const order = ['feature', 'city', 'improvement', 'bugfix', 'other'];
+      const bullets = {
+        'feature': '\u2728',
+        'improvement': '\u26A1',
+        'bugfix': '\uD83D\uDEE0\uFE0F',
+        'city': '\uD83D\uDCCD',
+        'other': '\u2022'
+      };
+
+      for (const cat of order) {
+        if (grouped[cat] && grouped[cat].length > 0) {
+          grouped[cat].forEach(c => {
+            lines.push(`${bullets[cat]} ${c.text}`);
+          });
+        }
+      }
+
+      return lines.join('\n').trim();
+    }
+
+    function groupByCategory(changes) {
+      const g = {};
+      changes.forEach(c => {
+        if (!g[c.category]) g[c.category] = [];
+        g[c.category].push(c);
+      });
+      return g;
+    }
+
+    function copyPreview() {
+      const text = document.getElementById('previewBox').textContent;
+      navigator.clipboard.writeText(text).then(() => showToast('Copied to clipboard'));
+    }
+
+    // ---- Templates ----
+    function applyTemplate(type) {
+      const list = document.getElementById('changesList');
+      list.innerHTML = '';
+
+      if (type === 'cities') {
+        document.getElementById('version').value = '';
+        addChangeItem('city', 'Now available in [City], [State]');
+        addChangeItem('city', 'Now available in [City], [State]');
+        addChangeItem('improvement', 'Expanded coverage with new health department data sources');
+      } else if (type === 'bugfix') {
+        document.getElementById('version').value = '';
+        addChangeItem('bugfix', 'Fixed an issue where [describe bug]');
+        addChangeItem('bugfix', 'Resolved a crash that occurred when [scenario]');
+        addChangeItem('improvement', 'Performance improvements and stability fixes');
+      } else if (type === 'major') {
+        document.getElementById('version').value = '';
+        addChangeItem('feature', 'Introducing [feature name] — [brief description]');
+        addChangeItem('improvement', 'Redesigned [screen/flow] for a better experience');
+        addChangeItem('city', 'Now available in [City], [State]');
+        addChangeItem('bugfix', 'Various bug fixes and performance improvements');
+      }
+
+      updatePreview();
+    }
+
+    // ---- Save / Load ----
+    function getReleases() {
+      try {
+        return JSON.parse(localStorage.getItem('surevera_releases') || '[]');
+      } catch { return []; }
+    }
+
+    function setReleases(releases) {
+      localStorage.setItem('surevera_releases', JSON.stringify(releases));
+    }
+
+    function saveRelease() {
+      const version = document.getElementById('version').value.trim();
+      const releaseDate = document.getElementById('releaseDate').value;
+      const platform = document.getElementById('platform').value;
+      const changes = getChanges();
+
+      if (!version) { showToast('Please enter a version number'); return; }
+      if (changes.length === 0) { showToast('Please add at least one change'); return; }
+
+      const release = {
+        version,
+        date: releaseDate,
+        platform,
+        changes,
+        savedAt: new Date().toISOString()
+      };
+
+      const releases = getReleases();
+
+      if (editingIndex !== null) {
+        releases[editingIndex] = release;
+        editingIndex = null;
+        showToast(`v${version} updated`);
+      } else {
+        releases.unshift(release);
+        showToast(`v${version} saved`);
+      }
+
+      setReleases(releases);
+      renderHistory();
+      clearForm();
+    }
+
+    function clearForm() {
+      document.getElementById('version').value = '';
+      document.getElementById('releaseDate').valueAsDate = new Date();
+      document.getElementById('platform').value = 'Both';
+      document.getElementById('changesList').innerHTML = '';
+      editingIndex = null;
+      addChangeItem();
+      updatePreview();
+    }
+
+    function editRelease(index) {
+      const releases = getReleases();
+      const r = releases[index];
+      if (!r) return;
+
+      document.getElementById('version').value = r.version;
+      document.getElementById('releaseDate').value = r.date;
+      document.getElementById('platform').value = r.platform;
+
+      const list = document.getElementById('changesList');
+      list.innerHTML = '';
+      r.changes.forEach(c => addChangeItem(c.category, c.text));
+
+      editingIndex = index;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      showToast(`Editing v${r.version}`);
+    }
+
+    function deleteRelease(index) {
+      const releases = getReleases();
+      const v = releases[index]?.version || '';
+      if (!confirm(`Delete v${v}?`)) return;
+      releases.splice(index, 1);
+      setReleases(releases);
+      renderHistory();
+      showToast(`v${v} deleted`);
+    }
+
+    function renderHistory() {
+      const releases = getReleases();
+      const container = document.getElementById('historyList');
+
+      if (releases.length === 0) {
+        container.innerHTML = '<div class="empty-state">No saved releases yet. Create your first one above.</div>';
+        return;
+      }
+
+      container.innerHTML = releases.map((r, i) => {
+        const changesText = formatAppStore(r.version, r.changes);
+        const dateStr = r.date ? new Date(r.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+        return `
+          <div class="history-item" id="history-${i}">
+            <div class="history-header" onclick="toggleHistory(${i})">
+              <div class="history-meta">
+                <span class="history-version">v${escapeHtml(r.version)}</span>
+                <span class="history-date">${dateStr}</span>
+                <span class="history-platform">${escapeHtml(r.platform)}</span>
+                <span style="font-size:0.78rem;color:#94A3B8;">${r.changes.length} change${r.changes.length !== 1 ? 's' : ''}</span>
+              </div>
+              <div class="history-actions">
+                <button class="btn btn-sm btn-ghost" onclick="event.stopPropagation();editRelease(${i})">Edit</button>
+                <button class="btn btn-sm btn-ghost" style="color:#DC2626;" onclick="event.stopPropagation();deleteRelease(${i})">Delete</button>
+                <span class="history-expand">\u25BC</span>
+              </div>
+            </div>
+            <div class="history-body">
+              <div class="history-changes">${escapeHtml(changesText)}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function toggleHistory(index) {
+      const el = document.getElementById(`history-${index}`);
+      el.classList.toggle('expanded');
+    }
+
+    // ---- Export ----
+    function exportAllNotes() {
+      const releases = getReleases();
+      if (releases.length === 0) { showToast('No releases to export'); return; }
+
+      let output = 'SureVera Release Notes\n';
+      output += '='.repeat(40) + '\n\n';
+
+      releases.forEach(r => {
+        const dateStr = r.date ? new Date(r.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '';
+        output += `Version ${r.version} — ${dateStr} (${r.platform})\n`;
+        output += '-'.repeat(40) + '\n';
+        output += formatAppStore(r.version, r.changes).replace(`Version ${r.version}\n\n`, '') + '\n\n';
+      });
+
+      const blob = new Blob([output], { type: 'text/plain' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `surevera-release-notes-${new Date().toISOString().split('T')[0]}.txt`;
+      a.click();
+      URL.revokeObjectURL(a.href);
+      showToast('Release notes exported');
+    }
+
+    // ---- Utilities ----
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    function escapeAttr(str) {
+      return str.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2200);
+    }
+
+    // Live preview on version input
+    document.getElementById('version').addEventListener('input', updatePreview);
+  </script>
+  <script src="dark-mode.js"></script>
+  <script src="toolkit-nav.js"></script>
+</body>
+</html>

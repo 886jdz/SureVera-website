@@ -1,0 +1,2524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Infrastructure — SureVera</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy: #1B3A6B;
+      --dark-navy: #0D1B2E;
+      --orange: #E8612A;
+      --bg: #F0F3F8;
+      --card-bg: #FFFFFF;
+      --text: #1E293B;
+      --text-sec: #64748B;
+      --text-muted: #94A3B8;
+      --border: #E2E8F0;
+      --shadow: 0 1px 4px rgba(0,0,0,0.06);
+      --shadow-hover: 0 8px 30px rgba(0,0,0,0.1);
+
+      /* Layer colors */
+      --layer1: #EEF2FF;  --layer1-border: #C7D2FE; --layer1-accent: #6366F1;
+      --layer2: #FFF7ED;  --layer2-border: #FED7AA; --layer2-accent: #EA580C;
+      --layer3: #F0FDF4;  --layer3-border: #BBF7D0; --layer3-accent: #16A34A;
+      --layer4: #FDF4FF;  --layer4-border: #F0ABFC; --layer4-accent: #A855F7;
+      --layer5: #FFF1F2;  --layer5-border: #FECDD3; --layer5-accent: #E11D48;
+      --layer6: #ECFDF5;  --layer6-border: #A7F3D0; --layer6-accent: #059669;
+      --layer7: #FFFBEB;  --layer7-border: #FDE68A; --layer7-accent: #D97706;
+      --layer8: #F0F9FF;  --layer8-border: #BAE6FD; --layer8-accent: #0284C7;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0A1422;
+      --card-bg: #132240;
+      --text: #FFFFFF;
+      --text-sec: #8B9EC7;
+      --text-muted: #5A6E99;
+      --border: rgba(255,255,255,0.10);
+      --shadow: 0 1px 4px rgba(0,0,0,0.3);
+      --shadow-hover: 0 8px 30px rgba(0,0,0,0.5);
+
+      --layer1: #1a1a3e;  --layer1-border: #3730a3; --layer1-accent: #818CF8;
+      --layer2: #2a1a0a;  --layer2-border: #9a3412; --layer2-accent: #FB923C;
+      --layer3: #0a2a14;  --layer3-border: #166534; --layer3-accent: #4ADE80;
+      --layer4: #2a0a2e;  --layer4-border: #7e22ce; --layer4-accent: #C084FC;
+      --layer5: #2a0a12;  --layer5-border: #9f1239; --layer5-accent: #FB7185;
+      --layer6: #0a2a1e;  --layer6-border: #047857; --layer6-accent: #34D399;
+      --layer7: #2a2200;  --layer7-border: #92400e; --layer7-accent: #FBBF24;
+      --layer8: #0a1e2e;  --layer8-border: #0369a1; --layer8-accent: #38BDF8;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    .toolbar {
+      background: linear-gradient(135deg, #0D1B2E 0%, #1B3A6B 100%);
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+      position: relative;
+    }
+
+    .toolbar-title {
+      color: white;
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .toolbar-title span {
+      color: #E8612A;
+    }
+
+    /* Header */
+    .page-header {
+      text-align: center;
+      padding: 2.5rem 2rem 1.5rem;
+    }
+
+    .page-header h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.02em;
+      margin-bottom: 0.4rem;
+    }
+
+    .page-header .subtitle {
+      font-size: 0.95rem;
+      color: var(--text-sec);
+    }
+
+    /* Legend */
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0 2rem 1.5rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-sec);
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+    }
+
+    /* Diagram container */
+    .diagram {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem 3rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    /* Layer */
+    .layer {
+      border-radius: 16px;
+      padding: 1.25rem;
+      position: relative;
+      transition: transform 0.2s ease;
+    }
+
+    .layer-header {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 1rem;
+    }
+
+    .layer-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .layer-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .layer-grid {
+      display: grid;
+      gap: 0.6rem;
+    }
+
+    .layer-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+    .layer-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+    .layer-grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
+    .layer-grid.cols-5 { grid-template-columns: repeat(5, 1fr); }
+    .layer-grid.cols-6 { grid-template-columns: repeat(6, 1fr); }
+
+    /* Connector arrows between layers */
+    .connector {
+      display: flex;
+      justify-content: center;
+      padding: 0;
+      height: 24px;
+      position: relative;
+    }
+
+    .connector::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 2px;
+      height: 100%;
+      background: var(--text-muted);
+      opacity: 0.4;
+    }
+
+    .connector::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 6px solid var(--text-muted);
+      opacity: 0.4;
+    }
+
+    /* Node card */
+    .node {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.75rem 0.85rem;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .node::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      border-radius: 3px 0 0 3px;
+      transition: width 0.2s;
+    }
+
+    .node:hover {
+      box-shadow: var(--shadow-hover);
+      transform: translateY(-2px);
+    }
+
+    .node:hover::before {
+      width: 4px;
+    }
+
+    .node-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      margin-bottom: 0.15rem;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .node-icon {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      opacity: 0.7;
+    }
+
+    .node-brief {
+      font-size: 0.65rem;
+      color: var(--text-sec);
+      line-height: 1.4;
+    }
+
+    .node-badge {
+      display: inline-block;
+      font-size: 0.55rem;
+      font-weight: 700;
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-top: 0.3rem;
+    }
+
+    /* Sub-nodes inside a node */
+    .sub-nodes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+      margin-top: 0.4rem;
+    }
+
+    .sub-node {
+      font-size: 0.6rem;
+      font-weight: 500;
+      padding: 0.15rem 0.45rem;
+      border-radius: 5px;
+      background: var(--bg);
+      color: var(--text-sec);
+      border: 1px solid var(--border);
+    }
+
+    /* Route list nodes */
+    .route-list {
+      list-style: none;
+      margin-top: 0.35rem;
+    }
+
+    .route-list li {
+      font-size: 0.6rem;
+      color: var(--text-sec);
+      padding: 0.1rem 0;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .route-list li code {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    /* Detail panel (slide-in from right) */
+    .detail-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 900;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s, visibility 0.3s;
+    }
+
+    .detail-overlay.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .detail-panel {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 460px;
+      max-width: 90vw;
+      background: var(--card-bg);
+      border-left: 1px solid var(--border);
+      z-index: 950;
+      transform: translateX(100%);
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+      overflow-y: auto;
+      box-shadow: -8px 0 40px rgba(0,0,0,0.15);
+    }
+
+    .detail-panel.open {
+      transform: translateX(0);
+    }
+
+    .detail-close {
+      position: sticky;
+      top: 0;
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 10;
+    }
+
+    .detail-close-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text-sec);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .detail-close-btn:hover {
+      background: var(--border);
+      color: var(--text);
+    }
+
+    .detail-layer-badge {
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .detail-body {
+      padding: 1.5rem 1.25rem 2rem;
+    }
+
+    .detail-body h2 {
+      font-size: 1.2rem;
+      font-weight: 800;
+      margin-bottom: 0.3rem;
+      color: var(--text);
+    }
+
+    .detail-body .detail-desc {
+      font-size: 0.85rem;
+      color: var(--text-sec);
+      line-height: 1.7;
+      margin-bottom: 1.25rem;
+    }
+
+    .detail-section {
+      margin-bottom: 1.25rem;
+    }
+
+    .detail-section h3 {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+      padding-bottom: 0.35rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .detail-section ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .detail-section li {
+      font-size: 0.78rem;
+      color: var(--text-sec);
+      padding: 0.3rem 0.5rem;
+      background: var(--bg);
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      line-height: 1.5;
+    }
+
+    .detail-section li code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--orange);
+      background: rgba(232, 97, 42, 0.08);
+      padding: 0.1rem 0.35rem;
+      border-radius: 4px;
+    }
+
+    .detail-section li strong {
+      color: var(--text);
+    }
+
+    .detail-section .file-path {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--text-sec);
+      background: var(--bg);
+      padding: 0.3rem 0.5rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+
+    .detail-endpoints {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .detail-endpoints li {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      padding: 0.3rem 0.5rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-sec);
+    }
+
+    .detail-endpoints li .method {
+      font-weight: 700;
+      font-size: 0.6rem;
+      padding: 0.1rem 0.3rem;
+      border-radius: 3px;
+      margin-right: 0.3rem;
+    }
+
+    .method-get { background: #DCFCE7; color: #166534; }
+    .method-post { background: #DBEAFE; color: #1E40AF; }
+    .method-delete { background: #FEE2E2; color: #991B1B; }
+
+    [data-theme="dark"] .method-get { background: #052e16; color: #4ade80; }
+    [data-theme="dark"] .method-post { background: #172554; color: #60a5fa; }
+    [data-theme="dark"] .method-delete { background: #450a0a; color: #fca5a5; }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 1.5rem 2rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+    }
+
+    /* Layer accent colors for node left bar */
+    .layer-1 .node::before { background: var(--layer1-accent); }
+    .layer-2 .node::before { background: var(--layer2-accent); }
+    .layer-3 .node::before { background: var(--layer3-accent); }
+    .layer-4 .node::before { background: var(--layer4-accent); }
+    .layer-5 .node::before { background: var(--layer5-accent); }
+    .layer-6 .node::before { background: var(--layer6-accent); }
+    .layer-7 .node::before { background: var(--layer7-accent); }
+    .layer-8 .node::before { background: var(--layer8-accent); }
+
+    /* Wide nodes */
+    .node.wide { grid-column: span 2; }
+    .node.full { grid-column: 1 / -1; }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .layer-grid.cols-3,
+      .layer-grid.cols-4,
+      .layer-grid.cols-5,
+      .layer-grid.cols-6 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .node.wide { grid-column: span 1; }
+      .page-header h1 { font-size: 1.5rem; }
+    }
+
+    @media (max-width: 600px) {
+      .layer-grid.cols-2,
+      .layer-grid.cols-3,
+      .layer-grid.cols-4,
+      .layer-grid.cols-5,
+      .layer-grid.cols-6 {
+        grid-template-columns: 1fr;
+      }
+      .diagram { padding: 0 0.75rem 2rem; }
+      .layer { padding: 1rem; }
+      .toolbar-nav { right: 0.5rem !important; }
+    }
+
+    /* Pulse animation for active connections */
+    @keyframes pulse-line {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.7; }
+    }
+
+    .connector.animated::before {
+      animation: pulse-line 2s ease-in-out infinite;
+    }
+
+    /* Scroll-triggered fade-in */
+    .layer {
+      opacity: 0;
+      transform: translateY(16px);
+      animation: fadeUp 0.5s ease forwards;
+    }
+
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .layer:nth-child(1)  { animation-delay: 0s; }
+    .layer:nth-child(3)  { animation-delay: 0.06s; }
+    .layer:nth-child(5)  { animation-delay: 0.12s; }
+    .layer:nth-child(7)  { animation-delay: 0.18s; }
+    .layer:nth-child(9)  { animation-delay: 0.24s; }
+    .layer:nth-child(11) { animation-delay: 0.30s; }
+    .layer:nth-child(13) { animation-delay: 0.36s; }
+    .layer:nth-child(15) { animation-delay: 0.42s; }
+
+    /* Search / filter */
+    .search-bar {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem 0.75rem;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 0.6rem 1rem 0.6rem 2.4rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--card-bg);
+      color: var(--text);
+      font-size: 0.85rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .search-input:focus {
+      border-color: var(--orange);
+      box-shadow: 0 0 0 3px rgba(232, 97, 42, 0.12);
+    }
+
+    .search-wrapper {
+      position: relative;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      color: var(--text-muted);
+    }
+
+    .node.hidden { display: none; }
+    .layer.hidden { display: none; }
+
+    /* Collapsible sections */
+    .collapsible-section {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem 0.75rem;
+    }
+
+    .collapsible-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .collapsible-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.25rem;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.2s;
+    }
+
+    .collapsible-header:hover {
+      background: var(--bg);
+    }
+
+    .collapsible-header h2 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin: 0;
+    }
+
+    .collapsible-hint {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .collapsible-chevron {
+      width: 16px;
+      height: 16px;
+      transition: transform 0.25s ease;
+    }
+
+    .collapsible-card.open .collapsible-chevron {
+      transform: rotate(180deg);
+    }
+
+    .collapsible-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease, padding 0.3s ease;
+      padding: 0 1.25rem;
+    }
+
+    .collapsible-card.open .collapsible-body {
+      max-height: 5000px;
+      padding: 0 1.25rem 1.5rem;
+    }
+
+    .big-picture-content {
+      font-size: 0.85rem;
+      color: var(--text-sec);
+      line-height: 1.8;
+    }
+
+    .big-picture-content .step-block {
+      margin-bottom: 1rem;
+      padding: 0.75rem 1rem;
+      background: var(--bg);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+
+    .big-picture-content .step-block strong {
+      color: var(--text);
+    }
+
+    .big-picture-content .step-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--navy);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 800;
+      margin-right: 0.5rem;
+      flex-shrink: 0;
+    }
+
+    [data-theme="dark"] .big-picture-content .step-num {
+      background: var(--orange);
+    }
+
+    /* Lifecycle walkthrough */
+    .lifecycle-step {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+      padding: 0.75rem 1rem;
+      background: var(--bg);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      align-items: flex-start;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .lifecycle-step:hover {
+      transform: translateX(4px);
+      box-shadow: var(--shadow);
+    }
+
+    .lifecycle-step-num {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      min-width: 28px;
+      border-radius: 50%;
+      background: var(--navy);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 800;
+    }
+
+    [data-theme="dark"] .lifecycle-step-num {
+      background: var(--orange);
+    }
+
+    .lifecycle-step-content {
+      flex: 1;
+    }
+
+    .lifecycle-step-desc {
+      font-size: 0.8rem;
+      color: var(--text-sec);
+      line-height: 1.5;
+    }
+
+    .lifecycle-step-desc strong {
+      color: var(--text);
+    }
+
+    .lifecycle-badge {
+      display: inline-block;
+      font-size: 0.6rem;
+      font-weight: 700;
+      padding: 0.15rem 0.5rem;
+      border-radius: 5px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-top: 0.3rem;
+      color: white;
+    }
+
+    /* Stats bar */
+    .stats-bar {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem 1rem;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 0.5rem;
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.75rem;
+      text-align: center;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .stat-value {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--orange);
+      line-height: 1.2;
+    }
+
+    .stat-label {
+      font-size: 0.65rem;
+      color: var(--text-sec);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-top: 0.2rem;
+    }
+
+    @media (max-width: 900px) {
+      .stats-bar { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    @media (max-width: 600px) {
+      .stats-bar { grid-template-columns: repeat(2, 1fr); }
+      .collapsible-section { padding: 0 0.75rem 0.75rem; }
+    }
+
+    /* Glossary grid */
+    .glossary-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.6rem;
+    }
+
+    .glossary-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+    }
+
+    .glossary-term {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.25rem;
+    }
+
+    .glossary-def {
+      font-size: 0.75rem;
+      color: var(--text-sec);
+      line-height: 1.5;
+    }
+
+    @media (max-width: 700px) {
+      .glossary-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Export / Print button */
+    .export-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.5rem 1rem;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 0.8rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+    .export-btn:hover {
+      background: var(--orange);
+      color: white;
+      border-color: var(--orange);
+    }
+    .export-btn svg { width: 16px; height: 16px; }
+
+    .search-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .search-bar-row .search-wrapper { flex: 1; }
+
+    /* ═══════ PRINT STYLES ═══════ */
+    @media print {
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+      body, html {
+        background: white !important;
+        color: #1E293B !important;
+      }
+      [data-theme="dark"] body, [data-theme="dark"] {
+        --bg: #F0F3F8 !important;
+        --card-bg: #FFFFFF !important;
+        --text: #1E293B !important;
+        --text-sec: #64748B !important;
+        --text-muted: #94A3B8 !important;
+        --border: #E2E8F0 !important;
+      }
+
+      /* Hide non-printable elements */
+      .toolbar, .toolbar-nav, .search-bar, .export-btn,
+      .detail-overlay, .detail-panel,
+      .legend { display: none !important; }
+
+      /* Remove animations and hover effects */
+      .layer, .node, .stat-card, .lifecycle-step, .connector {
+        animation: none !important;
+        transition: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+      }
+      .node { cursor: default !important; }
+      .node:hover { box-shadow: none !important; transform: none !important; }
+
+      /* Expand all collapsible sections */
+      .collapsible-body {
+        max-height: none !important;
+        overflow: visible !important;
+        padding: 0 1.25rem 1.5rem !important;
+      }
+      .collapsible-header { cursor: default !important; }
+      .collapsible-header:hover { background: transparent !important; }
+      .collapsible-hint { display: none !important; }
+
+      /* Page breaks */
+      .layer { page-break-inside: avoid; break-inside: avoid; }
+      .collapsible-section { page-break-inside: avoid; break-inside: avoid; }
+      .stats-bar { page-break-inside: avoid; break-inside: avoid; }
+      .diagram { page-break-before: always; }
+
+      /* White backgrounds */
+      .layer { background: #f8f9fb !important; border: 1px solid #ddd !important; }
+      .node { background: white !important; border: 1px solid #ddd !important; }
+      .stat-card { background: white !important; border: 1px solid #ddd !important; }
+      .collapsible-card { background: white !important; border: 1px solid #ddd !important; }
+      .glossary-card { background: #f8f9fb !important; border: 1px solid #ddd !important; }
+      .step-block { background: #f8f9fb !important; border: 1px solid #ddd !important; }
+      .lifecycle-step { background: #f8f9fb !important; border: 1px solid #ddd !important; }
+
+      /* Inline detail content below each node for print */
+      .node .print-detail {
+        display: block !important;
+        margin-top: 0.5rem;
+        padding-top: 0.5rem;
+        border-top: 1px solid #ddd;
+        font-size: 0.7rem;
+        color: #64748B;
+        line-height: 1.5;
+      }
+      .node .print-detail strong { color: #1E293B; }
+      .node .print-detail .pd-section { margin-top: 0.35rem; }
+      .node .print-detail .pd-label {
+        font-size: 0.6rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: #94A3B8;
+        margin-bottom: 0.15rem;
+      }
+      .node .print-detail .pd-item {
+        font-size: 0.65rem;
+        color: #64748B;
+        padding: 0.1rem 0;
+      }
+      .node .print-detail code {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.6rem;
+        color: #E8612A;
+        background: #FFF7ED;
+        padding: 0.05rem 0.25rem;
+        border-radius: 3px;
+      }
+
+      /* Ensure all nodes visible */
+      .node.hidden { display: block !important; }
+      .layer.hidden { display: block !important; }
+      .connector.hidden { display: flex !important; }
+
+      /* Adjust widths */
+      .diagram { max-width: 100% !important; padding: 0 0.5rem !important; }
+      .page-header { padding: 1rem 1rem 0.5rem !important; }
+      .stats-bar { max-width: 100% !important; }
+      .collapsible-section { max-width: 100% !important; }
+    }
+
+    /* Hide print details on screen */
+    .node .print-detail { display: none; }
+  </style>
+</head>
+<body>
+
+  <div class="toolbar">
+    <div class="toolbar-title"><span>Sure</span>Vera Infrastructure</div>
+  </div>
+
+  <div class="page-header">
+    <h1>SureVera Infrastructure</h1>
+    <p class="subtitle">Interactive architecture diagram -- click any component for details</p>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--layer1-accent)"></div>Client Apps</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--layer2-accent)"></div>API Gateway</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--layer3-accent)"></div>API Routes</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--layer4-accent)"></div>Core Libraries</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--layer5-accent)"></div>Data Providers</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--layer6-accent)"></div>Data Storage</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--layer7-accent)"></div>Scheduled Jobs</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--layer8-accent)"></div>External Services</div>
+  </div>
+
+  <!-- ═══════════════ HOW IT ALL WORKS ═══════════════ -->
+  <div class="collapsible-section">
+    <div class="collapsible-card" id="bigPictureCard">
+      <div class="collapsible-header" onclick="toggleCollapsible('bigPictureCard')">
+        <h2>How It All Works -- The Big Picture</h2>
+        <span class="collapsible-hint">
+          Click to expand
+          <svg class="collapsible-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </span>
+      </div>
+      <div class="collapsible-body">
+        <div class="big-picture-content">
+          <p style="margin-bottom:1rem;">SureVera is a mobile app that shows restaurant health inspection grades. Here is how the data flows:</p>
+
+          <div class="step-block">
+            <span class="step-num">1</span>
+            <strong>Health departments</strong> across the US publish inspection data in various formats -- some use open data portals (Socrata, ArcGIS), some publish PDFs, spreadsheets, or CSV files.
+          </div>
+
+          <div class="step-block">
+            <span class="step-num">2</span>
+            <strong>Scheduled cron jobs</strong> on Railway run daily or weekly to download this data from each health department's source. The data is cleaned, standardized into a common format (name, score, grade, date, violations), and stored in a PostgreSQL database.
+          </div>
+
+          <div class="step-block">
+            <span class="step-num">3</span>
+            <strong>When a user searches</strong> (e.g., types a ZIP code), the API does three things simultaneously: (a) queries OpenStreetMap via Overpass to find all restaurants near that location, (b) loads the cached inspection data for that jurisdiction from the database, and (c) fuzzy-matches each restaurant name against the inspection records to find the best match.
+          </div>
+
+          <div class="step-block">
+            <span class="step-num">4</span>
+            <strong>The matched results</strong> are returned to the mobile app, which displays them as a list with letter grades (A through F). The user can tap any restaurant to see detailed inspection history, violation notes, and more.
+          </div>
+
+          <div class="step-block">
+            <span class="step-num">5</span>
+            <strong>Behind the scenes</strong>, the matching algorithm uses Jaccard similarity on tokenized names, with special handling for chain restaurants (Starbucks, McDonald's) that have multiple locations. City enforcement prevents matching a restaurant to another city's inspection record.
+          </div>
+
+          <div class="step-block">
+            <span class="step-num">6</span>
+            <strong>Data freshness</strong> is maintained by the cron schedule -- Socrata/ArcGIS providers refresh daily, custom sources (PDFs, CSVs) refresh weekly. A 30-minute in-memory cache TTL ensures all server replicas serve current data.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ REQUEST LIFECYCLE ═══════════════ -->
+  <div class="collapsible-section">
+    <div class="collapsible-card" id="lifecycleCard">
+      <div class="collapsible-header" onclick="toggleCollapsible('lifecycleCard')">
+        <h2>Request Lifecycle -- What happens when you search?</h2>
+        <span class="collapsible-hint">
+          Click to expand
+          <svg class="collapsible-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </span>
+      </div>
+      <div class="collapsible-body">
+        <div class="lifecycle-steps">
+
+          <div class="lifecycle-step">
+            <div class="lifecycle-step-num">1</div>
+            <div class="lifecycle-step-content">
+              <div class="lifecycle-step-desc">User types <strong>"78613"</strong> in the SureVera app and taps Search</div>
+              <span class="lifecycle-badge" style="background:var(--layer1-accent);">Mobile App</span>
+            </div>
+          </div>
+
+          <div class="lifecycle-step">
+            <div class="lifecycle-step-num">2</div>
+            <div class="lifecycle-step-content">
+              <div class="lifecycle-step-desc">App calls <strong>GET /api/restaurants/search-with-grade?q=78613</strong></div>
+              <span class="lifecycle-badge" style="background:var(--layer2-accent);">API Gateway</span>
+            </div>
+          </div>
+
+          <div class="lifecycle-step">
+            <div class="lifecycle-step-num">3</div>
+            <div class="lifecycle-step-content">
+              <div class="lifecycle-step-desc">Nominatim geocodes <strong>"78613"</strong> to coordinates <strong>(30.51, -97.68)</strong></div>
+              <span class="lifecycle-badge" style="background:var(--layer8-accent);">Nominatim</span>
+            </div>
+          </div>
+
+          <div class="lifecycle-step">
+            <div class="lifecycle-step-num">4</div>
+            <div class="lifecycle-step-content">
+              <div class="lifecycle-step-desc"><strong>detectProviderByCoords()</strong> checks which provider's bbox contains those coords</div>
+              <span class="lifecycle-badge" style="background:var(--layer4-accent);">providers/index.ts</span>
+            </div>
+          </div>
+
+          <div class="lifecycle-step">
+            <div class="lifecycle-step-num">5</div>
+            <div class="lifecycle-step-content">
+              <div class="lifecycle-step-desc">Provider detected: <strong>tx-williamson-county</strong> (Williamson County Health District)</div>
+              <span class="lifecycle-badge" style="background:var(--layer5-accent);">Provider Registry</span>
+            </div>
+          </div>
+
+          <div class="lifecycle-step">
+            <div class="lifecycle-step-num">6</div>
+            <div class="lifecycle-step-content">
+              <div class="lifecycle-step-desc"><strong>readJurisdictionCache("tx-williamson-county")</strong> loads inspection records (in-memory if &lt;30min, else Postgres)</div>
+              <span class="lifecycle-badge" style="background:var(--layer6-accent);">Jurisdiction Cache</span>
+            </div>
+          </div>
+
+          <div class="lifecycle-step">
+            <div class="lifecycle-step-num">7</div>
+            <div class="lifecycle-step-content">
+              <div class="lifecycle-step-desc"><strong>Overpass API</strong> queried for all restaurants within the search radius</div>
+              <span class="lifecycle-badge" style="background:var(--layer8-accent);">Overpass API</span>
+            </div>
+          </div>
+
+          <div class="lifecycle-step">
+            <div class="lifecycle-step-num">8</div>
+            <div class="lifecycle-step-content">
+              <div class="lifecycle-step-desc">For each restaurant, <strong>detectProviderByCoords()</strong> checks if it belongs to a different jurisdiction</div>
+              <span class="lifecycle-badge" style="background:var(--layer4-accent);">Multi-Provider Matching</span>
+            </div>
+          </div>
+
+          <div class="lifecycle-step">
+            <div class="lifecycle-step-num">9</div>
+            <div class="lifecycle-step-content">
+              <div class="lifecycle-step-desc"><strong>bestMatchFast()</strong> fuzzy-matches each restaurant name against inspection records using Jaccard similarity</div>
+              <span class="lifecycle-badge" style="background:var(--layer4-accent);">matchInspection.ts</span>
+            </div>
+          </div>
+
+          <div class="lifecycle-step">
+            <div class="lifecycle-step-num">10</div>
+            <div class="lifecycle-step-content">
+              <div class="lifecycle-step-desc">Results sorted by distance, graded <strong>(A/B/C/F)</strong>, and returned to the app</div>
+              <span class="lifecycle-badge" style="background:var(--layer1-accent);">Mobile App</span>
+            </div>
+          </div>
+
+          <div class="lifecycle-step">
+            <div class="lifecycle-step-num">11</div>
+            <div class="lifecycle-step-content">
+              <div class="lifecycle-step-desc">User taps a restaurant -- detail endpoint called with <strong>matchedInspectionName</strong> pinned</div>
+              <span class="lifecycle-badge" style="background:var(--layer3-accent);">Detail Route</span>
+            </div>
+          </div>
+
+          <div class="lifecycle-step">
+            <div class="lifecycle-step-num">12</div>
+            <div class="lifecycle-step-content">
+              <div class="lifecycle-step-desc">Detail endpoint looks up the pinned inspection record + builds <strong>inspection history</strong></div>
+              <span class="lifecycle-badge" style="background:var(--layer6-accent);">Jurisdiction Cache</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="search-bar">
+    <div class="search-bar-row">
+      <div class="search-wrapper">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" class="search-input" placeholder="Filter components... (e.g. 'socrata', 'overpass', 'bell county')" id="searchInput">
+      </div>
+      <button class="export-btn" onclick="handleExportPrint()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Export / Print
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══════════════ QUICK REFERENCE STATS ═══════════════ -->
+  <div class="stats-bar">
+    <div class="stat-card">
+      <div class="stat-value">37</div>
+      <div class="stat-label">Providers with Violation Data</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">90+</div>
+      <div class="stat-label">Cities Covered</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">1M+</div>
+      <div class="stat-label">Inspection Records</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">30m</div>
+      <div class="stat-label">Cache TTL</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">12</div>
+      <div class="stat-label">Cron Jobs (7 Daily + 5 Weekly)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">7</div>
+      <div class="stat-label">Postgres Tables</div>
+    </div>
+  </div>
+
+  <div class="diagram" id="diagram">
+
+    <!-- ═══════════════ LAYER 1: CLIENT APPS ═══════════════ -->
+    <div class="layer layer-1" style="background:var(--layer1);border:1px solid var(--layer1-border);">
+      <div class="layer-header">
+        <div class="layer-num" style="background:var(--layer1-accent);">1</div>
+        <div class="layer-title" style="color:var(--layer1-accent);">Client Applications</div>
+      </div>
+      <div class="layer-grid cols-3">
+
+        <div class="node" data-id="mobile-app">
+          <div class="node-title">
+            <svg class="node-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+            React Native / Expo App
+          </div>
+          <div class="node-brief">Mobile app for iOS &amp; Android. Restaurant search, health grades, favorites, push notifications.</div>
+          <div class="sub-nodes">
+            <span class="sub-node">AsyncStorage</span>
+            <span class="sub-node">Expo Push</span>
+            <span class="sub-node">RevenueCat SDK</span>
+          </div>
+        </div>
+
+        <div class="node" data-id="landing-site">
+          <div class="node-title">
+            <svg class="node-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+            surevera.app
+          </div>
+          <div class="node-brief">Landing page, App Store links, legal pages. Static HTML on GitHub Pages.</div>
+          <div class="sub-nodes">
+            <span class="sub-node">GitHub Pages</span>
+            <span class="sub-node">GoDaddy DNS</span>
+          </div>
+        </div>
+
+        <div class="node" data-id="corporate-site">
+          <div class="node-title">
+            <svg class="node-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+            arriotech.com
+          </div>
+          <div class="node-brief">Corporate umbrella site for Arrio Technologies LLC. Static HTML on GitHub Pages.</div>
+          <div class="sub-nodes">
+            <span class="sub-node">GitHub Pages</span>
+            <span class="sub-node">GoDaddy DNS</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="connector animated"></div>
+
+    <!-- ═══════════════ LAYER 2: API GATEWAY ═══════════════ -->
+    <div class="layer layer-2" style="background:var(--layer2);border:1px solid var(--layer2-border);">
+      <div class="layer-header">
+        <div class="layer-num" style="background:var(--layer2-accent);">2</div>
+        <div class="layer-title" style="color:var(--layer2-accent);">API Gateway</div>
+      </div>
+      <div class="layer-grid cols-3">
+
+        <div class="node wide" data-id="nextjs-api">
+          <div class="node-title">
+            <svg class="node-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            Next.js 16 API Server
+          </div>
+          <div class="node-brief">App Router on Railway. Auto-deploys from GitHub. TypeScript strict mode. 8GB RAM.</div>
+          <div class="sub-nodes">
+            <span class="sub-node">Rate Limiter (60/min public, 10/min admin)</span>
+            <span class="sub-node">Admin Auth Middleware</span>
+            <span class="sub-node">CORS</span>
+            <span class="sub-node">Instrumentation (startup warmup)</span>
+          </div>
+        </div>
+
+        <div class="node" data-id="startup-flow">
+          <div class="node-title">
+            <svg class="node-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            Startup Flow
+          </div>
+          <div class="node-brief">instrumentation.ts: warm Overpass + jurisdiction caches from Postgres, build norm indexes, seed missing cities, flush write queue every 60s.</div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="connector animated"></div>
+
+    <!-- ═══════════════ LAYER 3: API ROUTES ═══════════════ -->
+    <div class="layer layer-3" style="background:var(--layer3);border:1px solid var(--layer3-border);">
+      <div class="layer-header">
+        <div class="layer-num" style="background:var(--layer3-accent);">3</div>
+        <div class="layer-title" style="color:var(--layer3-accent);">API Routes</div>
+      </div>
+      <div class="layer-grid cols-2">
+
+        <div class="node" data-id="public-routes">
+          <div class="node-title">
+            <svg class="node-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M13.8 12H3"/></svg>
+            Public Routes
+          </div>
+          <div class="node-brief">User-facing endpoints. Rate limited at 60 req/min.</div>
+          <ul class="route-list">
+            <li><code>GET /api/restaurants/search-with-grade</code></li>
+            <li><code>GET /api/restaurants/nearby-with-grade</code></li>
+            <li><code>GET /api/restaurants/details</code></li>
+            <li><code>POST /api/device/register</code></li>
+            <li><code>POST /api/device/follow</code></li>
+            <li><code>POST /api/device/unfollow</code></li>
+            <li><code>DELETE /api/account/delete-data</code></li>
+          </ul>
+        </div>
+
+        <div class="node" data-id="admin-routes">
+          <div class="node-title">
+            <svg class="node-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+            Admin Routes (secret-protected)
+          </div>
+          <div class="node-brief">Data refresh, health checks, audits. Rate limited at 10 req/min.</div>
+          <ul class="route-list">
+            <li><code>POST /api/admin/socrata-refresh</code></li>
+            <li><code>POST /api/admin/florida-refresh</code></li>
+            <li><code>POST /api/admin/bell-county-refresh</code></li>
+            <li><code>POST /api/admin/san-antonio-refresh</code></li>
+            <li><code>POST /api/admin/snhd-refresh</code></li>
+            <li><code>POST /api/admin/anchorage-refresh</code></li>
+            <li><code>POST /api/admin/wcchd-refresh</code></li>
+            <li><code>POST /api/admin/sc-refresh</code></li>
+            <li><code>POST /api/admin/seed-cities</code></li>
+            <li><code>GET  /api/admin/audit-all</code></li>
+            <li><code>GET  /api/admin/match-quality</code></li>
+            <li><code>POST /api/admin/check-score-changes</code></li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="connector animated"></div>
+
+    <!-- ═══════════════ LAYER 4: CORE LIBRARIES ═══════════════ -->
+    <div class="layer layer-4" style="background:var(--layer4);border:1px solid var(--layer4-border);">
+      <div class="layer-header">
+        <div class="layer-num" style="background:var(--layer4-accent);">4</div>
+        <div class="layer-title" style="color:var(--layer4-accent);">Core Libraries</div>
+      </div>
+      <div class="layer-grid cols-5">
+
+        <div class="node" data-id="match-inspection">
+          <div class="node-title">matchInspection.ts</div>
+          <div class="node-brief">Fuzzy name matching: Jaccard similarity + containsBoost + chain enforcement + city validation.</div>
+        </div>
+
+        <div class="node" data-id="nearby-restaurants">
+          <div class="node-title">nearbyRestaurants.ts</div>
+          <div class="node-brief">Overpass queries, multi-provider matching, cross-boundary detection, buildResults().</div>
+        </div>
+
+        <div class="node" data-id="providers-index">
+          <div class="node-title">providers/index.ts</div>
+          <div class="node-brief">Provider detection: bbox first, Nominatim fallback. Reverse geocode cache (1hr TTL).</div>
+        </div>
+
+        <div class="node" data-id="jurisdiction-cache">
+          <div class="node-title">jurisdictionCache.ts</div>
+          <div class="node-brief">Per-provider Postgres cache with 30-min in-memory TTL. Read: memory, then Postgres.</div>
+        </div>
+
+        <div class="node" data-id="provider-health">
+          <div class="node-title">providerHealth.ts</div>
+          <div class="node-brief">Health checks, stale data detection, auto-disable unhealthy providers.</div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="connector animated"></div>
+
+    <!-- ═══════════════ LAYER 5: DATA PROVIDERS ═══════════════ -->
+    <div class="layer layer-5" style="background:var(--layer5);border:1px solid var(--layer5-border);">
+      <div class="layer-header">
+        <div class="layer-num" style="background:var(--layer5-accent);">5</div>
+        <div class="layer-title" style="color:var(--layer5-accent);">Data Providers (External)</div>
+      </div>
+      <div class="layer-grid cols-3">
+
+        <div class="node" data-id="socrata-providers">
+          <div class="node-title">
+            <svg class="node-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"/></svg>
+            Socrata APIs
+          </div>
+          <div class="node-brief">Open data portals with SODA query API. Fetched via socrata.ts.</div>
+          <div class="sub-nodes">
+            <span class="sub-node">NYC</span>
+            <span class="sub-node">Chicago</span>
+            <span class="sub-node">San Francisco</span>
+            <span class="sub-node">King County</span>
+            <span class="sub-node">Austin</span>
+            <span class="sub-node">Boulder County</span>
+            <span class="sub-node">Montgomery Co MD</span>
+            <span class="sub-node">Santa Clara County</span>
+          </div>
+        </div>
+
+        <div class="node" data-id="arcgis-providers">
+          <div class="node-title">
+            <svg class="node-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10"/></svg>
+            ArcGIS APIs
+          </div>
+          <div class="node-brief">REST feature services for health inspection data. Fetched via arcgis.ts.</div>
+          <div class="sub-nodes">
+            <span class="sub-node">LA County</span>
+            <span class="sub-node">Wake County</span>
+            <span class="sub-node">Louisville</span>
+            <span class="sub-node">Fairfax</span>
+            <span class="sub-node">Minneapolis</span>
+            <span class="sub-node">Sacramento</span>
+            <span class="sub-node">Alameda</span>
+            <span class="sub-node">Kitsap</span>
+            <span class="sub-node">Sioux Falls</span>
+            <span class="sub-node">Arlington</span>
+            <span class="sub-node">Garland</span>
+            <span class="sub-node">Detroit</span>
+          </div>
+        </div>
+
+        <div class="node" data-id="custom-providers">
+          <div class="node-title">
+            <svg class="node-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+            Custom Sources
+          </div>
+          <div class="node-brief">Unique data formats parsed by dedicated handlers.</div>
+          <div class="sub-nodes">
+            <span class="sub-node">Florida DBPR (CSV)</span>
+            <span class="sub-node">Bell County (PDF)</span>
+            <span class="sub-node">San Antonio (XLSX)</span>
+            <span class="sub-node">SNHD Las Vegas (ZIP)</span>
+            <span class="sub-node">Anchorage (CSV)</span>
+            <span class="sub-node">Williamson Co (ZIP)</span>
+            <span class="sub-node">SC DHEC (ArcGIS)</span>
+            <span class="sub-node">NY State (Socrata)</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="connector animated"></div>
+
+    <!-- ═══════════════ LAYER 6: DATA STORAGE ═══════════════ -->
+    <div class="layer layer-6" style="background:var(--layer6);border:1px solid var(--layer6-border);">
+      <div class="layer-header">
+        <div class="layer-num" style="background:var(--layer6-accent);">6</div>
+        <div class="layer-title" style="color:var(--layer6-accent);">Data Storage</div>
+      </div>
+      <div class="layer-grid cols-2">
+
+        <div class="node" data-id="postgresql">
+          <div class="node-title">
+            <svg class="node-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+            PostgreSQL (Railway)
+          </div>
+          <div class="node-brief">Persistent database. Survives deploys. Shared across replicas.</div>
+          <div class="sub-nodes">
+            <span class="sub-node">jurisdiction_cache</span>
+            <span class="sub-node">overpass_cache</span>
+            <span class="sub-node">DeviceToken</span>
+            <span class="sub-node">RestaurantFollow</span>
+            <span class="sub-node">NotificationLog</span>
+            <span class="sub-node">CityRequest</span>
+            <span class="sub-node">Promotion</span>
+          </div>
+        </div>
+
+        <div class="node" data-id="in-memory-caches">
+          <div class="node-title">
+            <svg class="node-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><line x1="6" y1="10" x2="6" y2="14"/><line x1="10" y1="10" x2="10" y2="14"/><line x1="14" y1="10" x2="14" y2="14"/></svg>
+            In-Memory Caches
+          </div>
+          <div class="node-brief">Fast read layer. Wiped on each deployment, rewarmed from Postgres at startup.</div>
+          <div class="sub-nodes">
+            <span class="sub-node">Jurisdiction (30min TTL)</span>
+            <span class="sub-node">Overpass (6hr / 6-day TTL)</span>
+            <span class="sub-node">Nominatim Geo (1hr TTL)</span>
+            <span class="sub-node">Rate Limit Store</span>
+            <span class="sub-node">Norm Cache (token indexes)</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="connector animated"></div>
+
+    <!-- ═══════════════ LAYER 7: SCHEDULED JOBS ═══════════════ -->
+    <div class="layer layer-7" style="background:var(--layer7);border:1px solid var(--layer7-border);">
+      <div class="layer-header">
+        <div class="layer-num" style="background:var(--layer7-accent);">7</div>
+        <div class="layer-title" style="color:var(--layer7-accent);">Scheduled Jobs (Railway Crons)</div>
+      </div>
+      <div class="layer-grid cols-2">
+
+        <div class="node" data-id="daily-crons">
+          <div class="node-title">
+            <svg class="node-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            Daily Jobs
+          </div>
+          <div class="node-brief">Run every day via Railway cron services using curl images.</div>
+          <ul class="route-list">
+            <li><code>2:00 AM</code> socrata-refresh</li>
+            <li><code>3:00 AM</code> anchorage-refresh</li>
+            <li><code>4:00 AM</code> snhd-refresh</li>
+            <li><code>6:00 AM</code> audit-all</li>
+            <li><code>7:00 AM</code> match-quality</li>
+            <li><code>8:00 AM</code> city-enforcement-audit</li>
+            <li><code>10:00 AM</code> check-score-changes</li>
+          </ul>
+        </div>
+
+        <div class="node" data-id="weekly-crons">
+          <div class="node-title">
+            <svg class="node-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Weekly Jobs (Monday)
+          </div>
+          <div class="node-brief">Run every Monday. Custom source parsers for non-API data.</div>
+          <ul class="route-list">
+            <li><code>3:00 AM</code> florida-refresh (CSV)</li>
+            <li><code>8:00 AM</code> bell-county-refresh (PDF)</li>
+            <li><code>9:00 AM</code> san-antonio-refresh (XLSX)</li>
+            <li><code>10:00 AM</code> wcchd-refresh (ZIP)</li>
+            <li><code>11:00 AM</code> sc-refresh (ArcGIS)</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="connector animated"></div>
+
+    <!-- ═══════════════ LAYER 8: EXTERNAL SERVICES ═══════════════ -->
+    <div class="layer layer-8" style="background:var(--layer8);border:1px solid var(--layer8-border);">
+      <div class="layer-header">
+        <div class="layer-num" style="background:var(--layer8-accent);">8</div>
+        <div class="layer-title" style="color:var(--layer8-accent);">External Services</div>
+      </div>
+      <div class="layer-grid cols-4">
+
+        <div class="node" data-id="nominatim">
+          <div class="node-title">Nominatim</div>
+          <div class="node-brief">Reverse geocoding (coords to city/county/state). Provider detection fallback.</div>
+        </div>
+
+        <div class="node" data-id="overpass-api">
+          <div class="node-title">Overpass API</div>
+          <div class="node-brief">OpenStreetMap restaurant data. Multiple failover endpoints.</div>
+        </div>
+
+        <div class="node" data-id="expo-push">
+          <div class="node-title">Expo Push Service</div>
+          <div class="node-brief">Push notifications for grade changes. Token = user identity.</div>
+        </div>
+
+        <div class="node" data-id="revenucat">
+          <div class="node-title">RevenueCat</div>
+          <div class="node-brief">Subscription management. Handles iOS/Android purchase validation.</div>
+        </div>
+
+        <div class="node" data-id="stripe">
+          <div class="node-title">Stripe</div>
+          <div class="node-brief">Payment processing backend for RevenueCat subscriptions.</div>
+        </div>
+
+        <div class="node" data-id="github">
+          <div class="node-title">GitHub</div>
+          <div class="node-brief">Source code hosting. Push triggers Railway auto-deploy.</div>
+        </div>
+
+        <div class="node" data-id="godaddy">
+          <div class="node-title">GoDaddy</div>
+          <div class="node-brief">DNS management for surevera.app and arriotech.com.</div>
+        </div>
+
+        <div class="node" data-id="railway">
+          <div class="node-title">Railway</div>
+          <div class="node-brief">Hosting platform. API server, PostgreSQL, cron services.</div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════ GLOSSARY ═══════════════ -->
+  <div class="collapsible-section" style="padding-top:1rem;">
+    <div class="collapsible-card" id="glossaryCard">
+      <div class="collapsible-header" onclick="toggleCollapsible('glossaryCard')">
+        <h2>Glossary -- Key Terms</h2>
+        <span class="collapsible-hint">
+          Click to expand
+          <svg class="collapsible-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </span>
+      </div>
+      <div class="collapsible-body">
+        <div class="glossary-grid">
+
+          <div class="glossary-card">
+            <div class="glossary-term">OSM (OpenStreetMap)</div>
+            <div class="glossary-def">Free, community-maintained map database. SureVera uses it to find restaurant names and locations.</div>
+          </div>
+
+          <div class="glossary-card">
+            <div class="glossary-term">Overpass API</div>
+            <div class="glossary-def">Query service for OpenStreetMap data. Returns restaurants near a given coordinate.</div>
+          </div>
+
+          <div class="glossary-card">
+            <div class="glossary-term">Nominatim</div>
+            <div class="glossary-def">OpenStreetMap's geocoding service. Converts addresses/ZIP codes to coordinates and vice versa.</div>
+          </div>
+
+          <div class="glossary-card">
+            <div class="glossary-term">Socrata</div>
+            <div class="glossary-def">Open data platform used by many US cities to publish government data. Provides REST APIs.</div>
+          </div>
+
+          <div class="glossary-card">
+            <div class="glossary-term">ArcGIS</div>
+            <div class="glossary-def">Esri's mapping platform. Some health departments publish inspection data via ArcGIS FeatureServer endpoints.</div>
+          </div>
+
+          <div class="glossary-card">
+            <div class="glossary-term">Jaccard Similarity</div>
+            <div class="glossary-def">A text matching algorithm that compares two sets of words. Score = (words in common) / (total unique words). Used to match "McDonald's" to "MCDONALDS #1234 - W SS LOOP".</div>
+          </div>
+
+          <div class="glossary-card">
+            <div class="glossary-term">nominatimCity</div>
+            <div class="glossary-def">The city name from reverse-geocoding a restaurant's GPS coordinates. Used to prevent matching a restaurant to a different city's inspection record.</div>
+          </div>
+
+          <div class="glossary-card">
+            <div class="glossary-term">Jurisdiction Cache</div>
+            <div class="glossary-def">PostgreSQL table storing inspection records per provider. Refreshed by cron jobs, cached in memory with a 30-minute TTL.</div>
+          </div>
+
+          <div class="glossary-card">
+            <div class="glossary-term">Provider</div>
+            <div class="glossary-def">A health department data source. Each provider has a unique ID (e.g., "tx-austin"), a data type (Socrata, ArcGIS, etc.), and configuration for how to fetch and parse its data.</div>
+          </div>
+
+          <div class="glossary-card">
+            <div class="glossary-term">bestMatchFast vs bestMatchInspection</div>
+            <div class="glossary-def">Two matching functions. bestMatchFast is optimized for batch matching (search results, 100+ restaurants). bestMatchInspection is thorough (single restaurant detail view). Both use Jaccard + containsBoost + chain enforcement.</div>
+          </div>
+
+          <div class="glossary-card">
+            <div class="glossary-term">Chain Enforcement</div>
+            <div class="glossary-def">Special matching logic for chain restaurants (Starbucks, McDonald's). Uses city and ZIP code to prevent matching a restaurant to a different location's inspection record.</div>
+          </div>
+
+          <div class="glossary-card">
+            <div class="glossary-term">matchTier</div>
+            <div class="glossary-def">Confidence level of a name match. "confident" (score >= 0.60) = shown to users. "borderline" (0.28-0.49) = hidden from users, available for auditing.</div>
+          </div>
+
+          <div class="glossary-card">
+            <div class="glossary-term">LIVES Format</div>
+            <div class="glossary-def">A standardized CSV format for restaurant inspection data, used by some health departments (Anchorage, Williamson County).</div>
+          </div>
+
+          <div class="glossary-card">
+            <div class="glossary-term">DBPR</div>
+            <div class="glossary-def">Florida Department of Business and Professional Regulation. Publishes statewide inspection data as bulk CSV files.</div>
+          </div>
+
+          <div class="glossary-card">
+            <div class="glossary-term">Railway</div>
+            <div class="glossary-def">Cloud hosting platform where the SureVera API, PostgreSQL database, and cron jobs run.</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">SureVera Infrastructure Diagram -- Arrio Technologies LLC</div>
+
+  <!-- Detail overlay + panel -->
+  <div class="detail-overlay" id="detailOverlay"></div>
+  <div class="detail-panel" id="detailPanel">
+    <div class="detail-close">
+      <span class="detail-layer-badge" id="detailBadge">Layer 1</span>
+      <button class="detail-close-btn" id="detailCloseBtn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="detail-body" id="detailBody"></div>
+  </div>
+
+  <script>
+    // ── Collapsible toggle ──────────────────────────────────────
+    function toggleCollapsible(id) {
+      const card = document.getElementById(id);
+      if (!card) return;
+      card.classList.toggle("open");
+      const hint = card.querySelector(".collapsible-hint");
+      if (hint) {
+        const textNode = hint.childNodes[0];
+        if (textNode) {
+          textNode.textContent = card.classList.contains("open") ? "Click to collapse " : "Click to expand ";
+        }
+      }
+    }
+
+    // ── Component data ──────────────────────────────────────────
+    const COMPONENTS = {
+      "mobile-app": {
+        layer: 1,
+        layerName: "Client Apps",
+        accent: "var(--layer1-accent)",
+        title: "React Native / Expo Mobile App",
+        desc: "The primary SureVera mobile application built with React Native and Expo, targeting both iOS and Android. Users search for restaurants by city or GPS, view health inspection grades (A/B/C/F), save favorites, follow restaurants for grade-change notifications, and manage subscriptions.",
+        files: [
+          "src/screens/HomeScreen.tsx -- Main search interface with city picker + GPS",
+          "src/screens/RestaurantDetailScreen.tsx -- Individual restaurant grades + inspection history",
+          "src/screens/FavoritesScreen.tsx -- Locally-stored favorite restaurants",
+          "src/screens/HelpScreen.tsx -- FAQ, data deletion, contact",
+          "src/screens/PaywallScreen.tsx -- RevenueCat subscription flow",
+          "src/screens/OnboardingScreen.tsx -- First-launch city selection",
+          "src/api/backend.ts -- API client (all HTTP calls to Next.js backend)",
+          "src/config/api.ts -- API_BASE_URL constant (Railway production domain)",
+          "src/constants/colors.ts -- C object, gradeColors(), gradeColorsSoft()",
+          "src/utils/favorites.ts -- AsyncStorage persistence for favorites (key: favorites_v1)",
+          "src/navigation/RootNavigator.tsx -- React Navigation setup (bottom tabs + stack)"
+        ],
+        deps: ["Next.js API (Layer 2)", "Expo Push Notification Service", "RevenueCat SDK", "AsyncStorage (on-device)"],
+        config: [
+          "API_BASE_URL points to Railway production: https://surebite-api-production-fb8f.up.railway.app",
+          "Expo push token cached in AsyncStorage key \"expo_push_token\" -- this IS the user identity (no accounts)",
+          "Grade system: A >= 90, B >= 80, C >= 70, F < 70. No 'D' grade.",
+          "Navigation: Bottom tabs (Home, Favorites, Help) with nested stack for Home (HomeScreen -> RestaurantDetailScreen)"
+        ]
+      },
+      "landing-site": {
+        layer: 1,
+        layerName: "Client Apps",
+        accent: "var(--layer1-accent)",
+        title: "surevera.app (Landing Page)",
+        desc: "The public-facing marketing website for SureVera. Hosts the app landing page with App Store / Google Play links, plus required legal pages (privacy policy, terms of service). Also includes the internal toolkit at /toolkit.html.",
+        files: [
+          "surevera-website/index.html -- Main landing page",
+          "surevera-website/privacy-policy.html -- Privacy policy (Apple/Google requirement)",
+          "surevera-website/terms-of-service.html -- Terms of service",
+          "surevera-website/links.html -- Link-in-bio page",
+          "surevera-website/toolkit.html -- Internal toolkit hub (this infrastructure diagram!)"
+        ],
+        deps: ["GitHub Pages (hosting)", "GoDaddy (DNS)"],
+        config: [
+          "Custom domain via GoDaddy DNS -> GitHub Pages CNAME",
+          "Static HTML/CSS only -- no build step, no JavaScript frameworks",
+          "Contact: support@sureveraapp.com"
+        ]
+      },
+      "corporate-site": {
+        layer: 1,
+        layerName: "Client Apps",
+        accent: "var(--layer1-accent)",
+        title: "arriotech.com (Corporate Site)",
+        desc: "Corporate umbrella website for Arrio Technologies LLC, the business entity behind SureVera. Static marketing site for the parent company.",
+        files: ["arriotech-landing/ -- Corporate site source"],
+        deps: ["GitHub Pages (hosting)", "GoDaddy (DNS)"],
+        config: [
+          "Business entity: Arrio Technologies LLC (\"Arriotech\")",
+          "Static HTML/CSS hosted on GitHub Pages",
+          "Custom domain via GoDaddy DNS"
+        ]
+      },
+      "nextjs-api": {
+        layer: 2,
+        layerName: "API Gateway",
+        accent: "var(--layer2-accent)",
+        title: "Next.js 16 API Server (Railway)",
+        desc: "The central backend API powering all SureVera functionality. Built with Next.js 16 App Router and deployed on Railway with auto-deploy from GitHub. Handles restaurant search, inspection data matching, push notifications, and subscription management.",
+        files: [
+          "src/app/api/ -- All API route handlers (App Router convention)",
+          "src/middleware.ts -- Request middleware (admin auth, session, CORS)",
+          "src/instrumentation.ts -- Server startup: cache warmup from Postgres",
+          "src/lib/prisma.ts -- PostgreSQL connection pool",
+          "next.config.ts -- Next.js configuration"
+        ],
+        deps: ["Railway (hosting)", "PostgreSQL (data)", "GitHub (deploy trigger)"],
+        config: [
+          "Railway: 8GB RAM, multiple replicas, auto-deploy on push to main",
+          "Rate limiting: 60 req/min for public endpoints, 10 req/min for admin",
+          "TypeScript strict mode enabled",
+          "Admin routes protected by secret query parameter",
+          "CORS configured for mobile app origin"
+        ],
+        endpoints: [
+          { method: "GET", path: "/api/restaurants/search-with-grade" },
+          { method: "GET", path: "/api/restaurants/nearby-with-grade" },
+          { method: "GET", path: "/api/restaurants/details" },
+          { method: "POST", path: "/api/device/register" },
+          { method: "POST", path: "/api/device/follow" },
+          { method: "POST", path: "/api/device/unfollow" },
+          { method: "DELETE", path: "/api/account/delete-data" },
+          { method: "POST", path: "/api/admin/socrata-refresh" },
+          { method: "POST", path: "/api/admin/bell-county-refresh" },
+          { method: "GET", path: "/api/admin/audit-all" }
+        ]
+      },
+      "startup-flow": {
+        layer: 2,
+        layerName: "API Gateway",
+        accent: "var(--layer2-accent)",
+        title: "Server Startup Flow (instrumentation.ts)",
+        desc: "Next.js instrumentation hook that runs once when the Node.js server starts. On each Railway deployment, in-memory caches are wiped. This hook repopulates them from Postgres (fast, <50ms) to prevent a thundering herd on first user requests.",
+        files: [
+          "src/instrumentation.ts -- Main startup orchestration"
+        ],
+        deps: ["nearbyRestaurants.ts (Overpass cache)", "jurisdictionCache.ts (inspection cache)", "PostgreSQL"],
+        config: [
+          "Step 1: warmOverpassCacheFromPostgres() -- load Overpass cells from Postgres",
+          "Step 2: warmJurisdictionCacheFromPostgres() -- load inspection records per provider",
+          "Step 3: warmNormCache() -- pre-build inverted token indexes for fuzzy matching",
+          "Step 4: pruneExpiredOverpassCache() -- clean up expired rows (background)",
+          "Step 5: seedMissingCoverageAreas() -- fill missing city Overpass caches (background, 2-4 min)",
+          "Step 6: setInterval(flushOverpassWriteQueue, 60s) -- persist new Overpass data to Postgres",
+          "Only runs in Node.js runtime (not edge, not during builds)"
+        ]
+      },
+      "public-routes": {
+        layer: 3,
+        layerName: "API Routes",
+        accent: "var(--layer3-accent)",
+        title: "Public API Routes",
+        desc: "User-facing endpoints called by the mobile app. These handle restaurant search (by city name or GPS coordinates), restaurant detail views, push notification registration, and restaurant following.",
+        files: [
+          "src/app/api/restaurants/search-with-grade/route.ts",
+          "src/app/api/restaurants/nearby-with-grade/route.ts",
+          "src/app/api/restaurants/details/route.ts",
+          "src/app/api/device/register/route.ts",
+          "src/app/api/device/follow/route.ts",
+          "src/app/api/device/unfollow/route.ts",
+          "src/app/api/account/delete-data/route.ts"
+        ],
+        deps: ["nearbyRestaurants.ts", "matchInspection.ts", "jurisdictionCache.ts", "providers/index.ts", "PostgreSQL (DeviceToken, RestaurantFollow)"],
+        config: [
+          "search-with-grade: city/ZIP query -> Nominatim geocode -> Overpass OSM query -> match inspections -> graded results",
+          "nearby-with-grade: GPS lat/lng -> Overpass OSM query -> match inspections -> graded results",
+          "details: single restaurant by OSM ID -> detailed inspection match + history",
+          "delete-data: accepts { token }, deletes DeviceToken + RestaurantFollow + NotificationLog + CityRequest (Apple 5.1.1 compliance)",
+          "Rate limit: 60 requests per minute per IP"
+        ],
+        endpoints: [
+          { method: "GET", path: "/api/restaurants/search-with-grade?q=Austin+TX" },
+          { method: "GET", path: "/api/restaurants/nearby-with-grade?lat=30.26&lng=-97.74" },
+          { method: "GET", path: "/api/restaurants/details?id=123&lat=30.26&lng=-97.74" },
+          { method: "POST", path: "/api/device/register" },
+          { method: "POST", path: "/api/device/follow" },
+          { method: "POST", path: "/api/device/unfollow" },
+          { method: "DELETE", path: "/api/account/delete-data" }
+        ]
+      },
+      "admin-routes": {
+        layer: 3,
+        layerName: "API Routes",
+        accent: "var(--layer3-accent)",
+        title: "Admin API Routes (Secret-Protected)",
+        desc: "Administrative endpoints for data refresh, health monitoring, and quality audits. Protected by a shared secret passed as a query parameter. Called by Railway cron jobs and manually during development.",
+        files: [
+          "src/app/api/admin/socrata-refresh/route.ts",
+          "src/app/api/admin/florida-refresh/route.ts",
+          "src/app/api/admin/bell-county-refresh/route.ts",
+          "src/app/api/admin/san-antonio-refresh/route.ts",
+          "src/app/api/admin/snhd-refresh/route.ts",
+          "src/app/api/admin/anchorage-refresh/route.ts",
+          "src/app/api/admin/wcchd-refresh/route.ts",
+          "src/app/api/admin/sc-refresh/route.ts",
+          "src/app/api/admin/seed-cities/route.ts",
+          "src/app/api/admin/audit-all/route.ts",
+          "src/app/api/admin/match-quality/route.ts",
+          "src/app/api/admin/check-score-changes/route.ts",
+          "src/app/api/admin/city-enforcement-audit/route.ts"
+        ],
+        deps: ["jurisdictionCache.ts", "providerHealth.ts", "providers/ (socrata.ts, arcgis.ts, etc.)", "Expo Push Service (for check-score-changes)"],
+        config: [
+          "Auth: ?secret=SECRET query parameter (hardcoded in Railway cron curl commands)",
+          "socrata-refresh: refreshes all Socrata + ArcGIS providers; supports ?force=true and ?providers=id1,id2",
+          "florida-refresh: parses 7 FL DBPR district CSV files",
+          "bell-county-refresh: fetches + parses PDFs from Bell County Health Dept, writes to file cache + Postgres",
+          "san-antonio-refresh: parses SA Metro Health XLSX spreadsheet",
+          "snhd-refresh: parses Southern Nevada Health District ZIP archive",
+          "anchorage-refresh: parses Anchorage LIVES CSV format",
+          "wcchd-refresh: parses Williamson County LIVES ZIP archive",
+          "audit-all: batch health check for all providers",
+          "match-quality: false-positive audit across providers",
+          "check-score-changes: compares current vs previous scores, sends push notifications for changes",
+          "Rate limit: 10 requests per minute per IP"
+        ]
+      },
+      "match-inspection": {
+        layer: 4,
+        layerName: "Core Libraries",
+        accent: "var(--layer4-accent)",
+        title: "matchInspection.ts -- Fuzzy Name Matching",
+        desc: "The heart of SureVera's data pipeline. Matches OSM restaurant names against health inspection records using a multi-signal scoring algorithm. Handles chains with store numbers, noisy suffixes, address fragments, and cross-city false positives.",
+        files: [
+          "src/lib/matchInspection.ts"
+        ],
+        deps: ["jurisdictionCache.ts (inspection records)", "nearbyRestaurants.ts (calls bestMatchFast)"],
+        config: [
+          "Two matchers: bestMatchFast (batch/search, optimized) and bestMatchInspection (single/detail, thorough)",
+          "Scoring: Jaccard similarity on normalized token sets + containsBoost",
+          "normalizeName: strips store numbers (#4710), address fragments (- W SS LOOP), stop words, apostrophes",
+          "Min token length: 3 (eliminates 'TO', 'GO', 'KS', 'IN' false connectors)",
+          "COFFEE intentionally NOT in stop list -- adding it causes 1-token collisions",
+          "Chain enforcement (nameScore >= 0.70): confirmedCity from Nominatim -> hard reject (-1) on city mismatch",
+          "Unique restaurant city check (nameScore 0.45-0.70): soft penalty -0.30 on city mismatch when no ZIP",
+          "Single-token inspection: skip ZIP boost AND containsBoost",
+          "House-number guard: if both names have different house numbers, skip ZIP boost",
+          "Thresholds: confident >= 0.60 (shown to user), borderline 0.28-0.49 (treated as null)"
+        ]
+      },
+      "nearby-restaurants": {
+        layer: 4,
+        layerName: "Core Libraries",
+        accent: "var(--layer4-accent)",
+        title: "nearbyRestaurants.ts -- Restaurant Fetching & Matching",
+        desc: "Shared logic for fetching nearby restaurants from OpenStreetMap via Overpass API and matching them against inspection records. Used by both search and nearby routes. Handles Overpass caching (3-tier: memory -> Postgres -> live), cross-boundary provider detection, and result building.",
+        files: [
+          "src/lib/nearbyRestaurants.ts"
+        ],
+        deps: ["matchInspection.ts", "providers/index.ts", "jurisdictionCache.ts", "Overpass API", "PostgreSQL (overpass_cache)"],
+        config: [
+          "Overpass cache key: ${snapToGrid(lat).toFixed(2)},${snapToGrid(lng).toFixed(2)},${radius},${cuisine}",
+          "snapToGrid: Math.round(v * 100) / 100 (must match in seed scripts)",
+          "Three-tier cache: in-memory -> Postgres -> live Overpass",
+          "TTL: 6 hours for user requests, 6 days for seeded entries",
+          "Cross-boundary: detects provider per restaurant coordinates (not search center)",
+          "Overpass failover: list of mirror endpoints tried in sequence",
+          "Write queue: new Overpass results buffered in memory, flushed to Postgres every 60s"
+        ]
+      },
+      "providers-index": {
+        layer: 4,
+        layerName: "Core Libraries",
+        accent: "var(--layer4-accent)",
+        title: "providers/index.ts -- Provider Detection",
+        desc: "Determines which health department data provider covers a given location. Uses a two-phase approach: first checks coordinate bounding boxes (fast, no network), then falls back to Nominatim reverse geocoding for areas not covered by any bbox.",
+        files: [
+          "src/lib/providers/index.ts -- getInspectionsForCoords(), detectProvider()",
+          "src/lib/providers/registry.ts -- REGISTRY array with bbox + match rules per provider",
+          "src/lib/providers/types.ts -- ProviderConfig, LocationMatch, NormalizedRecord types",
+          "src/lib/providers/coverage.ts -- COVERAGE_AREAS (city dropdown list)",
+          "src/lib/providers/socrata.ts -- Socrata SODA API fetcher",
+          "src/lib/providers/arcgis.ts -- ArcGIS REST feature service fetcher"
+        ],
+        deps: ["Nominatim (reverse geocode fallback)", "registry.ts (provider definitions)"],
+        config: [
+          "Phase 1: bbox check -- coordinates inside [south, north, west, east] -> instant match",
+          "Phase 2: Nominatim reverse geocode -> match on state + county/city name",
+          "Reverse geocode cache: 1-hour TTL in memory",
+          "ArcGIS pass-fail mapping: TRUE/PASS/G -> A, FALSE/FAIL/R -> F, PASS*/MINOR/Y -> C",
+          "ArcGIS date field optional (omit for pre-deduplicated datasets)",
+          "Socrata row limits: NYC 75k, SF 100k, King County 50k (OOM constraint on 512MB)"
+        ]
+      },
+      "jurisdiction-cache": {
+        layer: 4,
+        layerName: "Core Libraries",
+        accent: "var(--layer4-accent)",
+        title: "jurisdictionCache.ts -- Per-Provider Inspection Cache",
+        desc: "Manages cached inspection data per health department jurisdiction. Uses a two-layer cache: in-memory Map (fast reads) backed by Postgres (survives deploys). Replaced the old flat-file approach that was wiped on every Railway deployment.",
+        files: [
+          "src/lib/jurisdictionCache.ts"
+        ],
+        deps: ["PostgreSQL (jurisdiction_cache table)", "providers/ (writes on refresh)"],
+        config: [
+          "In-memory TTL: 30 minutes (ensures cron refreshes propagate to all replicas)",
+          "Read path: memory -> Postgres (at most one PG query per process lifetime per provider within TTL)",
+          "Write path: always writes through to both memory AND Postgres",
+          "Large providers: LA 42k, NYC 26k records",
+          "Bell County uses both file cache (inspections-cache.json) and jurisdictionCache (Postgres)",
+          "isActive flag: if false, provider is auto-disabled (no grades served)",
+          "Schema: { fetchedAt: number, records: NormalizedRecord[], isActive?: boolean }"
+        ]
+      },
+      "provider-health": {
+        layer: 4,
+        layerName: "Core Libraries",
+        accent: "var(--layer4-accent)",
+        title: "providerHealth.ts -- Health Checks & Auto-Disable",
+        desc: "Monitors the health of each data provider. Detects stale data (inspection records too old), API failures, and data quality issues. Can auto-disable unhealthy providers to prevent serving outdated grades.",
+        files: [
+          "src/lib/providerHealth.ts"
+        ],
+        deps: ["jurisdictionCache.ts (reads cached data)", "admin routes (audit-all triggers this)"],
+        config: [
+          "Checks: record count, most recent inspection date, API reachability",
+          "Auto-disable: sets isActive=false in jurisdictionCache if health check fails",
+          "Called by: audit-all cron job (daily at 6am UTC)",
+          "Stale data threshold: configurable per provider type"
+        ]
+      },
+      "socrata-providers": {
+        layer: 5,
+        layerName: "Data Providers",
+        accent: "var(--layer5-accent)",
+        title: "Socrata API Providers",
+        desc: "Open data portals using the Socrata Open Data API (SODA). Each city publishes restaurant inspection data as a dataset with a unique 4x4 identifier. SureVera fetches, normalizes, and caches these records.",
+        files: [
+          "src/lib/providers/socrata.ts -- Generic Socrata fetcher with SoQL support",
+          "src/lib/providers/registry.ts -- Per-city Socrata dataset IDs and field mappings"
+        ],
+        deps: ["jurisdictionCache.ts (write target)", "socrata-refresh admin endpoint (trigger)"],
+        config: [
+          "NYC (DOHMH): 75k row limit (OOM at 100k when Overpass warm). Row = one violation, grouped by camis ID. Score is penalty points; grade letter is authoritative.",
+          "Chicago: Standard Socrata. Score + grade.",
+          "San Francisco: Standard Socrata.",
+          "King County (Seattle area): 50k row limit.",
+          "Austin: Standard Socrata.",
+          "Boulder County: Standard Socrata.",
+          "Montgomery County MD: Standard Socrata.",
+          "Santa Clara County: Standard Socrata.",
+          "NY State: Custom Socrata (statewide dataset, requires city filtering)."
+        ]
+      },
+      "arcgis-providers": {
+        layer: 5,
+        layerName: "Data Providers",
+        accent: "var(--layer5-accent)",
+        title: "ArcGIS API Providers",
+        desc: "Health departments publishing inspection data via Esri ArcGIS REST feature services. SureVera queries these with spatial or attribute filters and maps pass/fail results to letter grades.",
+        files: [
+          "src/lib/providers/arcgis.ts -- Generic ArcGIS fetcher with field mapping",
+          "src/lib/providers/registry.ts -- Per-city ArcGIS URLs and field maps"
+        ],
+        deps: ["jurisdictionCache.ts (write target)", "socrata-refresh admin endpoint (trigger -- handles both Socrata + ArcGIS)"],
+        config: [
+          "Pass-fail mapping: TRUE/1/PASS/PASSED/IN COMPLIANCE/G -> A; FALSE/0/FAIL/FAILED/CRITICAL VIOLATIONS/R -> F; startsWith('PASS')/MINOR VIOLATIONS/Y -> C",
+          "G/Y/R = Alameda County color placard codes (Green/Yellow/Red)",
+          "ArcGISFieldMap.date is OPTIONAL -- omit for pre-deduplicated datasets (e.g., Kitsap WA)",
+          "When date absent, orderByFields is skipped entirely",
+          "Cities: LA County, Wake County, Louisville, Fairfax, Minneapolis, Sacramento, Alameda, Kitsap, Sioux Falls, Arlington, Garland, Detroit"
+        ]
+      },
+      "custom-providers": {
+        layer: 5,
+        layerName: "Data Providers",
+        accent: "var(--layer5-accent)",
+        title: "Custom Data Sources",
+        desc: "Health departments that publish data in unique, non-standard formats. Each requires a dedicated parser/fetcher. These include PDF scraping, XLSX parsing, CSV processing, and ZIP archive extraction.",
+        files: [
+          "src/app/api/admin/florida-refresh/route.ts -- FL DBPR CSV (7 district files)",
+          "src/app/api/admin/bell-county-refresh/route.ts -- Bell County PDF parser",
+          "src/app/api/admin/san-antonio-refresh/route.ts -- SA Metro Health XLSX",
+          "src/app/api/admin/snhd-refresh/route.ts -- Las Vegas SNHD ZIP archive",
+          "src/app/api/admin/anchorage-refresh/route.ts -- Anchorage LIVES CSV",
+          "src/app/api/admin/wcchd-refresh/route.ts -- Williamson County LIVES ZIP",
+          "src/app/api/admin/sc-refresh/route.ts -- SC DHEC ArcGIS (custom handling)"
+        ],
+        deps: ["jurisdictionCache.ts (write target)", "External health department websites/portals"],
+        config: [
+          "Florida DBPR: 7 district CSV files downloaded and merged",
+          "Bell County: pdf-parse (import from pdf-parse/lib/pdf-parse.js, not root). PDF URL regex: [^\"]+ .pdf[^\"]* (URLs have ?t=... cache-busting). Writes to BOTH inspections-cache.json AND jurisdictionCache. Dates: MM/DD/YYYY -> ISO.",
+          "San Antonio: XLSX spreadsheet from SA Metro Health",
+          "SNHD Las Vegas: nightly ZIP archive with LIVES-format CSV inside",
+          "Anchorage: LIVES CSV format (standard restaurant inspection interchange)",
+          "Williamson County: LIVES ZIP (similar to Anchorage but zipped)",
+          "SC DHEC: ArcGIS-based but with custom state-level handling",
+          "NY State: Socrata with custom statewide filtering"
+        ]
+      },
+      "postgresql": {
+        layer: 6,
+        layerName: "Data Storage",
+        accent: "var(--layer6-accent)",
+        title: "PostgreSQL (Railway)",
+        desc: "The persistent relational database hosted on Railway. Survives deployments and is shared across all server replicas. Stores inspection cache data, Overpass cache, user device tokens, restaurant follows, and notification history.",
+        files: [
+          "src/lib/prisma.ts -- Connection pool (pg Pool, not Prisma despite filename)",
+          "src/lib/jurisdictionCache.ts -- jurisdiction_cache table operations",
+          "src/lib/nearbyRestaurants.ts -- overpass_cache table operations",
+          "prisma/schema.prisma -- Database schema (if using Prisma for some models)"
+        ],
+        deps: ["Railway (hosting)"],
+        config: [
+          "Tables: jurisdiction_cache (provider inspection data), overpass_cache (OSM restaurant cache), DeviceToken, RestaurantFollow, NotificationLog, CityRequest, Promotion",
+          "jurisdiction_cache: one row per provider, JSONB column for records array",
+          "overpass_cache: keyed by grid-snapped coordinates + radius + cuisine",
+          "DeviceToken: Expo push tokens (anonymous user identity)",
+          "RestaurantFollow: links push token to (providerId, matchedInspectionName)",
+          "NotificationLog: sent notification history (prevents duplicates)",
+          "CityRequest: user-submitted city expansion requests",
+          "Promotion: promotional content for the app"
+        ]
+      },
+      "in-memory-caches": {
+        layer: 6,
+        layerName: "Data Storage",
+        accent: "var(--layer6-accent)",
+        title: "In-Memory Caches",
+        desc: "Fast read-through caches stored in process memory (globalThis Maps). Wiped on every Railway deployment but rewarmed from Postgres at startup via instrumentation.ts. Ensures sub-millisecond reads for hot data.",
+        files: [
+          "src/lib/jurisdictionCache.ts -- memCache Map with 30min TTL",
+          "src/lib/nearbyRestaurants.ts -- overpassCache Map",
+          "src/lib/providers/index.ts -- nominatimGeoCache",
+          "src/lib/matchInspection.ts -- normCache (inverted token indexes)"
+        ],
+        deps: ["PostgreSQL (warm-from source)", "instrumentation.ts (startup warmup)"],
+        config: [
+          "Jurisdiction cache: 30-min TTL per provider. After TTL, re-reads from Postgres (ensures cron refresh propagation).",
+          "Overpass cache: 6-hour TTL for user-initiated requests, 6-day TTL for seed-cities entries.",
+          "Nominatim geo cache: 1-hour TTL. Caches reverse-geocode results for provider detection.",
+          "Rate limit store: per-IP request counts, sliding window.",
+          "Norm cache: pre-built inverted token indexes per provider for fast fuzzy matching. Built at startup by warmNormCache().",
+          "All caches use globalThis to survive Next.js module reloads within a single process."
+        ]
+      },
+      "daily-crons": {
+        layer: 7,
+        layerName: "Scheduled Jobs",
+        accent: "var(--layer7-accent)",
+        title: "Daily Cron Jobs",
+        desc: "Railway cron services that run every day. Each is a separate Railway service using the curlimages/curl:latest Docker image. Secrets are hardcoded in the curl command (environment variable substitution does not work in curl images).",
+        files: [
+          "Railway dashboard -- Cron service configurations"
+        ],
+        deps: ["Admin API routes", "Railway cron scheduler"],
+        config: [
+          "2:00 AM UTC -- socrata-refresh: Refresh all Socrata + ArcGIS providers (curl -s --max-time 600 -X POST)",
+          "3:00 AM UTC -- anchorage-refresh: Parse Anchorage LIVES CSV (curl -s --max-time 300 -X POST)",
+          "4:00 AM UTC -- snhd-refresh: Parse Las Vegas SNHD nightly ZIP (curl -X POST)",
+          "6:00 AM UTC -- audit-all: Batch health check all providers (bare curl, no -s/-f)",
+          "7:00 AM UTC -- match-quality: False-positive audit across all providers",
+          "8:00 AM UTC -- city-enforcement-audit: Verify grades don't drop when nominatimCity applied",
+          "10:00 AM UTC -- check-score-changes: Compare current vs previous scores, send push notifications",
+          "All times in UTC. Railway cron uses standard cron syntax (0 2 * * * etc.)"
+        ]
+      },
+      "weekly-crons": {
+        layer: 7,
+        layerName: "Scheduled Jobs",
+        accent: "var(--layer7-accent)",
+        title: "Weekly Cron Jobs (Monday)",
+        desc: "Railway cron services that run every Monday. These handle data sources that update weekly or less frequently -- typically custom-format sources that require dedicated parsers (PDF, XLSX, ZIP).",
+        files: [
+          "Railway dashboard -- Cron service configurations"
+        ],
+        deps: ["Admin API routes", "Railway cron scheduler", "External health department data sources"],
+        config: [
+          "3:00 AM UTC Monday -- florida-refresh: Parse FL DBPR CSV (7 district files)",
+          "8:00 AM UTC Monday -- bell-county-refresh: Fetch + parse Bell County Health Dept PDFs",
+          "9:00 AM UTC Monday -- san-antonio-refresh: Parse SA Metro Health XLSX spreadsheet",
+          "10:00 AM UTC Monday -- wcchd-refresh: Parse Williamson County LIVES ZIP archive",
+          "11:00 AM UTC Monday -- sc-refresh: Refresh SC DHEC ArcGIS data",
+          "All use curlimages/curl:latest with hardcoded secrets",
+          "Bell County writes to BOTH file cache (inspections-cache.json) AND jurisdictionCache (Postgres)"
+        ]
+      },
+      "nominatim": {
+        layer: 8,
+        layerName: "External Services",
+        accent: "var(--layer8-accent)",
+        title: "Nominatim (OpenStreetMap Geocoding)",
+        desc: "OpenStreetMap's geocoding service. Used for two purposes: (1) forward geocoding city/ZIP search queries to coordinates, and (2) reverse geocoding coordinates to determine city/county/state for provider detection.",
+        files: [
+          "src/lib/providers/index.ts -- Reverse geocode for provider detection",
+          "src/app/api/restaurants/search-with-grade/route.ts -- Forward geocode for search queries"
+        ],
+        deps: [],
+        config: [
+          "Forward geocode: city/ZIP query -> lat/lng coordinates",
+          "Reverse geocode: lat/lng -> address (city, county, state)",
+          "Response cached in memory with 1-hour TTL",
+          "nominatimCity is null on first request after deploy; populated on subsequent requests",
+          "Used as fallback when coordinates don't fall within any provider's bbox"
+        ]
+      },
+      "overpass-api": {
+        layer: 8,
+        layerName: "External Services",
+        accent: "var(--layer8-accent)",
+        title: "Overpass API (OpenStreetMap)",
+        desc: "Query interface for OpenStreetMap data. SureVera uses it to find restaurants, cafes, and fast food establishments within a radius of given coordinates. Results include name, cuisine, address, and coordinates.",
+        files: [
+          "src/lib/nearbyRestaurants.ts -- Overpass query builder + failover logic"
+        ],
+        deps: [],
+        config: [
+          "Queries: amenity=restaurant|cafe|fast_food within radius of coordinates",
+          "Failover: list of mirror Overpass endpoints, tried in sequence if primary fails",
+          "Results cached: in-memory (6hr TTL for user, 6-day for seed) -> Postgres -> live",
+          "Cache key: snapToGrid(lat).toFixed(2),snapToGrid(lng).toFixed(2),radius,cuisine",
+          "Seed script: python3 /tmp/seed_overpass_js_rounding.py SECRET (uses math.floor(v*100+0.5)/100 to match JS rounding)",
+          "Server-side seed: POST /api/admin/seed-cities (55s timeout per city, 2-4 min total)"
+        ]
+      },
+      "expo-push": {
+        layer: 8,
+        layerName: "External Services",
+        accent: "var(--layer8-accent)",
+        title: "Expo Push Notification Service",
+        desc: "Expo's push notification infrastructure. SureVera sends grade-change notifications through this service. The Expo push token serves as the anonymous user identity (no accounts in the system).",
+        files: [
+          "src/app/api/admin/check-score-changes/route.ts -- Sends notifications via Expo",
+          "src/app/api/device/register/route.ts -- Stores push token"
+        ],
+        deps: ["Apple APNs (iOS)", "Firebase Cloud Messaging (Android)"],
+        config: [
+          "Push token = user identity (stored in DeviceToken table)",
+          "Nightly cron groups follows by (providerId, matchedInspectionName)",
+          "Exact-name lookup in jurisdictionCache for current score",
+          "Comparison with NotificationLog to detect changes and prevent duplicates"
+        ]
+      },
+      "revenucat": {
+        layer: 8,
+        layerName: "External Services",
+        accent: "var(--layer8-accent)",
+        title: "RevenueCat (Subscription Management)",
+        desc: "Third-party service managing in-app subscriptions across iOS and Android. Handles purchase validation, subscription status, trial periods, and receipt verification so SureVera doesn't need to implement this directly.",
+        files: [
+          "Mobile app: RevenueCat SDK integration",
+          "src/screens/PaywallScreen.tsx -- Subscription UI"
+        ],
+        deps: ["Stripe (payment processing)", "Apple App Store", "Google Play Store"],
+        config: [
+          "Manages subscription tiers and entitlements",
+          "Handles cross-platform subscription status",
+          "Provides webhook callbacks for subscription events",
+          "SDK integrated in React Native / Expo app"
+        ]
+      },
+      "stripe": {
+        layer: 8,
+        layerName: "External Services",
+        accent: "var(--layer8-accent)",
+        title: "Stripe (Payment Processing)",
+        desc: "Payment processing backend used by RevenueCat for handling subscription payments. Processes credit card transactions and manages billing cycles.",
+        files: [],
+        deps: ["RevenueCat (subscription orchestration)"],
+        config: [
+          "Used indirectly through RevenueCat",
+          "Handles payment processing for subscriptions",
+          "No direct Stripe API calls from SureVera backend"
+        ]
+      },
+      "github": {
+        layer: 8,
+        layerName: "External Services",
+        accent: "var(--layer8-accent)",
+        title: "GitHub (Source Code & Deployment)",
+        desc: "Source code repository hosting. Push to the main branch triggers automatic deployment to Railway. Also hosts the static landing pages via GitHub Pages.",
+        files: [],
+        deps: [],
+        config: [
+          "Push to main -> Railway auto-deploy (healthbite-api)",
+          "GitHub Pages hosts surevera.app and arriotech.com",
+          "Repository contains both mobile app and backend API",
+          "Workflow: develop locally -> push -> Railway deploys -> cron jobs run"
+        ]
+      },
+      "godaddy": {
+        layer: 8,
+        layerName: "External Services",
+        accent: "var(--layer8-accent)",
+        title: "GoDaddy (DNS Management)",
+        desc: "Domain registrar and DNS provider. Manages DNS records pointing surevera.app and arriotech.com to GitHub Pages.",
+        files: [],
+        deps: [],
+        config: [
+          "Domains: surevera.app, arriotech.com",
+          "DNS records point to GitHub Pages IPs",
+          "CNAME records for custom domain verification"
+        ]
+      },
+      "railway": {
+        layer: 8,
+        layerName: "External Services",
+        accent: "var(--layer8-accent)",
+        title: "Railway (Hosting Platform)",
+        desc: "Cloud hosting platform running the entire SureVera backend. Hosts the Next.js API server, PostgreSQL database, and all cron job services. Provides auto-deploy from GitHub, environment variable management, and service orchestration.",
+        files: [],
+        deps: ["GitHub (deploy trigger)"],
+        config: [
+          "API server: Next.js 16, 8GB RAM, multiple replicas",
+          "PostgreSQL: managed database, persistent across deploys",
+          "Cron services: curlimages/curl:latest Docker images on schedule",
+          "Auto-deploy: triggered by GitHub push to main branch",
+          "Environment: secrets hardcoded in cron commands ($VAR doesn't work in curl images)",
+          "Production URL: https://surebite-api-production-fb8f.up.railway.app"
+        ]
+      }
+    };
+
+    // ── Detail panel logic ──────────────────────────────────────
+    const overlay = document.getElementById("detailOverlay");
+    const panel = document.getElementById("detailPanel");
+    const badge = document.getElementById("detailBadge");
+    const body = document.getElementById("detailBody");
+    const closeBtn = document.getElementById("detailCloseBtn");
+
+    function openDetail(id) {
+      const c = COMPONENTS[id];
+      if (!c) return;
+
+      badge.textContent = "Layer " + c.layer + " — " + c.layerName;
+      badge.style.background = c.accent;
+      badge.style.color = "white";
+
+      let html = `<h2>${esc(c.title)}</h2><p class="detail-desc">${esc(c.desc)}</p>`;
+
+      if (c.endpoints && c.endpoints.length) {
+        html += `<div class="detail-section"><h3>Endpoints</h3><ul class="detail-endpoints">`;
+        c.endpoints.forEach(e => {
+          const cls = e.method === "GET" ? "method-get" : e.method === "POST" ? "method-post" : "method-delete";
+          html += `<li><span class="method ${cls}">${e.method}</span>${esc(e.path)}</li>`;
+        });
+        html += `</ul></div>`;
+      }
+
+      if (c.files && c.files.length) {
+        html += `<div class="detail-section"><h3>Key Files</h3>`;
+        c.files.forEach(f => {
+          html += `<span class="file-path">${esc(f)}</span>`;
+        });
+        html += `</div>`;
+      }
+
+      if (c.deps && c.deps.length) {
+        html += `<div class="detail-section"><h3>Dependencies</h3><ul>`;
+        c.deps.forEach(d => { html += `<li>${esc(d)}</li>`; });
+        html += `</ul></div>`;
+      }
+
+      if (c.config && c.config.length) {
+        html += `<div class="detail-section"><h3>Configuration Notes</h3><ul>`;
+        c.config.forEach(n => {
+          // Highlight code-like tokens
+          const formatted = esc(n).replace(/`([^`]+)`/g, '<code>$1</code>');
+          html += `<li>${formatted}</li>`;
+        });
+        html += `</ul></div>`;
+      }
+
+      body.innerHTML = html;
+      overlay.classList.add("open");
+      panel.classList.add("open");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeDetail() {
+      overlay.classList.remove("open");
+      panel.classList.remove("open");
+      document.body.style.overflow = "";
+    }
+
+    function esc(s) {
+      const d = document.createElement("div");
+      d.textContent = s;
+      return d.innerHTML;
+    }
+
+    // Bind click handlers
+    document.querySelectorAll(".node[data-id]").forEach(node => {
+      node.addEventListener("click", () => openDetail(node.dataset.id));
+    });
+    overlay.addEventListener("click", closeDetail);
+    closeBtn.addEventListener("click", closeDetail);
+    document.addEventListener("keydown", e => { if (e.key === "Escape") closeDetail(); });
+
+    // ── Search / filter ─────────────────────────────────────────
+    const searchInput = document.getElementById("searchInput");
+    searchInput.addEventListener("input", () => {
+      const q = searchInput.value.toLowerCase().trim();
+      const allNodes = document.querySelectorAll(".node[data-id]");
+      const allLayers = document.querySelectorAll(".layer");
+
+      if (!q) {
+        allNodes.forEach(n => n.classList.remove("hidden"));
+        allLayers.forEach(l => l.classList.remove("hidden"));
+        document.querySelectorAll(".connector").forEach(c => c.classList.remove("hidden"));
+        return;
+      }
+
+      // Search in component data
+      const matchedIds = new Set();
+      Object.entries(COMPONENTS).forEach(([id, c]) => {
+        const haystack = [
+          c.title, c.desc,
+          ...(c.files || []),
+          ...(c.deps || []),
+          ...(c.config || []),
+          ...(c.endpoints || []).map(e => e.method + " " + e.path)
+        ].join(" ").toLowerCase();
+        if (haystack.includes(q)) matchedIds.add(id);
+      });
+
+      // Also search visible text in nodes
+      allNodes.forEach(n => {
+        const text = n.textContent.toLowerCase();
+        if (text.includes(q)) matchedIds.add(n.dataset.id);
+      });
+
+      allNodes.forEach(n => {
+        n.classList.toggle("hidden", !matchedIds.has(n.dataset.id));
+      });
+
+      // Hide empty layers
+      allLayers.forEach(l => {
+        const visibleNodes = l.querySelectorAll(".node[data-id]:not(.hidden)");
+        l.classList.toggle("hidden", visibleNodes.length === 0);
+      });
+
+      // Hide connectors next to hidden layers
+      document.querySelectorAll(".connector").forEach(c => {
+        const prev = c.previousElementSibling;
+        const next = c.nextElementSibling;
+        c.classList.toggle("hidden",
+          (prev && prev.classList.contains("hidden")) ||
+          (next && next.classList.contains("hidden"))
+        );
+      });
+    });
+
+    // ── Export / Print ─────────────────────────────────────────
+    function handleExportPrint() {
+      // Inject print details into each node
+      document.querySelectorAll(".node[data-id]").forEach(node => {
+        // Remove any existing print detail
+        const existing = node.querySelector(".print-detail");
+        if (existing) existing.remove();
+
+        const c = COMPONENTS[node.dataset.id];
+        if (!c) return;
+
+        const div = document.createElement("div");
+        div.className = "print-detail";
+
+        let html = '<strong>' + esc(c.desc) + '</strong>';
+
+        if (c.files && c.files.length) {
+          html += '<div class="pd-section"><div class="pd-label">Key Files</div>';
+          c.files.forEach(f => { html += '<div class="pd-item">' + esc(f) + '</div>'; });
+          html += '</div>';
+        }
+        if (c.endpoints && c.endpoints.length) {
+          html += '<div class="pd-section"><div class="pd-label">Endpoints</div>';
+          c.endpoints.forEach(e => { html += '<div class="pd-item"><code>' + e.method + '</code> ' + esc(e.path) + '</div>'; });
+          html += '</div>';
+        }
+        if (c.deps && c.deps.length) {
+          html += '<div class="pd-section"><div class="pd-label">Dependencies</div>';
+          c.deps.forEach(d => { html += '<div class="pd-item">' + esc(d) + '</div>'; });
+          html += '</div>';
+        }
+        if (c.config && c.config.length) {
+          html += '<div class="pd-section"><div class="pd-label">Configuration</div>';
+          c.config.forEach(n => {
+            html += '<div class="pd-item">' + esc(n).replace(/`([^`]+)`/g, '<code>$1</code>') + '</div>';
+          });
+          html += '</div>';
+        }
+
+        div.innerHTML = html;
+        node.appendChild(div);
+      });
+
+      // Expand all collapsible sections
+      ['bigPictureCard', 'lifecycleCard', 'glossaryCard'].forEach(id => {
+        const card = document.getElementById(id);
+        if (card && !card.classList.contains('open')) {
+          card.classList.add('open');
+        }
+      });
+
+      // Small delay to let DOM update, then print
+      setTimeout(() => { window.print(); }, 150);
+    }
+  </script>
+
+  <!-- Shared toolkit scripts -->
+  <script src="dark-mode.js"></script>
+  <script src="toolkit-nav.js"></script>
+</body>
+</html>

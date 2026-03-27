@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SureVera QR Code Generator</title>
+<link rel="icon" href="favicon.png" type="image/png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #F1F5F9;
+  color: #1E293B;
+  min-height: 100vh;
+}
+.toolbar {
+  background: linear-gradient(135deg, #0D1B2E 0%, #1B3A6B 100%);
+  padding: 1.25rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+}
+.toolbar img { height: 32px; }
+.divider { width: 1px; height: 24px; background: rgba(255,255,255,0.2); }
+.tool-label { font-size: 0.85rem; font-weight: 500; color: rgba(255,255,255,0.6); }
+
+.container {
+  max-width: 1100px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+@media (max-width: 820px) {
+  .container { grid-template-columns: 1fr; }
+}
+
+.panel {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 4px 24px rgba(0,0,0,0.04);
+  padding: 1.75rem;
+}
+.panel h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1B3A6B;
+  margin-bottom: 1.25rem;
+}
+
+label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #64748B;
+  margin-bottom: 0.35rem;
+  margin-top: 1rem;
+}
+label:first-of-type { margin-top: 0; }
+
+input[type="text"], input[type="url"], select {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.875rem;
+  color: #1E293B;
+  background: #FAFBFC;
+  transition: border-color 0.15s;
+  outline: none;
+}
+input:focus, select:focus { border-color: #1B3A6B; }
+
+.color-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-end;
+}
+.color-group { flex: 1; }
+.color-group .color-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+input[type="color"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 36px;
+  height: 36px;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 2px;
+  background: #fff;
+}
+input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+input[type="color"]::-webkit-color-swatch { border: none; border-radius: 5px; }
+
+.presets {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+.preset-btn {
+  padding: 0.4rem 0.85rem;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 8px;
+  background: #fff;
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.preset-btn:hover { border-color: #1B3A6B; color: #1B3A6B; background: #F0F4FF; }
+
+.size-options {
+  display: flex;
+  gap: 0.5rem;
+}
+.size-btn {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 8px;
+  background: #fff;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #475569;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+}
+.size-btn.active { border-color: #1B3A6B; background: #1B3A6B; color: #fff; }
+.size-btn:hover:not(.active) { border-color: #1B3A6B; color: #1B3A6B; }
+
+.style-options { display: flex; gap: 0.5rem; }
+.style-btn {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 8px;
+  background: #fff;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #475569;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+}
+.style-btn.active { border-color: #1B3A6B; background: #1B3A6B; color: #fff; }
+.style-btn:hover:not(.active) { border-color: #1B3A6B; color: #1B3A6B; }
+
+.preview-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+.preview-box {
+  background: repeating-conic-gradient(#F1F5F9 0% 25%, #fff 0% 50%) 50%/20px 20px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  min-height: 300px;
+  width: 100%;
+}
+
+.branded-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+  padding: 2rem 2rem 1.5rem;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+.branded-card canvas { display: block; }
+.branded-accent {
+  width: 40px;
+  height: 3px;
+  background: #E8612A;
+  border-radius: 2px;
+  margin: 1rem 0 0.6rem;
+}
+.branded-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1B3A6B;
+  letter-spacing: -0.02em;
+}
+.branded-sub {
+  font-size: 0.75rem;
+  color: #94A3B8;
+  margin-top: 0.2rem;
+  font-weight: 500;
+}
+
+.actions {
+  display: flex;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 360px;
+}
+.btn-primary {
+  flex: 1;
+  padding: 0.65rem 1rem;
+  background: #1B3A6B;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-primary:hover { background: #0D1B2E; }
+.btn-outline {
+  flex: 1;
+  padding: 0.65rem 1rem;
+  background: #fff;
+  color: #1B3A6B;
+  border: 2px solid #1B3A6B;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-outline:hover { background: #F0F4FF; }
+
+.footer {
+  margin-top: 3rem;
+  padding: 1.5rem;
+  text-align: center;
+  font-size: 0.75rem;
+  color: #94A3B8;
+}
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <img src="surevera-header-white-logo.png" alt="SureVera" style="height:32px">
+  <div class="divider" style="width:1px;height:24px;background:rgba(255,255,255,0.2)"></div>
+  <span class="tool-label" style="font-size:0.85rem;font-weight:500;color:rgba(255,255,255,0.6)">QR Code Generator</span>
+</div>
+
+<div class="container">
+  <!-- Controls -->
+  <div class="panel">
+    <h2>Settings</h2>
+
+    <label for="urlInput">URL / Text</label>
+    <input type="url" id="urlInput" value="https://surevera.app" spellcheck="false">
+
+    <div class="presets">
+      <button class="preset-btn" onclick="setPreset('https://surevera.app','')">Website</button>
+      <button class="preset-btn" onclick="setPreset('#','Add your App Store link')">App Store</button>
+      <button class="preset-btn" onclick="setPreset('#','Add your Play Store link')">Play Store</button>
+    </div>
+
+    <label>QR Code Size</label>
+    <div class="size-options">
+      <button class="size-btn active" data-size="256" onclick="setSize(this)">Small<br><span style="font-size:0.7rem;opacity:0.6">256px</span></button>
+      <button class="size-btn" data-size="512" onclick="setSize(this)">Medium<br><span style="font-size:0.7rem;opacity:0.6">512px</span></button>
+      <button class="size-btn" data-size="1024" onclick="setSize(this)">Large<br><span style="font-size:0.7rem;opacity:0.6">1024px</span></button>
+    </div>
+
+    <div class="color-row">
+      <div class="color-group">
+        <label for="fgColor">Foreground</label>
+        <div class="color-input-wrap">
+          <input type="color" id="fgColor" value="#1B3A6B">
+          <input type="text" id="fgHex" value="#1B3A6B" style="width:90px" maxlength="7">
+        </div>
+      </div>
+      <div class="color-group">
+        <label for="bgColor">Background</label>
+        <div class="color-input-wrap">
+          <input type="color" id="bgColor" value="#FFFFFF">
+          <input type="text" id="bgHex" value="#FFFFFF" style="width:90px" maxlength="7">
+        </div>
+      </div>
+    </div>
+
+    <label>Output Style</label>
+    <div class="style-options">
+      <button class="style-btn active" data-style="qr" onclick="setStyle(this)">QR Only</button>
+      <button class="style-btn" data-style="branded" onclick="setStyle(this)">Branded Card</button>
+    </div>
+  </div>
+
+  <!-- Preview -->
+  <div class="panel">
+    <h2>Preview</h2>
+    <div class="preview-area">
+      <div class="preview-box" id="previewBox"></div>
+      <div class="actions">
+        <button class="btn-primary" onclick="downloadPNG()">Download PNG</button>
+        <button class="btn-outline" onclick="downloadSVG()">Download SVG</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">SureVera QR Generator &mdash; runs entirely in your browser</div>
+
+<script>
+// ============================================================
+// Inline QR Code Generator — based on the QR Code specification
+// Supports byte mode encoding, error correction level M
+// ============================================================
+var QRCode = (function() {
+  // Galois Field GF(2^8) with polynomial 0x11D
+  var EXP = new Uint8Array(512);
+  var LOG = new Uint8Array(256);
+  (function() {
+    var x = 1;
+    for (var i = 0; i < 255; i++) {
+      EXP[i] = x;
+      LOG[x] = i;
+      x <<= 1;
+      if (x & 256) x ^= 0x11D;
+    }
+    for (var i = 255; i < 512; i++) EXP[i] = EXP[i - 255];
+  })();
+
+  function gfMul(a, b) {
+    if (a === 0 || b === 0) return 0;
+    return EXP[LOG[a] + LOG[b]];
+  }
+
+  function polyMul(a, b) {
+    var r = new Uint8Array(a.length + b.length - 1);
+    for (var i = 0; i < a.length; i++)
+      for (var j = 0; j < b.length; j++)
+        r[i + j] ^= gfMul(a[i], b[j]);
+    return r;
+  }
+
+  function generatorPoly(n) {
+    var g = new Uint8Array([1]);
+    for (var i = 0; i < n; i++) {
+      g = polyMul(g, new Uint8Array([1, EXP[i]]));
+    }
+    return g;
+  }
+
+  function ecBytes(data, ecCount) {
+    var gen = generatorPoly(ecCount);
+    var msg = new Uint8Array(data.length + ecCount);
+    msg.set(data);
+    for (var i = 0; i < data.length; i++) {
+      var coef = msg[i];
+      if (coef !== 0) {
+        for (var j = 0; j < gen.length; j++) {
+          msg[i + j] ^= gfMul(gen[j], coef);
+        }
+      }
+    }
+    return msg.slice(data.length);
+  }
+
+  // Version info: [version, totalCodewords, ecCodewordsPerBlock, numBlocksG1, dataPerBlockG1, numBlocksG2, dataPerBlockG2]
+  // Error correction level M
+  var VERSION_TABLE = [
+    null,
+    [1,  26,  10, 1, 16, 0, 0],
+    [2,  44,  16, 1, 28, 0, 0],
+    [3,  70,  26, 1, 44, 0, 0],
+    [4,  100, 18, 2, 32, 0, 0],
+    [5,  134, 24, 2, 43, 0, 0],
+    [6,  172, 16, 4, 27, 0, 0],
+    [7,  196, 18, 4, 31, 0, 0],
+    [8,  242, 22, 2, 38, 2, 39],
+    [9,  292, 22, 3, 36, 2, 37],
+    [10, 346, 26, 4, 43, 1, 44],
+    [11, 404, 30, 1, 50, 4, 51],
+    [12, 466, 22, 6, 36, 2, 37],
+    [13, 532, 22, 8, 37, 1, 38],
+    [14, 581, 24, 4, 40, 5, 41],
+    [15, 655, 24, 5, 41, 5, 42],
+    [16, 733, 28, 7, 45, 3, 46],
+    [17, 815, 28, 10,46, 1, 47],
+    [18, 901, 26, 9, 43, 4, 44],
+    [19, 991, 26, 3, 44,11, 45],
+    [20, 1085,26, 3, 41,13, 42],
+    [21, 1156,26, 17,42, 0, 0],
+    [22, 1258,28, 17,46, 0, 0],
+    [23, 1364,28, 4, 47,14, 48],
+    [24, 1474,28, 6, 45,14, 46],
+    [25, 1588,28, 8, 47,13, 48],
+    [26, 1706,28, 19,46, 4, 47],
+    [27, 1828,28, 22,45, 3, 46],
+    [28, 1921,28, 3, 45,23, 46],
+    [29, 2051,28, 21,45, 7, 46],
+    [30, 2185,28, 19,45,10, 46],
+    [31, 2323,28, 2, 47,29, 48],
+    [32, 2465,28, 10,46,23, 47],
+    [33, 2611,28, 14,46,21, 47],
+    [34, 2761,28, 14,46,23, 47],
+    [35, 2876,28, 12,47,26, 48],
+    [36, 3034,28, 6, 47,34, 48],
+    [37, 3196,28, 29,46, 14,47],
+    [38, 3362,28, 13,46, 32,47],
+    [39, 3532,28, 40,47, 7, 48],
+    [40, 3706,28, 18,47, 31,48],
+  ];
+
+  // Data capacity (byte mode, EC level M)
+  function dataCapacity(ver) {
+    var t = VERSION_TABLE[ver];
+    return t[3] * t[4] + t[5] * t[6];
+  }
+
+  function chooseVersion(dataLen) {
+    for (var v = 1; v <= 40; v++) {
+      // byte mode header: 4 bits mode + char count bits + data
+      var ccBits = v <= 9 ? 8 : 16;
+      var totalBits = 4 + ccBits + dataLen * 8;
+      var cap = dataCapacity(v) * 8;
+      if (totalBits <= cap) return v;
+    }
+    throw new Error('Data too long for QR code');
+  }
+
+  // Alignment pattern locations
+  var ALIGNMENT_POSITIONS = [
+    null, [], [6,18], [6,22], [6,26], [6,30], [6,34],
+    [6,22,38], [6,24,42], [6,26,46], [6,28,50], [6,30,54], [6,32,58],
+    [6,34,62], [6,26,46,66], [6,26,48,70], [6,26,50,74], [6,30,54,78],
+    [6,30,56,82], [6,30,58,86], [6,34,62,90], [6,28,50,72,94],
+    [6,26,50,74,98], [6,30,54,78,102], [6,28,54,80,106], [6,32,58,84,110],
+    [6,30,58,86,114], [6,34,62,90,118], [6,26,50,74,98,122],
+    [6,30,54,78,102,126], [6,26,52,78,104,130], [6,30,56,82,108,134],
+    [6,34,60,86,112,138], [6,30,58,86,114,142], [6,34,62,90,118,146],
+    [6,30,54,78,102,126,150], [6,24,50,76,102,128,154],
+    [6,28,54,80,106,132,158], [6,32,58,84,110,136,162],
+    [6,26,54,82,110,138,166], [6,30,58,86,114,142,170],
+  ];
+
+  // Format info bits for EC level M and mask 0-7
+  var FORMAT_INFO = [
+    0x5412, 0x5125, 0x5E7C, 0x5B4B, 0x45F9, 0x40CE, 0x4F97, 0x4AA0,
+  ];
+
+  // Version info bits for versions 7-40
+  var VERSION_INFO = [
+    0x07C94, 0x085BC, 0x09A99, 0x0A4D3, 0x0BBF6, 0x0C762, 0x0D847,
+    0x0E60D, 0x0F928, 0x10B78, 0x1145D, 0x12A17, 0x13532, 0x149A6,
+    0x15683, 0x168C9, 0x177EC, 0x18EC4, 0x191E1, 0x1AFAB, 0x1B08E,
+    0x1CC1A, 0x1D33F, 0x1ED75, 0x1F250, 0x209D5, 0x216F0, 0x228BA,
+    0x2379F, 0x24B0B, 0x2542E, 0x26A64, 0x27541, 0x28C69,
+  ];
+
+  function createMatrix(version) {
+    var size = version * 4 + 17;
+    var matrix = [];
+    var reserved = [];
+    for (var i = 0; i < size; i++) {
+      matrix[i] = new Int8Array(size); // 0=white, 1=black, unset=0
+      reserved[i] = new Uint8Array(size); // 1=reserved
+    }
+    return { matrix: matrix, reserved: reserved, size: size };
+  }
+
+  function setModule(m, row, col, val) {
+    m.matrix[row][col] = val ? 1 : 0;
+    m.reserved[row][col] = 1;
+  }
+
+  function addFinderPattern(m, row, col) {
+    for (var r = -1; r <= 7; r++) {
+      for (var c = -1; c <= 7; c++) {
+        var rr = row + r, cc = col + c;
+        if (rr < 0 || rr >= m.size || cc < 0 || cc >= m.size) continue;
+        var dark = (r >= 0 && r <= 6 && (c === 0 || c === 6)) ||
+                   (c >= 0 && c <= 6 && (r === 0 || r === 6)) ||
+                   (r >= 2 && r <= 4 && c >= 2 && c <= 4);
+        setModule(m, rr, cc, dark);
+      }
+    }
+  }
+
+  function addAlignmentPattern(m, row, col) {
+    for (var r = -2; r <= 2; r++) {
+      for (var c = -2; c <= 2; c++) {
+        var dark = Math.abs(r) === 2 || Math.abs(c) === 2 || (r === 0 && c === 0);
+        setModule(m, row + r, col + c, dark);
+      }
+    }
+  }
+
+  function addTimingPatterns(m) {
+    for (var i = 8; i < m.size - 8; i++) {
+      var dark = i % 2 === 0;
+      if (!m.reserved[6][i]) setModule(m, 6, i, dark);
+      if (!m.reserved[i][6]) setModule(m, i, 6, dark);
+    }
+  }
+
+  function reserveFormatArea(m, version) {
+    // Around top-left finder
+    for (var i = 0; i <= 8; i++) {
+      if (i < m.size) { m.reserved[8][i] = 1; m.reserved[i][8] = 1; }
+    }
+    // Around top-right finder
+    for (var i = 0; i <= 7; i++) {
+      m.reserved[8][m.size - 1 - i] = 1;
+    }
+    // Around bottom-left finder
+    for (var i = 0; i <= 7; i++) {
+      m.reserved[m.size - 1 - i][8] = 1;
+    }
+    // Dark module
+    setModule(m, m.size - 8, 8, 1);
+
+    // Version info areas
+    if (version >= 7) {
+      for (var i = 0; i < 6; i++) {
+        for (var j = 0; j < 3; j++) {
+          m.reserved[i][m.size - 11 + j] = 1;
+          m.reserved[m.size - 11 + j][i] = 1;
+        }
+      }
+    }
+  }
+
+  function placeData(m, dataBits) {
+    var idx = 0;
+    var upward = true;
+    for (var right = m.size - 1; right >= 1; right -= 2) {
+      if (right === 6) right = 5; // skip timing column
+      var rows = upward ? range(m.size - 1, -1) : range(0, m.size);
+      for (var ri = 0; ri < rows.length; ri++) {
+        var row = rows[ri];
+        for (var dc = 0; dc <= 1; dc++) {
+          var col = right - dc;
+          if (m.reserved[row][col]) continue;
+          m.matrix[row][col] = idx < dataBits.length ? dataBits[idx] : 0;
+          idx++;
+        }
+      }
+      upward = !upward;
+    }
+  }
+
+  function range(start, end) {
+    var arr = [];
+    if (start < end) { for (var i = start; i < end; i++) arr.push(i); }
+    else { for (var i = start; i >= end + 1; i--) arr.push(i); /* inclusive of end+1? no. */ }
+    // fix: range(size-1, -1) means from size-1 down to 0
+    if (start > end) {
+      arr = [];
+      for (var i = start; i > end; i--) arr.push(i);
+    }
+    return arr;
+  }
+
+  // Mask functions
+  var MASKS = [
+    function(r,c) { return (r + c) % 2 === 0; },
+    function(r,c) { return r % 2 === 0; },
+    function(r,c) { return c % 3 === 0; },
+    function(r,c) { return (r + c) % 3 === 0; },
+    function(r,c) { return (Math.floor(r/2) + Math.floor(c/3)) % 2 === 0; },
+    function(r,c) { return (r*c)%2 + (r*c)%3 === 0; },
+    function(r,c) { return ((r*c)%2 + (r*c)%3) % 2 === 0; },
+    function(r,c) { return ((r+c)%2 + (r*c)%3) % 2 === 0; },
+  ];
+
+  function applyMask(m, maskIdx) {
+    var fn = MASKS[maskIdx];
+    for (var r = 0; r < m.size; r++) {
+      for (var c = 0; c < m.size; c++) {
+        if (!m.reserved[r][c] && fn(r, c)) {
+          m.matrix[r][c] ^= 1;
+        }
+      }
+    }
+  }
+
+  function writeFormatInfo(m, maskIdx) {
+    var bits = FORMAT_INFO[maskIdx];
+    // Horizontal: left side of row 8
+    var positions = [
+      [8,0],[8,1],[8,2],[8,3],[8,4],[8,5],[8,7],[8,8],
+      [7,8],[5,8],[4,8],[3,8],[2,8],[1,8],[0,8]
+    ];
+    for (var i = 0; i < 15; i++) {
+      var bit = (bits >> i) & 1;
+      var p = positions[i];
+      m.matrix[p[0]][p[1]] = bit;
+    }
+    // Vertical + horizontal other side
+    var positions2 = [];
+    for (var i = 0; i < 7; i++) positions2.push([m.size - 1 - i, 8]);
+    for (var i = 0; i < 8; i++) positions2.push([8, m.size - 8 + i]);
+    for (var i = 0; i < 15; i++) {
+      var bit = (bits >> i) & 1;
+      var p = positions2[i];
+      m.matrix[p[0]][p[1]] = bit;
+    }
+  }
+
+  function writeVersionInfo(m, version) {
+    if (version < 7) return;
+    var bits = VERSION_INFO[version - 7];
+    for (var i = 0; i < 18; i++) {
+      var bit = (bits >> i) & 1;
+      var r = Math.floor(i / 3);
+      var c = m.size - 11 + (i % 3);
+      m.matrix[r][c] = bit;
+      m.matrix[c][r] = bit;
+    }
+  }
+
+  function penaltyScore(m) {
+    var score = 0;
+    var s = m.size;
+    // Rule 1: consecutive same-color modules in row/col
+    for (var r = 0; r < s; r++) {
+      var count = 1;
+      for (var c = 1; c < s; c++) {
+        if (m.matrix[r][c] === m.matrix[r][c-1]) { count++; }
+        else { if (count >= 5) score += count - 2; count = 1; }
+      }
+      if (count >= 5) score += count - 2;
+    }
+    for (var c = 0; c < s; c++) {
+      var count = 1;
+      for (var r = 1; r < s; r++) {
+        if (m.matrix[r][c] === m.matrix[r-1][c]) { count++; }
+        else { if (count >= 5) score += count - 2; count = 1; }
+      }
+      if (count >= 5) score += count - 2;
+    }
+    // Rule 2: 2x2 blocks
+    for (var r = 0; r < s - 1; r++) {
+      for (var c = 0; c < s - 1; c++) {
+        var v = m.matrix[r][c];
+        if (v === m.matrix[r][c+1] && v === m.matrix[r+1][c] && v === m.matrix[r+1][c+1])
+          score += 3;
+      }
+    }
+    // Rule 3 & 4 simplified (skip for performance, mask 0 usually good enough)
+    return score;
+  }
+
+  function encodeData(text, version) {
+    var t = VERSION_TABLE[version];
+    var ccBits = version <= 9 ? 8 : 16;
+    var utf8 = [];
+    for (var i = 0; i < text.length; i++) {
+      var code = text.charCodeAt(i);
+      if (code < 0x80) utf8.push(code);
+      else if (code < 0x800) { utf8.push(0xC0|(code>>6)); utf8.push(0x80|(code&0x3F)); }
+      else { utf8.push(0xE0|(code>>12)); utf8.push(0x80|((code>>6)&0x3F)); utf8.push(0x80|(code&0x3F)); }
+    }
+
+    var dataCap = dataCapacity(version);
+    var bits = [];
+    function pushBits(val, len) {
+      for (var i = len - 1; i >= 0; i--) bits.push((val >> i) & 1);
+    }
+
+    // Mode: byte = 0100
+    pushBits(4, 4);
+    pushBits(utf8.length, ccBits);
+    for (var i = 0; i < utf8.length; i++) pushBits(utf8[i], 8);
+
+    // Terminator
+    var termLen = Math.min(4, dataCap * 8 - bits.length);
+    pushBits(0, termLen);
+
+    // Pad to byte boundary
+    while (bits.length % 8 !== 0) bits.push(0);
+
+    // Pad bytes
+    var padBytes = [0xEC, 0x11];
+    var pi = 0;
+    while (bits.length < dataCap * 8) {
+      pushBits(padBytes[pi % 2], 8);
+      pi++;
+    }
+
+    // Convert to bytes
+    var dataBytes = new Uint8Array(dataCap);
+    for (var i = 0; i < dataCap; i++) {
+      var b = 0;
+      for (var j = 0; j < 8; j++) b = (b << 1) | bits[i * 8 + j];
+      dataBytes[i] = b;
+    }
+
+    // Split into blocks and compute EC
+    var ecPerBlock = t[2];
+    var g1Blocks = t[3], g1Data = t[4];
+    var g2Blocks = t[5], g2Data = t[6];
+
+    var blocks = [];
+    var ecBlocks = [];
+    var offset = 0;
+
+    for (var i = 0; i < g1Blocks; i++) {
+      var block = dataBytes.slice(offset, offset + g1Data);
+      blocks.push(block);
+      ecBlocks.push(ecBytes(block, ecPerBlock));
+      offset += g1Data;
+    }
+    for (var i = 0; i < g2Blocks; i++) {
+      var block = dataBytes.slice(offset, offset + g2Data);
+      blocks.push(block);
+      ecBlocks.push(ecBytes(block, ecPerBlock));
+      offset += g2Data;
+    }
+
+    // Interleave data
+    var result = [];
+    var maxDataLen = Math.max(g1Data, g2Data || 0);
+    for (var i = 0; i < maxDataLen; i++) {
+      for (var j = 0; j < blocks.length; j++) {
+        if (i < blocks[j].length) result.push(blocks[j][i]);
+      }
+    }
+    // Interleave EC
+    for (var i = 0; i < ecPerBlock; i++) {
+      for (var j = 0; j < ecBlocks.length; j++) {
+        result.push(ecBlocks[j][i]);
+      }
+    }
+
+    // Convert to bit array
+    var dataBits = [];
+    for (var i = 0; i < result.length; i++) {
+      for (var j = 7; j >= 0; j--) dataBits.push((result[i] >> j) & 1);
+    }
+
+    return dataBits;
+  }
+
+  function generate(text) {
+    var version = chooseVersion(new TextEncoder().encode(text).length);
+    var dataBits = encodeData(text, version);
+    var m = createMatrix(version);
+
+    // Add finder patterns
+    addFinderPattern(m, 0, 0);
+    addFinderPattern(m, 0, m.size - 7);
+    addFinderPattern(m, m.size - 7, 0);
+
+    // Add alignment patterns
+    var positions = ALIGNMENT_POSITIONS[version];
+    if (positions.length > 0) {
+      for (var i = 0; i < positions.length; i++) {
+        for (var j = 0; j < positions.length; j++) {
+          var r = positions[i], c = positions[j];
+          if (m.reserved[r][c]) continue;
+          addAlignmentPattern(m, r, c);
+        }
+      }
+    }
+
+    addTimingPatterns(m);
+    reserveFormatArea(m, version);
+    placeData(m, dataBits);
+
+    // Try all masks, pick best
+    var bestMask = 0;
+    var bestScore = Infinity;
+    for (var mask = 0; mask < 8; mask++) {
+      // Clone matrix
+      var clone = createMatrix(version);
+      for (var r = 0; r < m.size; r++) {
+        for (var c = 0; c < m.size; c++) {
+          clone.matrix[r][c] = m.matrix[r][c];
+          clone.reserved[r][c] = m.reserved[r][c];
+        }
+      }
+      applyMask(clone, mask);
+      writeFormatInfo(clone, mask);
+      writeVersionInfo(clone, version);
+      var score = penaltyScore(clone);
+      if (score < bestScore) { bestScore = score; bestMask = mask; }
+    }
+
+    applyMask(m, bestMask);
+    writeFormatInfo(m, bestMask);
+    writeVersionInfo(m, version);
+
+    // Return 2D array of booleans
+    var modules = [];
+    for (var r = 0; r < m.size; r++) {
+      modules[r] = [];
+      for (var c = 0; c < m.size; c++) {
+        modules[r][c] = m.matrix[r][c] === 1;
+      }
+    }
+    return { modules: modules, size: m.size, version: version };
+  }
+
+  return { generate: generate };
+})();
+
+// ============================================================
+// App Logic
+// ============================================================
+var state = {
+  url: 'https://surevera.app',
+  qrSize: 256,
+  fgColor: '#1B3A6B',
+  bgColor: '#FFFFFF',
+  style: 'qr',
+};
+
+var urlInput = document.getElementById('urlInput');
+var fgColor = document.getElementById('fgColor');
+var bgColor = document.getElementById('bgColor');
+var fgHex = document.getElementById('fgHex');
+var bgHex = document.getElementById('bgHex');
+var previewBox = document.getElementById('previewBox');
+
+var debounceTimer;
+function scheduleRender() {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(render, 120);
+}
+
+urlInput.addEventListener('input', function() {
+  state.url = urlInput.value || ' ';
+  scheduleRender();
+});
+
+fgColor.addEventListener('input', function() {
+  state.fgColor = fgColor.value;
+  fgHex.value = fgColor.value.toUpperCase();
+  scheduleRender();
+});
+bgColor.addEventListener('input', function() {
+  state.bgColor = bgColor.value;
+  bgHex.value = bgColor.value.toUpperCase();
+  scheduleRender();
+});
+fgHex.addEventListener('input', function() {
+  if (/^#[0-9A-Fa-f]{6}$/.test(fgHex.value)) {
+    state.fgColor = fgHex.value;
+    fgColor.value = fgHex.value;
+    scheduleRender();
+  }
+});
+bgHex.addEventListener('input', function() {
+  if (/^#[0-9A-Fa-f]{6}$/.test(bgHex.value)) {
+    state.bgColor = bgHex.value;
+    bgColor.value = bgHex.value;
+    scheduleRender();
+  }
+});
+
+function setSize(btn) {
+  document.querySelectorAll('.size-btn').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+  state.qrSize = parseInt(btn.dataset.size);
+  scheduleRender();
+}
+
+function setStyle(btn) {
+  document.querySelectorAll('.style-btn').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+  state.style = btn.dataset.style;
+  scheduleRender();
+}
+
+function setPreset(url, placeholder) {
+  urlInput.value = url;
+  state.url = url;
+  if (placeholder) urlInput.placeholder = placeholder;
+  render();
+}
+
+function renderQRToCanvas(canvas, size) {
+  var text = state.url || ' ';
+  var qr;
+  try { qr = QRCode.generate(text); } catch(e) { return null; }
+
+  var moduleCount = qr.size;
+  var quietZone = 4;
+  var totalModules = moduleCount + quietZone * 2;
+  canvas.width = size;
+  canvas.height = size;
+  var ctx = canvas.getContext('2d');
+  var cellSize = size / totalModules;
+
+  ctx.fillStyle = state.bgColor;
+  ctx.fillRect(0, 0, size, size);
+
+  ctx.fillStyle = state.fgColor;
+  for (var r = 0; r < moduleCount; r++) {
+    for (var c = 0; c < moduleCount; c++) {
+      if (qr.modules[r][c]) {
+        ctx.fillRect(
+          Math.round((c + quietZone) * cellSize),
+          Math.round((r + quietZone) * cellSize),
+          Math.ceil(cellSize),
+          Math.ceil(cellSize)
+        );
+      }
+    }
+  }
+  return qr;
+}
+
+function render() {
+  previewBox.innerHTML = '';
+
+  if (state.style === 'qr') {
+    var canvas = document.createElement('canvas');
+    var previewSize = Math.min(state.qrSize, 400);
+    renderQRToCanvas(canvas, previewSize);
+    canvas.style.borderRadius = '8px';
+    canvas.id = 'qrCanvas';
+    previewBox.appendChild(canvas);
+  } else {
+    // Branded card preview
+    var card = document.createElement('div');
+    card.className = 'branded-card';
+    card.id = 'brandedCard';
+
+    var canvas = document.createElement('canvas');
+    var previewSize = Math.min(state.qrSize, 300);
+    renderQRToCanvas(canvas, previewSize);
+    canvas.style.borderRadius = '4px';
+    canvas.id = 'qrCanvas';
+    card.appendChild(canvas);
+
+    var accent = document.createElement('div');
+    accent.className = 'branded-accent';
+    card.appendChild(accent);
+
+    var title = document.createElement('div');
+    title.className = 'branded-title';
+    title.textContent = 'SureVera';
+    card.appendChild(title);
+
+    var sub = document.createElement('div');
+    sub.className = 'branded-sub';
+    sub.textContent = 'Scan to download';
+    card.appendChild(sub);
+
+    previewBox.appendChild(card);
+  }
+}
+
+function downloadPNG() {
+  if (state.style === 'qr') {
+    var canvas = document.createElement('canvas');
+    renderQRToCanvas(canvas, state.qrSize);
+    var link = document.createElement('a');
+    link.download = 'surevera-qr-' + state.qrSize + 'px.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  } else {
+    // Render branded card at full resolution to a canvas
+    var padding = Math.round(state.qrSize * 0.15);
+    var accentH = Math.round(state.qrSize * 0.012);
+    var titleSize = Math.round(state.qrSize * 0.08);
+    var subSize = Math.round(state.qrSize * 0.045);
+    var gapAboveAccent = Math.round(state.qrSize * 0.06);
+    var gapBelowAccent = Math.round(state.qrSize * 0.035);
+    var gapBelowTitle = Math.round(state.qrSize * 0.015);
+    var bottomPad = Math.round(state.qrSize * 0.1);
+
+    var totalW = state.qrSize + padding * 2;
+    var totalH = state.qrSize + padding + gapAboveAccent + accentH + gapBelowAccent + titleSize + gapBelowTitle + subSize + bottomPad;
+
+    var c = document.createElement('canvas');
+    c.width = totalW;
+    c.height = totalH;
+    var ctx = c.getContext('2d');
+
+    // Card background with rounded corners
+    var radius = Math.round(totalW * 0.04);
+    ctx.fillStyle = '#FFFFFF';
+    roundRect(ctx, 0, 0, totalW, totalH, radius);
+    ctx.fill();
+
+    // Shadow effect (subtle border)
+    ctx.strokeStyle = 'rgba(0,0,0,0.06)';
+    ctx.lineWidth = 2;
+    roundRect(ctx, 0, 0, totalW, totalH, radius);
+    ctx.stroke();
+
+    // QR code
+    var qrCanvas = document.createElement('canvas');
+    renderQRToCanvas(qrCanvas, state.qrSize);
+    ctx.drawImage(qrCanvas, padding, padding);
+
+    var y = padding + state.qrSize + gapAboveAccent;
+
+    // Orange accent
+    var accentW = Math.round(state.qrSize * 0.15);
+    ctx.fillStyle = '#E8612A';
+    roundRect(ctx, (totalW - accentW) / 2, y, accentW, accentH, accentH / 2);
+    ctx.fill();
+    y += accentH + gapBelowAccent;
+
+    // Title
+    ctx.fillStyle = '#1B3A6B';
+    ctx.font = '700 ' + titleSize + 'px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('SureVera', totalW / 2, y + titleSize * 0.8);
+    y += titleSize + gapBelowTitle;
+
+    // Subtitle
+    ctx.fillStyle = '#94A3B8';
+    ctx.font = '500 ' + subSize + 'px Inter, sans-serif';
+    ctx.fillText('Scan to download', totalW / 2, y + subSize * 0.8);
+
+    var link = document.createElement('a');
+    link.download = 'surevera-qr-branded-' + state.qrSize + 'px.png';
+    link.href = c.toDataURL('image/png');
+    link.click();
+  }
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+function downloadSVG() {
+  var text = state.url || ' ';
+  var qr;
+  try { qr = QRCode.generate(text); } catch(e) { return; }
+
+  var moduleCount = qr.size;
+  var quietZone = 4;
+  var totalModules = moduleCount + quietZone * 2;
+
+  if (state.style === 'qr') {
+    var svgSize = state.qrSize;
+    var cellSize = svgSize / totalModules;
+    var rects = '';
+    for (var r = 0; r < moduleCount; r++) {
+      for (var c = 0; c < moduleCount; c++) {
+        if (qr.modules[r][c]) {
+          rects += '<rect x="' + ((c + quietZone) * cellSize).toFixed(2) +
+                   '" y="' + ((r + quietZone) * cellSize).toFixed(2) +
+                   '" width="' + Math.ceil(cellSize) +
+                   '" height="' + Math.ceil(cellSize) +
+                   '" fill="' + state.fgColor + '"/>';
+        }
+      }
+    }
+    var svg = '<?xml version="1.0" encoding="UTF-8"?>\n' +
+      '<svg xmlns="http://www.w3.org/2000/svg" width="' + svgSize + '" height="' + svgSize + '" viewBox="0 0 ' + svgSize + ' ' + svgSize + '">' +
+      '<rect width="100%" height="100%" fill="' + state.bgColor + '"/>' +
+      rects + '</svg>';
+
+    var blob = new Blob([svg], { type: 'image/svg+xml' });
+    var link = document.createElement('a');
+    link.download = 'surevera-qr-' + state.qrSize + 'px.svg';
+    link.href = URL.createObjectURL(blob);
+    link.click();
+    URL.revokeObjectURL(link.href);
+  } else {
+    // Branded card SVG
+    var padding = Math.round(state.qrSize * 0.15);
+    var qrSvgSize = state.qrSize;
+    var cellSize = qrSvgSize / totalModules;
+    var totalW = qrSvgSize + padding * 2;
+    var accentH = Math.round(qrSvgSize * 0.012);
+    var titleSize = Math.round(qrSvgSize * 0.08);
+    var subSize = Math.round(qrSvgSize * 0.045);
+    var gapAboveAccent = Math.round(qrSvgSize * 0.06);
+    var gapBelowAccent = Math.round(qrSvgSize * 0.035);
+    var gapBelowTitle = Math.round(qrSvgSize * 0.015);
+    var bottomPad = Math.round(qrSvgSize * 0.1);
+    var totalH = qrSvgSize + padding + gapAboveAccent + accentH + gapBelowAccent + titleSize + gapBelowTitle + subSize + bottomPad;
+    var radius = Math.round(totalW * 0.04);
+    var accentW = Math.round(qrSvgSize * 0.15);
+
+    var rects = '';
+    for (var r = 0; r < moduleCount; r++) {
+      for (var c = 0; c < moduleCount; c++) {
+        if (qr.modules[r][c]) {
+          rects += '<rect x="' + (padding + (c + quietZone) * cellSize).toFixed(2) +
+                   '" y="' + (padding + (r + quietZone) * cellSize).toFixed(2) +
+                   '" width="' + Math.ceil(cellSize) +
+                   '" height="' + Math.ceil(cellSize) +
+                   '" fill="' + state.fgColor + '"/>';
+        }
+      }
+    }
+
+    // QR background rect
+    var qrBgRect = '<rect x="' + padding + '" y="' + padding + '" width="' + qrSvgSize + '" height="' + qrSvgSize + '" fill="' + state.bgColor + '" rx="4"/>';
+
+    var y = padding + qrSvgSize + gapAboveAccent;
+    var accentRect = '<rect x="' + ((totalW - accentW) / 2) + '" y="' + y + '" width="' + accentW + '" height="' + accentH + '" fill="#E8612A" rx="' + (accentH / 2) + '"/>';
+    y += accentH + gapBelowAccent;
+    var titleEl = '<text x="' + (totalW / 2) + '" y="' + (y + titleSize * 0.8) + '" text-anchor="middle" font-family="Inter, sans-serif" font-weight="700" font-size="' + titleSize + '" fill="#1B3A6B">SureVera</text>';
+    y += titleSize + gapBelowTitle;
+    var subEl = '<text x="' + (totalW / 2) + '" y="' + (y + subSize * 0.8) + '" text-anchor="middle" font-family="Inter, sans-serif" font-weight="500" font-size="' + subSize + '" fill="#94A3B8">Scan to download</text>';
+
+    var svg = '<?xml version="1.0" encoding="UTF-8"?>\n' +
+      '<svg xmlns="http://www.w3.org/2000/svg" width="' + totalW + '" height="' + totalH + '" viewBox="0 0 ' + totalW + ' ' + totalH + '">' +
+      '<rect width="100%" height="100%" fill="#F1F5F9"/>' +
+      '<rect x="1" y="1" width="' + (totalW - 2) + '" height="' + (totalH - 2) + '" rx="' + radius + '" fill="#FFFFFF" stroke="rgba(0,0,0,0.06)" stroke-width="1"/>' +
+      qrBgRect + rects + accentRect + titleEl + subEl +
+      '</svg>';
+
+    var blob = new Blob([svg], { type: 'image/svg+xml' });
+    var link = document.createElement('a');
+    link.download = 'surevera-qr-branded-' + state.qrSize + 'px.svg';
+    link.href = URL.createObjectURL(blob);
+    link.click();
+    URL.revokeObjectURL(link.href);
+  }
+}
+
+// Initial render
+render();
+</script>
+<script src="dark-mode.js"></script>
+<script src="toolkit-nav.js"></script>
+</body>
+</html>

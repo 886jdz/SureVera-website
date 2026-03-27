@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SureVera — Screenshot Builder</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #F0F3F8;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #1E293B;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .toolbar {
+      width: 100%;
+      background: linear-gradient(135deg, #0D1B2E 0%, #1B3A6B 100%);
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+      margin-bottom: 2rem;
+    }
+    .toolbar img { height: 32px; }
+    .toolbar .divider {
+      width: 1px;
+      height: 24px;
+      background: rgba(255,255,255,0.2);
+    }
+    .toolbar .tool-label {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: rgba(255,255,255,0.6);
+    }
+
+    .page { padding: 0 2rem 2rem; width: 100%; display: flex; flex-direction: column; align-items: center; }
+
+    .subtitle { color: #64748B; font-size: 0.85rem; margin-bottom: 1.5rem; }
+
+    .controls {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      background: #FFF;
+      padding: 1rem 1.5rem;
+      border-radius: 14px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      border: 1px solid #E2E8F0;
+      width: 100%;
+      max-width: 1000px;
+    }
+    .controls label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #475569;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .controls select,
+    .controls input[type="text"] {
+      padding: 0.4rem 0.75rem;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-family: inherit;
+      background: #F8FAFC;
+      cursor: pointer;
+    }
+    .controls select:focus,
+    .controls input[type="text"]:focus,
+    .controls input[type="color"]:focus {
+      outline: 2px solid #1B3A6B;
+      outline-offset: 1px;
+    }
+    .controls input[type="color"] {
+      width: 36px; height: 32px; padding: 2px; border-radius: 8px;
+      border: 1px solid #CBD5E1; cursor: pointer;
+    }
+    .controls input[type="text"] {
+      width: 220px;
+    }
+
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #94A3B8;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      width: 100%;
+      text-align: left;
+      margin-top: 0.25rem;
+    }
+
+    .drop-zone {
+      width: 100%;
+      max-width: 1000px;
+      min-height: 140px;
+      border: 2px dashed #94A3B8;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      background: #FFF;
+    }
+    .drop-zone:hover, .drop-zone.drag-over {
+      border-color: #E8612A;
+      background: #FFF7F3;
+    }
+    .drop-zone p { color: #64748B; font-size: 0.9rem; }
+    .drop-zone .browse {
+      color: #E8612A;
+      font-weight: 600;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+    .drop-zone input { display: none; }
+    .drop-zone.has-image {
+      min-height: 60px;
+      padding: 1rem 2rem;
+      border-style: solid;
+      border-color: #22C55E;
+      background: #F0FDF4;
+    }
+    .drop-zone.has-image p { color: #16A34A; }
+
+    .preview-wrapper {
+      width: 100%;
+      max-width: 1000px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .preview-card {
+      background: #FFF;
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      border: 1px solid #E2E8F0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      width: 100%;
+    }
+    .preview-card canvas {
+      max-width: 100%;
+      max-height: 500px;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .preview-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #475569;
+    }
+    .preview-dims {
+      font-size: 0.75rem;
+      color: #94A3B8;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .download-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.7rem 1.75rem;
+      background: #1B3A6B;
+      color: #FFF;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .download-btn:hover { background: #15305A; }
+    .download-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .download-all-btn {
+      padding: 0.7rem 1.75rem;
+      background: #E8612A;
+      color: #FFF;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .download-all-btn:hover { background: #D4541F; }
+    .download-all-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .hidden { display: none; }
+
+    .footer {
+      margin-top: 3rem;
+      padding: 1.5rem;
+      text-align: center;
+      font-size: 0.75rem;
+      color: #94A3B8;
+    }
+
+    /* Checkered background for transparent preview */
+    .checkerboard {
+      background-image:
+        linear-gradient(45deg, #ccc 25%, transparent 25%),
+        linear-gradient(-45deg, #ccc 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #ccc 75%),
+        linear-gradient(-45deg, transparent 75%, #ccc 75%);
+      background-size: 16px 16px;
+      background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="toolbar">
+    <img src="surevera-header-white-logo.png" alt="SureVera">
+    <div class="divider"></div>
+    <span class="tool-label">Screenshot Builder</span>
+  </div>
+
+  <div class="page">
+    <p class="subtitle">Build polished App Store & Play Store screenshots — 100% offline</p>
+
+    <!-- Text Controls -->
+    <div class="controls">
+      <span class="section-label">Text</span>
+      <label>Headline:
+        <input type="text" id="headlineInput" value="Be Sure. Verify." placeholder="Headline text...">
+      </label>
+      <label>Subtitle:
+        <input type="text" id="subtitleInput" value="Real health inspection grades for 90+ cities" placeholder="Subtitle text...">
+      </label>
+      <label>Position:
+        <select id="textPosition">
+          <option value="top">Top</option>
+          <option value="bottom">Bottom</option>
+        </select>
+      </label>
+    </div>
+
+    <!-- Appearance Controls -->
+    <div class="controls">
+      <span class="section-label">Appearance</span>
+      <label>Output Size:
+        <select id="sizeSelect">
+          <option value="1290x2796">iPhone 6.7" (1290x2796)</option>
+          <option value="1179x2556">iPhone 6.1" (1179x2556)</option>
+          <option value="1242x2208">iPhone 5.5" (1242x2208)</option>
+          <option value="2048x2732">iPad Pro 12.9" (2048x2732)</option>
+          <option value="1080x1920">Android Phone (1080x1920)</option>
+          <option value="1080x1920gp">Google Play (1080x1920)</option>
+        </select>
+      </label>
+      <label>Background:
+        <select id="bgSelect">
+          <option value="#1B3A6B">Navy</option>
+          <option value="#0D1B2E">Dark Navy</option>
+          <option value="#FFFFFF">White</option>
+          <option value="#F1F5F9">Light Gray</option>
+          <option value="#000000">Black</option>
+          <option value="custom">Custom...</option>
+        </select>
+      </label>
+      <input type="color" id="customBgColor" class="hidden" value="#1B3A6B">
+      <label>Text Color:
+        <select id="textColorSelect">
+          <option value="#FFFFFF">White</option>
+          <option value="#1E293B">Dark</option>
+          <option value="#1B3A6B">Navy</option>
+          <option value="#E8612A">Orange</option>
+          <option value="custom">Custom...</option>
+        </select>
+      </label>
+      <input type="color" id="customTextColor" class="hidden" value="#FFFFFF">
+    </div>
+
+    <!-- Drop Zone -->
+    <div class="drop-zone" id="dropZone">
+      <p>Drag & drop a phone screenshot here</p>
+      <p>or <span class="browse" id="browseBtn">browse files</span></p>
+      <input type="file" id="fileInput" accept="image/*">
+    </div>
+
+    <!-- Preview -->
+    <div class="preview-wrapper">
+      <div class="preview-card" id="previewCard">
+        <span class="preview-label" id="previewLabel">Live Preview</span>
+        <canvas id="previewCanvas" width="400" height="600"></canvas>
+        <span class="preview-dims" id="previewDims">1290 x 2796</span>
+      </div>
+
+      <div class="btn-row">
+        <button class="download-btn" id="downloadBtn" disabled>Download PNG</button>
+        <button class="download-all-btn" id="downloadAllBtn" disabled>Download All Sizes</button>
+      </div>
+    </div>
+
+    <div class="footer">SureVera Screenshot Builder — runs entirely in your browser</div>
+  </div>
+
+  <script>
+    // ── Presets ──
+    const SIZE_PRESETS = [
+      { key: "1290x2796",   label: "iPhone 6.7\"",    w: 1290, h: 2796 },
+      { key: "1179x2556",   label: "iPhone 6.1\"",    w: 1179, h: 2556 },
+      { key: "1242x2208",   label: "iPhone 5.5\"",    w: 1242, h: 2208 },
+      { key: "2048x2732",   label: "iPad Pro 12.9\"", w: 2048, h: 2732 },
+      { key: "1080x1920",   label: "Android Phone",   w: 1080, h: 1920 },
+      { key: "1080x1920gp", label: "Google Play",     w: 1080, h: 1920 },
+    ];
+
+    function getPreset(key) {
+      return SIZE_PRESETS.find(p => p.key === key) || SIZE_PRESETS[0];
+    }
+
+    function getSelectedSize() {
+      return getPreset(sizeSelect.value);
+    }
+
+    // ── DOM ──
+    const sizeSelect       = document.getElementById("sizeSelect");
+    const bgSelect         = document.getElementById("bgSelect");
+    const customBgColor    = document.getElementById("customBgColor");
+    const textColorSelect  = document.getElementById("textColorSelect");
+    const customTextColor  = document.getElementById("customTextColor");
+    const headlineInput    = document.getElementById("headlineInput");
+    const subtitleInput    = document.getElementById("subtitleInput");
+    const textPosition     = document.getElementById("textPosition");
+    const dropZone         = document.getElementById("dropZone");
+    const fileInput        = document.getElementById("fileInput");
+    const browseBtn        = document.getElementById("browseBtn");
+    const previewCanvas    = document.getElementById("previewCanvas");
+    const previewLabel     = document.getElementById("previewLabel");
+    const previewDims      = document.getElementById("previewDims");
+    const downloadBtn      = document.getElementById("downloadBtn");
+    const downloadAllBtn   = document.getElementById("downloadAllBtn");
+
+    let uploadedImage = null;
+
+    // ── Event listeners ──
+    bgSelect.addEventListener("change", () => {
+      customBgColor.classList.toggle("hidden", bgSelect.value !== "custom");
+      renderPreview();
+    });
+    customBgColor.addEventListener("input", renderPreview);
+
+    textColorSelect.addEventListener("change", () => {
+      customTextColor.classList.toggle("hidden", textColorSelect.value !== "custom");
+      renderPreview();
+    });
+    customTextColor.addEventListener("input", renderPreview);
+
+    sizeSelect.addEventListener("change", renderPreview);
+    headlineInput.addEventListener("input", renderPreview);
+    subtitleInput.addEventListener("input", renderPreview);
+    textPosition.addEventListener("change", renderPreview);
+
+    // ── File handling ──
+    browseBtn.addEventListener("click", () => fileInput.click());
+    dropZone.addEventListener("click", (e) => {
+      if (e.target !== fileInput) fileInput.click();
+    });
+    dropZone.addEventListener("dragover", (e) => { e.preventDefault(); dropZone.classList.add("drag-over"); });
+    dropZone.addEventListener("dragleave", () => dropZone.classList.remove("drag-over"));
+    dropZone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      dropZone.classList.remove("drag-over");
+      handleFile(e.dataTransfer.files);
+    });
+    fileInput.addEventListener("change", () => handleFile(fileInput.files));
+
+    function handleFile(files) {
+      const file = Array.from(files).find(f => f.type.startsWith("image/"));
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          uploadedImage = img;
+          dropZone.classList.add("has-image");
+          dropZone.innerHTML = `<p>Uploaded: <strong>${file.name}</strong> (${img.width}x${img.height}) — click or drop to replace</p>`;
+          dropZone.appendChild(fileInput);
+          downloadBtn.disabled = false;
+          downloadAllBtn.disabled = false;
+          renderPreview();
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // ── Helpers ──
+    function getBgColor() {
+      return bgSelect.value === "custom" ? customBgColor.value : bgSelect.value;
+    }
+
+    function getTextColor() {
+      return textColorSelect.value === "custom" ? customTextColor.value : textColorSelect.value;
+    }
+
+    // ── Rendering ──
+    function renderToCanvas(canvas, preset) {
+      const W = preset.w;
+      const H = preset.h;
+      canvas.width = W;
+      canvas.height = H;
+      const ctx = canvas.getContext("2d");
+
+      // Background
+      ctx.fillStyle = getBgColor();
+      ctx.fillRect(0, 0, W, H);
+
+      const headline = headlineInput.value.trim();
+      const subtitle = subtitleInput.value.trim();
+      const pos = textPosition.value; // "top" or "bottom"
+      const color = getTextColor();
+
+      // Font sizes relative to canvas width
+      const headlineSize = Math.round(W * 0.058);
+      const subtitleSize = Math.round(W * 0.032);
+      const lineGap = Math.round(headlineSize * 0.5);
+      const padding = Math.round(W * 0.08);
+
+      // Measure text block height
+      ctx.font = `800 ${headlineSize}px 'Inter', sans-serif`;
+      const headlineLines = wrapText(ctx, headline, W - padding * 2);
+      ctx.font = `500 ${subtitleSize}px 'Inter', sans-serif`;
+      const subtitleLines = wrapText(ctx, subtitle, W - padding * 2);
+
+      const headlineBlockH = headlineLines.length * (headlineSize * 1.2);
+      const subtitleBlockH = subtitleLines.length * (subtitleSize * 1.4);
+      const textBlockH = headlineBlockH + lineGap + subtitleBlockH;
+
+      // Layout: text region and image region
+      const textPaddingTop = Math.round(H * 0.06);
+      const textPaddingBottom = Math.round(H * 0.04);
+      const textRegionH = textBlockH + textPaddingTop + textPaddingBottom;
+      const imageRegionH = H - textRegionH;
+
+      let textStartY, imageStartY;
+      if (pos === "top") {
+        textStartY = textPaddingTop;
+        imageStartY = textRegionH;
+      } else {
+        imageStartY = 0;
+        textStartY = imageRegionH + textPaddingTop;
+      }
+
+      // Draw text
+      ctx.fillStyle = color;
+      ctx.textAlign = "center";
+      const centerX = W / 2;
+
+      // Headline
+      ctx.font = `800 ${headlineSize}px 'Inter', sans-serif`;
+      let ty = textStartY + headlineSize;
+      for (const line of headlineLines) {
+        ctx.fillText(line, centerX, ty);
+        ty += headlineSize * 1.2;
+      }
+
+      // Subtitle
+      ty += lineGap - headlineSize * 0.2;
+      ctx.font = `500 ${subtitleSize}px 'Inter', sans-serif`;
+      for (const line of subtitleLines) {
+        ctx.fillText(line, centerX, ty);
+        ty += subtitleSize * 1.4;
+      }
+
+      // Draw uploaded image (centered in image region with padding)
+      if (uploadedImage) {
+        const imgPad = Math.round(W * 0.08);
+        const availW = W - imgPad * 2;
+        const availH = imageRegionH - imgPad * 2;
+        const imgAspect = uploadedImage.width / uploadedImage.height;
+        const slotAspect = availW / availH;
+        let drawW, drawH;
+        if (imgAspect > slotAspect) {
+          drawW = availW;
+          drawH = availW / imgAspect;
+        } else {
+          drawH = availH;
+          drawW = availH * imgAspect;
+        }
+        const drawX = (W - drawW) / 2;
+        const drawY = imageStartY + (imageRegionH - drawH) / 2;
+
+        // Subtle shadow behind screenshot
+        ctx.save();
+        ctx.shadowColor = "rgba(0,0,0,0.3)";
+        ctx.shadowBlur = Math.round(W * 0.03);
+        ctx.shadowOffsetY = Math.round(W * 0.01);
+
+        // Rounded corners on the screenshot
+        const cornerR = Math.round(W * 0.025);
+        roundRect(ctx, drawX, drawY, drawW, drawH, cornerR);
+        ctx.clip();
+        ctx.drawImage(uploadedImage, drawX, drawY, drawW, drawH);
+        ctx.restore();
+      }
+
+      return canvas;
+    }
+
+    function wrapText(ctx, text, maxWidth) {
+      if (!text) return [];
+      const words = text.split(" ");
+      const lines = [];
+      let currentLine = "";
+      for (const word of words) {
+        const testLine = currentLine ? currentLine + " " + word : word;
+        if (ctx.measureText(testLine).width > maxWidth && currentLine) {
+          lines.push(currentLine);
+          currentLine = word;
+        } else {
+          currentLine = testLine;
+        }
+      }
+      if (currentLine) lines.push(currentLine);
+      return lines;
+    }
+
+    function roundRect(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + r, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+    }
+
+    function renderPreview() {
+      const preset = getSelectedSize();
+      previewDims.textContent = `${preset.w} x ${preset.h}`;
+      previewLabel.textContent = `Live Preview — ${preset.label}`;
+
+      // Render at full resolution to an offscreen canvas
+      const offscreen = document.createElement("canvas");
+      renderToCanvas(offscreen, preset);
+
+      // Scale down for preview display
+      const maxDisplayH = 500;
+      const scale = Math.min(1, maxDisplayH / preset.h, 400 / preset.w);
+      const displayW = Math.round(preset.w * scale);
+      const displayH = Math.round(preset.h * scale);
+
+      previewCanvas.width = displayW;
+      previewCanvas.height = displayH;
+      previewCanvas.style.width = displayW + "px";
+      previewCanvas.style.height = displayH + "px";
+      const pctx = previewCanvas.getContext("2d");
+      pctx.drawImage(offscreen, 0, 0, displayW, displayH);
+    }
+
+    // ── Download ──
+    function downloadForPreset(preset) {
+      const canvas = document.createElement("canvas");
+      renderToCanvas(canvas, preset);
+      const link = document.createElement("a");
+      const headline = headlineInput.value.trim().replace(/\s+/g, "-").toLowerCase() || "screenshot";
+      link.download = `${headline}-${preset.w}x${preset.h}.png`;
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    }
+
+    downloadBtn.addEventListener("click", () => {
+      if (!uploadedImage) return;
+      downloadForPreset(getSelectedSize());
+    });
+
+    downloadAllBtn.addEventListener("click", () => {
+      if (!uploadedImage) return;
+      // Small delay between downloads so browser doesn't block them
+      SIZE_PRESETS.forEach((preset, i) => {
+        setTimeout(() => downloadForPreset(preset), i * 200);
+      });
+    });
+
+    // ── Initial render ──
+    renderPreview();
+  </script>
+<script src="dark-mode.js"></script>
+<script src="toolkit-nav.js"></script>
+</body>
+</html>

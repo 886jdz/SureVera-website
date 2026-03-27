@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SureVera Brand Kit</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #F1F5F9;
+      color: #1E293B;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Toolbar */
+    .toolbar {
+      background: linear-gradient(135deg, #0D1B2E 0%, #1B3A6B 100%);
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .toolbar .divider { width: 1px; height: 24px; background: rgba(255,255,255,0.2); }
+    .toolbar .tool-label { font-size: 0.85rem; font-weight: 500; color: rgba(255,255,255,0.6); }
+
+    /* Layout */
+    .container { max-width: 960px; margin: 0 auto; padding: 2.5rem 1.5rem 1rem; }
+
+    /* Section Cards */
+    .card {
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 16px;
+      padding: 2.25rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.03);
+    }
+    .card h2 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #1B3A6B;
+      margin-bottom: 0.35rem;
+    }
+    .card .section-desc {
+      font-size: 0.9rem;
+      color: #64748B;
+      margin-bottom: 1.75rem;
+    }
+
+    /* ---- Logos ---- */
+    .logo-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    @media (max-width: 640px) { .logo-grid { grid-template-columns: 1fr; } }
+    .logo-cell {
+      border: 1px solid #E2E8F0;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .logo-preview {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      min-height: 120px;
+    }
+    .logo-preview img { max-height: 56px; max-width: 80%; object-fit: contain; }
+    .logo-preview.light { background: #F8FAFC; }
+    .logo-preview.dark { background: linear-gradient(135deg, #0D1B2E, #1B3A6B); }
+    .logo-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      border-top: 1px solid #E2E8F0;
+      background: #FAFBFC;
+    }
+    .logo-meta span { font-size: 0.8rem; color: #64748B; font-weight: 500; }
+    .btn-sm {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.4rem 0.85rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-decoration: none;
+    }
+    .btn-dl {
+      background: #1B3A6B;
+      color: #fff;
+    }
+    .btn-dl:hover { background: #0D1B2E; }
+
+    /* ---- Colors ---- */
+    .color-group-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #94A3B8;
+      margin-bottom: 0.75rem;
+      margin-top: 1.25rem;
+    }
+    .color-group-label:first-child { margin-top: 0; }
+    .color-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 0.5rem;
+    }
+    .swatch-card {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      padding: 0.65rem 0.85rem;
+      border: 1px solid #E2E8F0;
+      border-radius: 12px;
+      background: #FAFBFC;
+      min-width: 210px;
+      flex: 1;
+      max-width: 280px;
+      transition: box-shadow 0.15s;
+    }
+    .swatch-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .swatch-circle {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      flex-shrink: 0;
+      border: 1px solid rgba(0,0,0,0.06);
+    }
+    .swatch-info { flex: 1; }
+    .swatch-info .name { font-size: 0.82rem; font-weight: 600; color: #1E293B; }
+    .swatch-info .hex { font-size: 0.78rem; color: #64748B; font-family: 'SF Mono', 'Fira Code', monospace; }
+    .btn-copy {
+      background: #F1F5F9;
+      color: #64748B;
+      border: 1px solid #E2E8F0;
+      padding: 0.3rem 0.6rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .btn-copy:hover { background: #E2E8F0; color: #1E293B; }
+    .btn-copy.copied { background: #16A34A; color: #fff; border-color: #16A34A; }
+
+    /* ---- Typography ---- */
+    .type-sample {
+      border-bottom: 1px solid #F1F5F9;
+      padding: 1rem 0;
+    }
+    .type-sample:last-child { border-bottom: none; }
+    .type-meta {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 0.4rem;
+    }
+    .type-tag {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #64748B;
+      background: #F1F5F9;
+      padding: 0.15rem 0.55rem;
+      border-radius: 4px;
+    }
+    .font-ref {
+      margin-top: 1.25rem;
+      padding: 0.85rem 1rem;
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      border-radius: 10px;
+      font-size: 0.8rem;
+      color: #64748B;
+      word-break: break-all;
+    }
+    .font-ref code {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.75rem;
+      color: #1B3A6B;
+    }
+
+    /* ---- Grades ---- */
+    .grade-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+    }
+    .grade-card {
+      flex: 1;
+      min-width: 180px;
+      max-width: 220px;
+      border: 1px solid #E2E8F0;
+      border-radius: 14px;
+      overflow: hidden;
+      text-align: center;
+    }
+    .grade-pill-wrap {
+      padding: 1.5rem 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .grade-pill {
+      font-size: 1.5rem;
+      font-weight: 800;
+      width: 56px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 14px;
+    }
+    .grade-pill-soft {
+      font-size: 0.9rem;
+      font-weight: 700;
+      padding: 0.35rem 1.1rem;
+      border-radius: 20px;
+    }
+    .grade-meta {
+      padding: 0.75rem;
+      background: #FAFBFC;
+      border-top: 1px solid #E2E8F0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .grade-hex-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.72rem;
+    }
+    .grade-hex-row .label { color: #94A3B8; font-weight: 500; }
+    .grade-hex-row .value { font-family: 'SF Mono', 'Fira Code', monospace; color: #64748B; }
+
+    /* ---- Identity ---- */
+    .identity-block { text-align: center; padding: 1rem 0; }
+    .identity-block .app-name {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: #1B3A6B;
+      letter-spacing: -0.02em;
+    }
+    .identity-block .tagline {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #E8612A;
+      margin-top: 0.25rem;
+    }
+    .identity-block .description {
+      font-size: 0.95rem;
+      color: #64748B;
+      margin-top: 0.75rem;
+      max-width: 480px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 3rem;
+      padding: 1.5rem;
+      text-align: center;
+      font-size: 0.75rem;
+      color: #94A3B8;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Toolbar -->
+<div class="toolbar">
+  <img src="surevera-header-white-logo.png" alt="SureVera" style="height:32px">
+  <div class="divider" style="width:1px;height:24px;background:rgba(255,255,255,0.2)"></div>
+  <span class="tool-label" style="font-size:0.85rem;font-weight:500;color:rgba(255,255,255,0.6)">Brand Kit</span>
+</div>
+
+<div class="container">
+
+  <!-- ============ APP IDENTITY ============ -->
+  <div class="card">
+    <div class="identity-block">
+      <div class="app-name">SureVera</div>
+      <div class="tagline">"Be Sure. Verify."</div>
+      <div class="description">Real restaurant health inspection grades from official government sources</div>
+    </div>
+  </div>
+
+  <!-- ============ LOGOS ============ -->
+  <div class="card">
+    <h2>Logos</h2>
+    <p class="section-desc">Primary logo marks in navy/white and all-white versions. Use the white variant on dark backgrounds.</p>
+
+    <div class="logo-grid">
+      <!-- logo.png on light -->
+      <div class="logo-cell">
+        <div class="logo-preview light"><img src="logo.png" alt="SureVera logo (navy)"></div>
+        <div class="logo-meta">
+          <span>logo.png &middot; Light bg</span>
+          <a href="logo.png" download class="btn-sm btn-dl">&#11015; Download</a>
+        </div>
+      </div>
+      <!-- logo.png on dark -->
+      <div class="logo-cell">
+        <div class="logo-preview dark"><img src="logo.png" alt="SureVera logo on dark"></div>
+        <div class="logo-meta">
+          <span>logo.png &middot; Dark bg</span>
+          <a href="logo.png" download class="btn-sm btn-dl">&#11015; Download</a>
+        </div>
+      </div>
+      <!-- white logo on light -->
+      <div class="logo-cell">
+        <div class="logo-preview light" style="background:#E2E8F0"><img src="surevera-header-white-logo.png" alt="SureVera white logo on light"></div>
+        <div class="logo-meta">
+          <span>white logo &middot; Light bg</span>
+          <a href="surevera-header-white-logo.png" download class="btn-sm btn-dl">&#11015; Download</a>
+        </div>
+      </div>
+      <!-- white logo on dark -->
+      <div class="logo-cell">
+        <div class="logo-preview dark"><img src="surevera-header-white-logo.png" alt="SureVera white logo on dark"></div>
+        <div class="logo-meta">
+          <span>white logo &middot; Dark bg</span>
+          <a href="surevera-header-white-logo.png" download class="btn-sm btn-dl">&#11015; Download</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ COLOR PALETTE ============ -->
+  <div class="card">
+    <h2>Color Palette</h2>
+    <p class="section-desc">Core brand colors, neutrals, and semantic grade colors.</p>
+
+    <div class="color-group-label">Primary</div>
+    <div class="color-row">
+      <div class="swatch-card">
+        <div class="swatch-circle" style="background:#1B3A6B"></div>
+        <div class="swatch-info"><div class="name">Navy</div><div class="hex">#1B3A6B</div></div>
+        <button class="btn-copy" onclick="copyHex(this,'#1B3A6B')">Copy</button>
+      </div>
+      <div class="swatch-card">
+        <div class="swatch-circle" style="background:#0D1B2E"></div>
+        <div class="swatch-info"><div class="name">Dark Navy</div><div class="hex">#0D1B2E</div></div>
+        <button class="btn-copy" onclick="copyHex(this,'#0D1B2E')">Copy</button>
+      </div>
+      <div class="swatch-card">
+        <div class="swatch-circle" style="background:#E8612A"></div>
+        <div class="swatch-info"><div class="name">Orange</div><div class="hex">#E8612A</div></div>
+        <button class="btn-copy" onclick="copyHex(this,'#E8612A')">Copy</button>
+      </div>
+      <div class="swatch-card">
+        <div class="swatch-circle" style="background:#D4541F"></div>
+        <div class="swatch-info"><div class="name">Orange Hover</div><div class="hex">#D4541F</div></div>
+        <button class="btn-copy" onclick="copyHex(this,'#D4541F')">Copy</button>
+      </div>
+    </div>
+
+    <div class="color-group-label">Neutrals</div>
+    <div class="color-row">
+      <div class="swatch-card">
+        <div class="swatch-circle" style="background:#FFFFFF; border:1px solid #CBD5E1"></div>
+        <div class="swatch-info"><div class="name">White</div><div class="hex">#FFFFFF</div></div>
+        <button class="btn-copy" onclick="copyHex(this,'#FFFFFF')">Copy</button>
+      </div>
+      <div class="swatch-card">
+        <div class="swatch-circle" style="background:#F8FAFC"></div>
+        <div class="swatch-info"><div class="name">Light Gray BG</div><div class="hex">#F8FAFC</div></div>
+        <button class="btn-copy" onclick="copyHex(this,'#F8FAFC')">Copy</button>
+      </div>
+      <div class="swatch-card">
+        <div class="swatch-circle" style="background:#F1F5F9"></div>
+        <div class="swatch-info"><div class="name">Light Gray BG Alt</div><div class="hex">#F1F5F9</div></div>
+        <button class="btn-copy" onclick="copyHex(this,'#F1F5F9')">Copy</button>
+      </div>
+      <div class="swatch-card">
+        <div class="swatch-circle" style="background:#E2E8F0"></div>
+        <div class="swatch-info"><div class="name">Gray Border</div><div class="hex">#E2E8F0</div></div>
+        <button class="btn-copy" onclick="copyHex(this,'#E2E8F0')">Copy</button>
+      </div>
+      <div class="swatch-card">
+        <div class="swatch-circle" style="background:#CBD5E1"></div>
+        <div class="swatch-info"><div class="name">Gray Border Alt</div><div class="hex">#CBD5E1</div></div>
+        <button class="btn-copy" onclick="copyHex(this,'#CBD5E1')">Copy</button>
+      </div>
+      <div class="swatch-card">
+        <div class="swatch-circle" style="background:#1E293B"></div>
+        <div class="swatch-info"><div class="name">Text Dark</div><div class="hex">#1E293B</div></div>
+        <button class="btn-copy" onclick="copyHex(this,'#1E293B')">Copy</button>
+      </div>
+      <div class="swatch-card">
+        <div class="swatch-circle" style="background:#64748B"></div>
+        <div class="swatch-info"><div class="name">Text Secondary</div><div class="hex">#64748B</div></div>
+        <button class="btn-copy" onclick="copyHex(this,'#64748B')">Copy</button>
+      </div>
+    </div>
+
+    <div class="color-group-label">Grade Colors</div>
+    <div class="color-row">
+      <div class="swatch-card">
+        <div class="swatch-circle" style="background:#16A34A"></div>
+        <div class="swatch-info"><div class="name">Green (A)</div><div class="hex">#16A34A</div></div>
+        <button class="btn-copy" onclick="copyHex(this,'#16A34A')">Copy</button>
+      </div>
+      <div class="swatch-card">
+        <div class="swatch-circle" style="background:#B45309"></div>
+        <div class="swatch-info"><div class="name">Amber (B)</div><div class="hex">#B45309</div></div>
+        <button class="btn-copy" onclick="copyHex(this,'#B45309')">Copy</button>
+      </div>
+      <div class="swatch-card">
+        <div class="swatch-circle" style="background:#C2410C"></div>
+        <div class="swatch-info"><div class="name">Orange (C)</div><div class="hex">#C2410C</div></div>
+        <button class="btn-copy" onclick="copyHex(this,'#C2410C')">Copy</button>
+      </div>
+      <div class="swatch-card">
+        <div class="swatch-circle" style="background:#B91C1C"></div>
+        <div class="swatch-info"><div class="name">Red (F)</div><div class="hex">#B91C1C</div></div>
+        <button class="btn-copy" onclick="copyHex(this,'#B91C1C')">Copy</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ TYPOGRAPHY ============ -->
+  <div class="card">
+    <h2>Typography</h2>
+    <p class="section-desc">Inter is the primary typeface across all SureVera surfaces.</p>
+
+    <div class="type-sample">
+      <div class="type-meta">
+        <span class="type-tag">Headline &middot; 2rem &middot; 800</span>
+      </div>
+      <div style="font-size:2rem; font-weight:800; color:#1B3A6B; letter-spacing:-0.02em">Be Sure. Verify.</div>
+    </div>
+
+    <div class="type-sample">
+      <div class="type-meta">
+        <span class="type-tag">Subhead &middot; 1.25rem &middot; 700</span>
+      </div>
+      <div style="font-size:1.25rem; font-weight:700; color:#1E293B">Restaurant Health Inspection Grades</div>
+    </div>
+
+    <div class="type-sample">
+      <div class="type-meta">
+        <span class="type-tag">Body &middot; 1rem &middot; 400</span>
+      </div>
+      <div style="font-size:1rem; font-weight:400; color:#1E293B">SureVera shows real health inspection scores from official government sources so you can make informed dining choices. Search any supported city to see grades at a glance.</div>
+    </div>
+
+    <div class="type-sample">
+      <div class="type-meta">
+        <span class="type-tag">Body Medium &middot; 1rem &middot; 500</span>
+      </div>
+      <div style="font-size:1rem; font-weight:500; color:#1E293B">Grade A means the restaurant scored 90 or above on their most recent inspection.</div>
+    </div>
+
+    <div class="type-sample">
+      <div class="type-meta">
+        <span class="type-tag">Semibold &middot; 1rem &middot; 600</span>
+      </div>
+      <div style="font-size:1rem; font-weight:600; color:#1E293B">42 cities covered across the United States</div>
+    </div>
+
+    <div class="type-sample">
+      <div class="type-meta">
+        <span class="type-tag">Caption &middot; 0.85rem &middot; 500</span>
+      </div>
+      <div style="font-size:0.85rem; font-weight:500; color:#64748B">Last inspected Dec 14, 2025 &middot; Score: 94 &middot; Grade A</div>
+    </div>
+
+    <div class="font-ref">
+      <strong style="color:#1E293B">Google Fonts import:</strong><br>
+      <code>@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');</code>
+    </div>
+  </div>
+
+  <!-- ============ GRADE PILLS ============ -->
+  <div class="card">
+    <h2>Grade Badges</h2>
+    <p class="section-desc">Grade pills shown on restaurant cards. Solid style for primary display, soft style for secondary contexts.</p>
+
+    <div class="grade-row">
+      <!-- Grade A -->
+      <div class="grade-card">
+        <div class="grade-pill-wrap">
+          <div class="grade-pill" style="background:#16A34A; color:#FFFFFF">A</div>
+          <div class="grade-pill-soft" style="background:rgba(22,163,74,0.10); color:#16A34A">Grade A</div>
+        </div>
+        <div class="grade-meta">
+          <div class="grade-hex-row">
+            <span class="label">Solid bg</span>
+            <span class="value">#16A34A</span>
+            <button class="btn-copy" onclick="copyHex(this,'#16A34A')" style="margin-left:auto">Copy</button>
+          </div>
+          <div class="grade-hex-row">
+            <span class="label">Soft bg</span>
+            <span class="value">rgba(22,163,74,0.10)</span>
+          </div>
+          <div class="grade-hex-row">
+            <span class="label">Text on solid</span>
+            <span class="value">#FFFFFF</span>
+          </div>
+        </div>
+      </div>
+      <!-- Grade B -->
+      <div class="grade-card">
+        <div class="grade-pill-wrap">
+          <div class="grade-pill" style="background:#B45309; color:#FFFFFF">B</div>
+          <div class="grade-pill-soft" style="background:rgba(180,83,9,0.10); color:#B45309">Grade B</div>
+        </div>
+        <div class="grade-meta">
+          <div class="grade-hex-row">
+            <span class="label">Solid bg</span>
+            <span class="value">#B45309</span>
+            <button class="btn-copy" onclick="copyHex(this,'#B45309')" style="margin-left:auto">Copy</button>
+          </div>
+          <div class="grade-hex-row">
+            <span class="label">Soft bg</span>
+            <span class="value">rgba(180,83,9,0.10)</span>
+          </div>
+          <div class="grade-hex-row">
+            <span class="label">Text on solid</span>
+            <span class="value">#FFFFFF</span>
+          </div>
+        </div>
+      </div>
+      <!-- Grade C -->
+      <div class="grade-card">
+        <div class="grade-pill-wrap">
+          <div class="grade-pill" style="background:#C2410C; color:#FFFFFF">C</div>
+          <div class="grade-pill-soft" style="background:rgba(194,65,12,0.10); color:#C2410C">Grade C</div>
+        </div>
+        <div class="grade-meta">
+          <div class="grade-hex-row">
+            <span class="label">Solid bg</span>
+            <span class="value">#C2410C</span>
+            <button class="btn-copy" onclick="copyHex(this,'#C2410C')" style="margin-left:auto">Copy</button>
+          </div>
+          <div class="grade-hex-row">
+            <span class="label">Soft bg</span>
+            <span class="value">rgba(194,65,12,0.10)</span>
+          </div>
+          <div class="grade-hex-row">
+            <span class="label">Text on solid</span>
+            <span class="value">#FFFFFF</span>
+          </div>
+        </div>
+      </div>
+      <!-- Grade F -->
+      <div class="grade-card">
+        <div class="grade-pill-wrap">
+          <div class="grade-pill" style="background:#B91C1C; color:#FFFFFF">F</div>
+          <div class="grade-pill-soft" style="background:rgba(185,28,28,0.10); color:#B91C1C">Grade F</div>
+        </div>
+        <div class="grade-meta">
+          <div class="grade-hex-row">
+            <span class="label">Solid bg</span>
+            <span class="value">#B91C1C</span>
+            <button class="btn-copy" onclick="copyHex(this,'#B91C1C')" style="margin-left:auto">Copy</button>
+          </div>
+          <div class="grade-hex-row">
+            <span class="label">Soft bg</span>
+            <span class="value">rgba(185,28,28,0.10)</span>
+          </div>
+          <div class="grade-hex-row">
+            <span class="label">Text on solid</span>
+            <span class="value">#FFFFFF</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<div class="footer">SureVera Brand Kit</div>
+
+<script>
+function copyHex(btn, hex) {
+  function showCopied() {
+    var orig = btn.textContent;
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(function() {
+      btn.textContent = orig;
+      btn.classList.remove('copied');
+    }, 1200);
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(hex).then(showCopied);
+  } else {
+    var ta = document.createElement('textarea');
+    ta.value = hex;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showCopied();
+  }
+}
+</script>
+<script src="dark-mode.js"></script>
+<script src="toolkit-nav.js"></script>
+</body>
+</html>

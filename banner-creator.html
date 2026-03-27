@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SureVera — Banner Creator</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #F0F3F8;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #1E293B;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .toolbar {
+      width: 100%;
+      background: linear-gradient(135deg, #0D1B2E 0%, #1B3A6B 100%);
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+      margin-bottom: 2rem;
+    }
+    .toolbar img { height: 32px; }
+    .toolbar .divider {
+      width: 1px;
+      height: 24px;
+      background: rgba(255,255,255,0.2);
+    }
+    .toolbar .tool-label {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: rgba(255,255,255,0.6);
+    }
+
+    .page { padding: 0 2rem 2rem; width: 100%; display: flex; flex-direction: column; align-items: center; }
+
+    .subtitle { color: #64748B; font-size: 0.85rem; margin-bottom: 1.5rem; }
+
+    h2.section-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #1E293B;
+      margin-bottom: 0.75rem;
+      align-self: flex-start;
+      width: 100%;
+      max-width: 1200px;
+    }
+
+    /* Size cards */
+    .size-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+    .size-card {
+      background: #FFF;
+      border: 2px solid #E2E8F0;
+      border-radius: 10px;
+      padding: 0.6rem 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+      min-width: 120px;
+    }
+    .size-card:hover { border-color: #1B3A6B; background: #F8FAFC; }
+    .size-card.active { border-color: #E8612A; background: #FFF7F3; }
+    .size-card .size-name {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: 0.15rem;
+    }
+    .size-card .size-dims {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #1B3A6B;
+    }
+
+    /* Controls panel */
+    .controls {
+      display: flex;
+      gap: 1.25rem;
+      align-items: flex-start;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      background: #FFF;
+      padding: 1.25rem 1.5rem;
+      border-radius: 14px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      border: 1px solid #E2E8F0;
+      width: 100%;
+      max-width: 1200px;
+    }
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .control-group label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .control-group input[type="text"],
+    .control-group select {
+      padding: 0.45rem 0.75rem;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-family: inherit;
+      background: #F8FAFC;
+      cursor: pointer;
+      min-width: 160px;
+    }
+    .control-group input[type="text"]:focus,
+    .control-group select:focus {
+      outline: 2px solid #1B3A6B;
+      outline-offset: 1px;
+    }
+    .control-group input[type="color"] {
+      width: 36px; height: 32px; padding: 2px; border-radius: 8px;
+      border: 1px solid #CBD5E1; cursor: pointer;
+    }
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .toggle-row input[type="checkbox"] {
+      width: 16px; height: 16px; accent-color: #E8612A; cursor: pointer;
+    }
+    .toggle-row span {
+      font-size: 0.8rem;
+      color: #475569;
+    }
+
+    /* Drop zone */
+    .drop-zone {
+      width: 100%;
+      max-width: 400px;
+      min-height: 100px;
+      border: 2px dashed #94A3B8;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 1rem;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      background: #FFF;
+    }
+    .drop-zone:hover, .drop-zone.drag-over {
+      border-color: #E8612A;
+      background: #FFF7F3;
+    }
+    .drop-zone p { color: #64748B; font-size: 0.8rem; text-align: center; }
+    .drop-zone .browse {
+      color: #E8612A;
+      font-weight: 600;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+    .drop-zone input { display: none; }
+    .drop-zone.has-image {
+      border-style: solid;
+      border-color: #22C55E;
+      background: #F0FDF4;
+    }
+    .drop-zone.has-image p { color: #16A34A; }
+
+    /* Preview */
+    .preview-wrapper {
+      margin-bottom: 2rem;
+      width: 100%;
+      max-width: 1200px;
+      overflow-x: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .preview-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #94A3B8;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.75rem;
+    }
+    .preview-container {
+      background: repeating-conic-gradient(#E2E8F0 0% 25%, #FFF 0% 50%) 50% / 16px 16px;
+      border-radius: 12px;
+      padding: 16px;
+      display: inline-flex;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      border: 1px solid #E2E8F0;
+    }
+    .preview-container canvas {
+      display: block;
+    }
+
+    /* Buttons */
+    .btn-row {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+    .download-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.65rem 1.75rem;
+      background: #1B3A6B;
+      color: #FFF;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .download-btn:hover { background: #15305A; }
+    .download-all-btn {
+      padding: 0.65rem 1.75rem;
+      background: #E8612A;
+      color: #FFF;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .download-all-btn:hover { background: #D4541F; }
+
+    .footer {
+      margin-top: 3rem;
+      padding: 1.5rem;
+      text-align: center;
+      font-size: 0.75rem;
+      color: #94A3B8;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="toolbar">
+    <img src="surevera-header-white-logo.png" alt="SureVera" style="height:32px">
+    <div class="divider" style="width:1px;height:24px;background:rgba(255,255,255,0.2)"></div>
+    <span class="tool-label" style="font-size:0.85rem;font-weight:500;color:rgba(255,255,255,0.6)">Banner Creator</span>
+  </div>
+
+  <div class="page">
+    <p class="subtitle">100% offline — design banner ads entirely in your browser</p>
+
+    <!-- Size presets -->
+    <h2 class="section-title">Banner Size</h2>
+    <div class="size-grid" id="sizeGrid"></div>
+
+    <!-- Controls -->
+    <div class="controls">
+      <div class="control-group">
+        <label>Phone Mockup (optional)</label>
+        <div class="drop-zone" id="dropZone">
+          <p>Drop image or <span class="browse">browse</span></p>
+          <input type="file" id="mockupInput" accept="image/*">
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label>Headline</label>
+        <input type="text" id="headlineInput" value="Be Sure. Verify." placeholder="Headline text">
+      </div>
+
+      <div class="control-group">
+        <label>CTA Button Text</label>
+        <input type="text" id="ctaInput" value="Download Free" placeholder="Button text">
+      </div>
+
+      <div class="control-group">
+        <label>Background</label>
+        <select id="bgSelect">
+          <option value="navy-gradient">Navy Gradient</option>
+          <option value="white">White</option>
+          <option value="dark-navy">Dark Navy</option>
+          <option value="custom">Custom Color</option>
+        </select>
+        <input type="color" id="customBg" value="#1B3A6B" style="display:none; margin-top:0.35rem;">
+      </div>
+
+      <div class="control-group">
+        <label>Text Color</label>
+        <select id="textColorSelect">
+          <option value="white">White</option>
+          <option value="dark">Dark</option>
+        </select>
+      </div>
+
+      <div class="control-group" style="justify-content:flex-end;">
+        <label>&nbsp;</label>
+        <div class="toggle-row">
+          <input type="checkbox" id="showLogo" checked>
+          <span>Show "SureVera" logo text</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Preview -->
+    <div class="preview-wrapper">
+      <span class="preview-label" id="previewLabel">Preview — 728 × 90</span>
+      <div class="preview-container">
+        <canvas id="previewCanvas"></canvas>
+      </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="btn-row">
+      <button class="download-btn" id="downloadBtn">&#11015; Download PNG</button>
+      <button class="download-all-btn" id="downloadAllBtn">&#11015; Download All Sizes</button>
+    </div>
+  </div>
+
+  <div class="footer">SureVera Banner Creator — runs entirely in your browser</div>
+
+<script>
+const SIZES = [
+  { name: 'Leaderboard',       w: 728,  h: 90  },
+  { name: 'Medium Rectangle',  w: 300,  h: 250 },
+  { name: 'Wide Skyscraper',   w: 160,  h: 600 },
+  { name: 'Large Rectangle',   w: 336,  h: 280 },
+  { name: 'Half Page',         w: 300,  h: 600 },
+  { name: 'Billboard',         w: 970,  h: 250 },
+  { name: 'Mobile Banner',     w: 320,  h: 50  },
+  { name: 'Mobile Leaderboard',w: 320,  h: 100 },
+];
+
+const NAVY     = '#1B3A6B';
+const DARK_NAVY= '#0D1B2E';
+const ORANGE   = '#E8612A';
+
+let selectedSize = 0;
+let mockupImg = null;
+
+// --- Build size cards ---
+const sizeGrid = document.getElementById('sizeGrid');
+SIZES.forEach((s, i) => {
+  const card = document.createElement('div');
+  card.className = 'size-card' + (i === 0 ? ' active' : '');
+  card.innerHTML = `<div class="size-name">${s.name}</div><div class="size-dims">${s.w} × ${s.h}</div>`;
+  card.onclick = () => {
+    document.querySelectorAll('.size-card').forEach(c => c.classList.remove('active'));
+    card.classList.add('active');
+    selectedSize = i;
+    render();
+  };
+  sizeGrid.appendChild(card);
+});
+
+// --- Drop zone ---
+const dropZone = document.getElementById('dropZone');
+const mockupInput = document.getElementById('mockupInput');
+
+dropZone.onclick = () => mockupInput.click();
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropZone.classList.remove('drag-over');
+  if (e.dataTransfer.files.length) loadMockup(e.dataTransfer.files[0]);
+});
+mockupInput.addEventListener('change', () => { if (mockupInput.files.length) loadMockup(mockupInput.files[0]); });
+
+function loadMockup(file) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => { mockupImg = img; dropZone.classList.add('has-image'); dropZone.querySelector('p').textContent = file.name; render(); };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+// --- Live update ---
+document.getElementById('headlineInput').addEventListener('input', render);
+document.getElementById('ctaInput').addEventListener('input', render);
+document.getElementById('bgSelect').addEventListener('change', () => {
+  document.getElementById('customBg').style.display = document.getElementById('bgSelect').value === 'custom' ? 'block' : 'none';
+  render();
+});
+document.getElementById('customBg').addEventListener('input', render);
+document.getElementById('textColorSelect').addEventListener('change', render);
+document.getElementById('showLogo').addEventListener('change', render);
+
+// --- Rendering ---
+const previewCanvas = document.getElementById('previewCanvas');
+
+function getLayout(w, h) {
+  const ratio = w / h;
+  if (ratio >= 3)    return 'wide';     // leaderboard, mobile banner
+  if (ratio <= 0.5)  return 'tall';     // skyscraper, half page
+  if (ratio >= 1.8)  return 'wide';     // billboard-ish
+  return 'rect';                         // rectangles
+}
+
+function getBg(ctx, w, h) {
+  const sel = document.getElementById('bgSelect').value;
+  if (sel === 'navy-gradient') {
+    const g = ctx.createLinearGradient(0, 0, w, h);
+    g.addColorStop(0, DARK_NAVY);
+    g.addColorStop(1, NAVY);
+    return g;
+  }
+  if (sel === 'white')     return '#FFFFFF';
+  if (sel === 'dark-navy') return DARK_NAVY;
+  return document.getElementById('customBg').value;
+}
+
+function getTextColor() {
+  return document.getElementById('textColorSelect').value === 'white' ? '#FFFFFF' : '#1E293B';
+}
+
+function drawBanner(canvas, sizeIdx) {
+  const { w, h } = SIZES[sizeIdx];
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext('2d');
+  const layout = getLayout(w, h);
+  const textColor = getTextColor();
+  const headline = document.getElementById('headlineInput').value || 'Be Sure. Verify.';
+  const ctaText = document.getElementById('ctaInput').value || 'Download Free';
+  const showLogo = document.getElementById('showLogo').checked;
+  const pad = Math.min(w, h) * 0.08;
+
+  // Background
+  ctx.fillStyle = getBg(ctx, w, h);
+  ctx.fillRect(0, 0, w, h);
+
+  if (layout === 'wide') {
+    drawWide(ctx, w, h, pad, textColor, headline, ctaText, showLogo);
+  } else if (layout === 'tall') {
+    drawTall(ctx, w, h, pad, textColor, headline, ctaText, showLogo);
+  } else {
+    drawRect(ctx, w, h, pad, textColor, headline, ctaText, showLogo);
+  }
+}
+
+function drawRoundedRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+function drawCTAButton(ctx, text, cx, cy, fontSize) {
+  ctx.font = `700 ${fontSize}px Inter, sans-serif`;
+  const tw = ctx.measureText(text).width;
+  const bw = tw + fontSize * 2;
+  const bh = fontSize * 2.2;
+  const br = bh / 2;
+  const bx = cx - bw / 2;
+  const by = cy - bh / 2;
+
+  drawRoundedRect(ctx, bx, by, bw, bh, br);
+  ctx.fillStyle = ORANGE;
+  ctx.fill();
+
+  ctx.fillStyle = '#FFFFFF';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(text, cx, cy);
+}
+
+function drawLogoText(ctx, x, y, fontSize, color) {
+  ctx.font = `800 ${fontSize}px Inter, sans-serif`;
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
+
+  // "Sure" in text color
+  ctx.fillStyle = color;
+  const sureW = ctx.measureText('Sure').width;
+  ctx.fillText('Sure', x, y);
+
+  // "Bite" in orange
+  ctx.fillStyle = ORANGE;
+  ctx.fillText('Bite', x + sureW, y);
+}
+
+function drawLogoTextCentered(ctx, cx, y, fontSize, color) {
+  ctx.font = `800 ${fontSize}px Inter, sans-serif`;
+  const fullW = ctx.measureText('SureVera').width;
+  drawLogoText(ctx, cx - fullW / 2, y, fontSize, color);
+}
+
+function drawMockup(ctx, img, x, y, maxW, maxH) {
+  if (!img) return;
+  const scale = Math.min(maxW / img.width, maxH / img.height);
+  const dw = img.width * scale;
+  const dh = img.height * scale;
+  ctx.drawImage(img, x + (maxW - dw) / 2, y + (maxH - dh) / 2, dw, dh);
+}
+
+// --- Wide layout (horizontal) ---
+function drawWide(ctx, w, h, pad, textColor, headline, ctaText, showLogo) {
+  const vCenter = h / 2;
+  let leftX = pad;
+
+  // Logo
+  if (showLogo) {
+    const logoSize = Math.max(10, h * 0.28);
+    drawLogoText(ctx, leftX, vCenter, logoSize, textColor);
+    ctx.font = `800 ${logoSize}px Inter, sans-serif`;
+    leftX += ctx.measureText('SureVera').width + pad * 1.2;
+  }
+
+  // Mockup on right
+  let rightEdge = w - pad;
+  if (mockupImg) {
+    const mockH = h * 0.85;
+    const mockW = mockH * 0.6;
+    drawMockup(ctx, mockupImg, rightEdge - mockW, (h - mockH) / 2, mockW, mockH);
+    rightEdge -= mockW + pad * 0.8;
+  }
+
+  // CTA on right side
+  const ctaFontSize = Math.max(8, h * 0.22);
+  ctx.font = `700 ${ctaFontSize}px Inter, sans-serif`;
+  const ctaBW = ctx.measureText(ctaText).width + ctaFontSize * 2;
+  const ctaCX = rightEdge - ctaBW / 2;
+  drawCTAButton(ctx, ctaText, ctaCX, vCenter, ctaFontSize);
+  rightEdge -= ctaBW + pad * 0.8;
+
+  // Headline in remaining space
+  const headlineSpace = rightEdge - leftX;
+  if (headlineSpace > 40) {
+    let hSize = Math.max(8, h * 0.3);
+    ctx.font = `700 ${hSize}px Inter, sans-serif`;
+    while (ctx.measureText(headline).width > headlineSpace && hSize > 8) {
+      hSize -= 1;
+      ctx.font = `700 ${hSize}px Inter, sans-serif`;
+    }
+    ctx.fillStyle = textColor;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(headline, leftX + headlineSpace / 2, vCenter);
+  }
+}
+
+// --- Tall layout (vertical) ---
+function drawTall(ctx, w, h, pad, textColor, headline, ctaText, showLogo) {
+  let curY = pad;
+
+  // Logo
+  if (showLogo) {
+    const logoSize = Math.max(10, w * 0.14);
+    drawLogoTextCentered(ctx, w / 2, curY + logoSize / 2, logoSize, textColor);
+    curY += logoSize + pad;
+  }
+
+  // Headline
+  let hSize = Math.max(10, w * 0.15);
+  ctx.font = `700 ${hSize}px Inter, sans-serif`;
+  while (ctx.measureText(headline).width > w - pad * 2 && hSize > 10) {
+    hSize -= 1;
+    ctx.font = `700 ${hSize}px Inter, sans-serif`;
+  }
+  // Wrap text
+  const lines = wrapText(ctx, headline, w - pad * 2);
+  ctx.fillStyle = textColor;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  lines.forEach(line => {
+    ctx.fillText(line, w / 2, curY);
+    curY += hSize * 1.3;
+  });
+  curY += pad * 0.5;
+
+  // CTA at bottom
+  const ctaFontSize = Math.max(9, w * 0.1);
+  const ctaY = h - pad - ctaFontSize * 1.1;
+  drawCTAButton(ctx, ctaText, w / 2, ctaY, ctaFontSize);
+
+  // Phone mockup fills remaining space
+  if (mockupImg) {
+    const mockBottom = ctaY - ctaFontSize * 1.5 - pad * 0.5;
+    const mockH = mockBottom - curY;
+    const mockW = w - pad * 2;
+    if (mockH > 20) {
+      drawMockup(ctx, mockupImg, pad, curY, mockW, mockH);
+    }
+  }
+}
+
+// --- Rectangle layout ---
+function drawRect(ctx, w, h, pad, textColor, headline, ctaText, showLogo) {
+  const leftHalf = mockupImg ? w * 0.45 : 0;
+  const rightStart = mockupImg ? w * 0.45 : pad;
+  const rightW = w - rightStart - pad;
+
+  // Phone mockup on left
+  if (mockupImg) {
+    const mockW = leftHalf - pad * 1.5;
+    const mockH = h - pad * 2;
+    drawMockup(ctx, mockupImg, pad, pad, mockW, mockH);
+  }
+
+  // Text area on right (or centered if no mockup)
+  const centerX = rightStart + rightW / 2;
+  let curY = pad;
+
+  // Logo
+  if (showLogo) {
+    const logoSize = Math.max(10, Math.min(rightW * 0.12, h * 0.1));
+    drawLogoTextCentered(ctx, centerX, curY + logoSize / 2, logoSize, textColor);
+    curY += logoSize + pad * 1.2;
+  } else {
+    curY += pad;
+  }
+
+  // Headline
+  let hSize = Math.max(10, Math.min(rightW * 0.14, h * 0.12));
+  ctx.font = `700 ${hSize}px Inter, sans-serif`;
+  const lines = wrapText(ctx, headline, rightW);
+  ctx.fillStyle = textColor;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+
+  // Vertically center text group
+  const textBlockH = lines.length * hSize * 1.3;
+  const ctaFontSize = Math.max(9, Math.min(rightW * 0.08, h * 0.06));
+  const ctaBH = ctaFontSize * 2.2;
+  const totalContentH = textBlockH + pad + ctaBH;
+  const availH = h - curY - pad;
+  const offsetY = Math.max(0, (availH - totalContentH) / 2);
+  curY += offsetY;
+
+  lines.forEach(line => {
+    ctx.fillText(line, centerX, curY);
+    curY += hSize * 1.3;
+  });
+
+  curY += pad;
+
+  // CTA
+  drawCTAButton(ctx, ctaText, centerX, curY + ctaBH / 2, ctaFontSize);
+}
+
+function wrapText(ctx, text, maxWidth) {
+  const words = text.split(' ');
+  const lines = [];
+  let current = '';
+  for (const word of words) {
+    const test = current ? current + ' ' + word : word;
+    if (ctx.measureText(test).width > maxWidth && current) {
+      lines.push(current);
+      current = word;
+    } else {
+      current = test;
+    }
+  }
+  if (current) lines.push(current);
+  return lines.length ? lines : [text];
+}
+
+function render() {
+  const { w, h } = SIZES[selectedSize];
+  document.getElementById('previewLabel').textContent = `Preview — ${w} × ${h}`;
+  drawBanner(previewCanvas, selectedSize);
+}
+
+// --- Download ---
+document.getElementById('downloadBtn').addEventListener('click', () => {
+  const { w, h, name } = SIZES[selectedSize];
+  const c = document.createElement('canvas');
+  drawBanner(c, selectedSize);
+  downloadCanvas(c, `surevera-banner-${w}x${h}.png`);
+});
+
+document.getElementById('downloadAllBtn').addEventListener('click', () => {
+  SIZES.forEach((s, i) => {
+    const c = document.createElement('canvas');
+    drawBanner(c, i);
+    setTimeout(() => downloadCanvas(c, `surevera-banner-${s.w}x${s.h}.png`), i * 200);
+  });
+});
+
+function downloadCanvas(canvas, filename) {
+  const a = document.createElement('a');
+  a.download = filename;
+  a.href = canvas.toDataURL('image/png');
+  a.click();
+}
+
+// Initial render
+render();
+</script>
+
+<script src="dark-mode.js"></script>
+<script src="toolkit-nav.js"></script>
+</body>
+</html>

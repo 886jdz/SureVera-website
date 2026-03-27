@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SureVera — City Data Sources</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #F0F3F8;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      color: #1E293B;
+    }
+
+    .toolbar {
+      width: 100%;
+      background: linear-gradient(135deg, #0D1B2E 0%, #1B3A6B 100%);
+      padding: 1.5rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+      position: relative;
+      z-index: 1000;
+    }
+    .toolbar img { height: 36px; }
+    .toolbar .divider {
+      width: 1px;
+      height: 28px;
+      background: rgba(255,255,255,0.2);
+    }
+    .toolbar .tool-label {
+      font-size: 1rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.7);
+      letter-spacing: -0.01em;
+    }
+
+    .page {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem 2rem 4rem;
+    }
+
+    .hero-text {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .hero-text h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #1B3A6B;
+      margin-bottom: 0.5rem;
+    }
+    .hero-text p {
+      font-size: 1rem;
+      color: #64748B;
+    }
+
+    /* Stats bar */
+    .stats-bar {
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+    .stat-pill {
+      background: #FFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 12px;
+      padding: 0.75rem 1.25rem;
+      text-align: center;
+      min-width: 140px;
+    }
+    .stat-pill .num {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #1B3A6B;
+    }
+    .stat-pill .label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #64748B;
+      margin-top: 0.15rem;
+    }
+
+    /* Controls */
+    .controls {
+      background: #FFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 14px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .controls input[type="text"] {
+      flex: 1;
+      min-width: 200px;
+      padding: 0.6rem 1rem;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      background: #F8FAFC;
+      color: #1E293B;
+    }
+    .controls input[type="text"]:focus {
+      outline: none;
+      border-color: #E8612A;
+      box-shadow: 0 0 0 3px rgba(232,97,42,0.1);
+    }
+    .controls select {
+      padding: 0.6rem 1rem;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-family: inherit;
+      background: #F8FAFC;
+      color: #1E293B;
+      cursor: pointer;
+    }
+    .controls select:focus {
+      outline: none;
+      border-color: #E8612A;
+    }
+    .controls .result-count {
+      font-size: 0.8rem;
+      color: #94A3B8;
+      white-space: nowrap;
+    }
+
+    /* Table */
+    .table-wrap {
+      background: #FFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+    .state-group-header {
+      background: #F1F5F9;
+      padding: 0.6rem 1.25rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #E8612A;
+      border-bottom: 1px solid #E2E8F0;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    thead th {
+      background: #1B3A6B;
+      color: #FFF;
+      padding: 0.75rem 1rem;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      position: sticky;
+      top: 0;
+      z-index: 3;
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+    }
+    thead th:hover {
+      background: #244E8A;
+    }
+    thead th .sort-arrow {
+      margin-left: 4px;
+      opacity: 0.4;
+      font-size: 0.65rem;
+    }
+    thead th.sorted .sort-arrow {
+      opacity: 1;
+    }
+    tbody tr {
+      border-bottom: 1px solid #F1F5F9;
+    }
+    tbody tr:hover {
+      background: #FAFBFD;
+    }
+    tbody td {
+      padding: 0.6rem 1rem;
+      vertical-align: top;
+    }
+    tbody td.city-name {
+      font-weight: 600;
+      color: #1E293B;
+    }
+
+    /* Status badges */
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .badge-covered {
+      background: #DCFCE7;
+      color: #15803D;
+    }
+    .badge-not-covered {
+      background: #FEE2E2;
+      color: #DC2626;
+    }
+    .badge-disabled {
+      background: #FEF3C7;
+      color: #B45309;
+    }
+
+    /* System badges */
+    .sys-badge {
+      display: inline-block;
+      padding: 0.15rem 0.5rem;
+      border-radius: 5px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      background: #EFF6FF;
+      color: #1D4ED8;
+      white-space: nowrap;
+    }
+    .sys-badge.socrata { background: #EFF6FF; color: #1D4ED8; }
+    .sys-badge.arcgis { background: #F0FDF4; color: #15803D; }
+    .sys-badge.tyler { background: #FDF4FF; color: #A21CAF; }
+    .sys-badge.healthspace { background: #FFF7ED; color: #C2410C; }
+    .sys-badge.pdf { background: #FEF3C7; color: #B45309; }
+    .sys-badge.lives { background: #ECFDF5; color: #047857; }
+    .sys-badge.custom { background: #F1F5F9; color: #475569; }
+    .sys-badge.ckan { background: #EDE9FE; color: #6D28D9; }
+    .sys-badge.none { background: #FEE2E2; color: #DC2626; }
+    .sys-badge.florida { background: #FFF1F2; color: #BE123C; }
+
+    /* Violations */
+    .viol-yes { color: #15803D; font-weight: 600; }
+    .viol-no { color: #DC2626; }
+    .viol-unknown { color: #94A3B8; }
+
+    /* Links */
+    td a {
+      color: #2563EB;
+      text-decoration: none;
+      font-size: 0.8rem;
+      word-break: break-all;
+    }
+    td a:hover {
+      text-decoration: underline;
+    }
+
+    .notes-col {
+      font-size: 0.78rem;
+      color: #64748B;
+      max-width: 260px;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 2rem;
+      font-size: 0.75rem;
+      color: #94A3B8;
+      margin-top: 2rem;
+    }
+
+    @media (max-width: 900px) {
+      .page { padding: 1rem; }
+      .controls { flex-direction: column; }
+      .controls input[type="text"] { min-width: 100%; }
+      table { font-size: 0.78rem; }
+      tbody td, thead th { padding: 0.5rem 0.6rem; }
+      .notes-col { max-width: 160px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="toolbar">
+    <img src="surevera-header-white-logo.png" alt="SureVera">
+    <div class="divider"></div>
+    <span class="tool-label">City Data Sources</span>
+  </div>
+
+  <div class="page">
+    <div class="hero-text">
+      <h1>City Data Sources</h1>
+      <p>Health inspection data availability across major US metro areas. Research updated March 2026.</p>
+    </div>
+
+    <div class="stats-bar" id="statsBar">
+      <div class="stat-pill"><div class="num" id="statTotal">0</div><div class="label">Total Cities</div></div>
+      <div class="stat-pill"><div class="num" id="statCovered">0</div><div class="label">Covered</div></div>
+      <div class="stat-pill"><div class="num" id="statNotCovered">0</div><div class="label">Not Covered</div></div>
+      <div class="stat-pill"><div class="num" id="statStates">0</div><div class="label">States</div></div>
+    </div>
+
+    <div class="controls">
+      <input type="text" id="searchInput" placeholder="Search cities, states, systems...">
+      <select id="statusFilter">
+        <option value="">All Statuses</option>
+        <option value="Covered">Covered</option>
+        <option value="Not Covered">Not Covered</option>
+        <option value="Disabled">Disabled</option>
+      </select>
+      <select id="systemFilter">
+        <option value="">All Systems</option>
+        <option value="Socrata">Socrata</option>
+        <option value="ArcGIS">ArcGIS</option>
+        <option value="Tyler Tech">Tyler Tech</option>
+        <option value="HealthSpace">HealthSpace</option>
+        <option value="CKAN">CKAN</option>
+        <option value="LIVES">LIVES</option>
+        <option value="PDF">PDF</option>
+        <option value="Custom">Custom</option>
+        <option value="Florida DBPR">Florida DBPR</option>
+        <option value="None Found">None Found</option>
+      </select>
+      <span class="result-count" id="resultCount"></span>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th data-col="city">City / Metro <span class="sort-arrow">&#9650;</span></th>
+            <th data-col="status">Status <span class="sort-arrow">&#9650;</span></th>
+            <th data-col="system">Data System <span class="sort-arrow">&#9650;</span></th>
+            <th data-col="violations">Violations <span class="sort-arrow">&#9650;</span></th>
+            <th data-col="url">Data URL</th>
+            <th data-col="notes">Notes</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="footer">SureVera Toolkit — City Data Sources — runs entirely in your browser</div>
+
+<script>
+const CITIES = [
+  // ── COVERED (active in registry) ──────────────────────────────────────────
+
+  // Alaska
+  { city: "Anchorage", state: "Alaska", status: "Covered", system: "LIVES", violations: "Yes",
+    url: "https://opendata.muni.org/LIVES/LIVES-flat.csv",
+    notes: "LIVES flat CSV, daily refresh. ~1,810 establishments." },
+
+  // California
+  { city: "Los Angeles County", state: "California", status: "Covered", system: "ArcGIS", violations: "No",
+    url: "https://services.arcgis.com/RmCCgQtiZLDCtblq/arcgis/rest/services/",
+    notes: "ArcGIS FeatureServer. 0-100 score + letter grade. Covers 85 of 88 cities." },
+  { city: "San Francisco", state: "California", status: "Covered", system: "Socrata", violations: "Yes",
+    url: "https://data.sfgov.org/resource/tvy3-wexg.json",
+    notes: "Socrata API. Pass/fail since 2020 (no numeric score)." },
+  { city: "San Jose / Santa Clara County", state: "California", status: "Covered", system: "Socrata", violations: "No",
+    url: "https://data.sccgov.org/resource/2u2d-8jej.json",
+    notes: "Two-dataset Socrata join. 0-100 score, G/Y/R placard. Data last updated Aug 2024." },
+  { city: "Oakland / Alameda County", state: "California", status: "Covered", system: "ArcGIS", violations: "No",
+    url: "https://services5.arcgis.com/ROBnTHSNjoZ2Wm1P/arcgis/rest/services/Restaurant_Inspections/FeatureServer/0",
+    notes: "ArcGIS FeatureServer. G/Y/R color placard system." },
+  { city: "Sacramento County", state: "California", status: "Covered", system: "ArcGIS", violations: "No",
+    url: "https://services1.arcgis.com/5NARefyPVtAeuJPU/arcgis/rest/services/Food_Inspections/FeatureServer/0",
+    notes: "ArcGIS FeatureServer. Pass/fail system. ~6,185 facilities." },
+
+  // Colorado
+  { city: "Boulder County", state: "Colorado", status: "Covered", system: "Socrata", violations: "Yes",
+    url: "https://data.colorado.gov/resource/tuvj-xz3m.json",
+    notes: "Socrata API. Penalty points (lower=better). ~1,714 facilities." },
+
+  // Florida (all via DBPR)
+  { city: "Miami-Dade County", state: "Florida", status: "Covered", system: "Florida DBPR", violations: "Yes",
+    url: "https://www2.myfloridalicense.com/",
+    notes: "Florida DBPR bulk CSV. Synthetic score. No official letter grades." },
+  { city: "Broward County (Ft. Lauderdale)", state: "Florida", status: "Covered", system: "Florida DBPR", violations: "Yes",
+    url: "https://www2.myfloridalicense.com/",
+    notes: "Florida DBPR bulk CSV." },
+  { city: "Palm Beach County", state: "Florida", status: "Covered", system: "Florida DBPR", violations: "Yes",
+    url: "https://www2.myfloridalicense.com/",
+    notes: "Florida DBPR bulk CSV." },
+  { city: "Hillsborough County (Tampa)", state: "Florida", status: "Covered", system: "Florida DBPR", violations: "Yes",
+    url: "https://www2.myfloridalicense.com/",
+    notes: "Florida DBPR bulk CSV." },
+  { city: "Orange County (Orlando)", state: "Florida", status: "Covered", system: "Florida DBPR", violations: "Yes",
+    url: "https://www2.myfloridalicense.com/",
+    notes: "Florida DBPR bulk CSV." },
+  { city: "Duval County (Jacksonville)", state: "Florida", status: "Covered", system: "Florida DBPR", violations: "Yes",
+    url: "https://www2.myfloridalicense.com/",
+    notes: "Florida DBPR bulk CSV." },
+  { city: "Pinellas County (St. Pete)", state: "Florida", status: "Covered", system: "Florida DBPR", violations: "Yes",
+    url: "https://www2.myfloridalicense.com/",
+    notes: "Florida DBPR bulk CSV." },
+  { city: "Lee County (Fort Myers)", state: "Florida", status: "Covered", system: "Florida DBPR", violations: "Yes",
+    url: "https://www2.myfloridalicense.com/",
+    notes: "Florida DBPR bulk CSV." },
+  { city: "Polk County (Lakeland)", state: "Florida", status: "Covered", system: "Florida DBPR", violations: "Yes",
+    url: "https://www2.myfloridalicense.com/",
+    notes: "Florida DBPR bulk CSV." },
+  { city: "Brevard County", state: "Florida", status: "Covered", system: "Florida DBPR", violations: "Yes",
+    url: "https://www2.myfloridalicense.com/",
+    notes: "Florida DBPR bulk CSV." },
+  { city: "Additional FL counties (16+)", state: "Florida", status: "Covered", system: "Florida DBPR", violations: "Yes",
+    url: "https://www2.myfloridalicense.com/",
+    notes: "Pasco, Volusia, Seminole, Sarasota, Manatee, Osceola, Collier, Alachua, Escambia, St. Lucie, Okaloosa, Leon, St. Johns, Marion, Indian River, Clay, Nassau, Putnam, Flagler, Hernando, Citrus, Highlands, Sumter, Charlotte." },
+
+  // Georgia
+  { city: "Atlanta / Fulton County", state: "Georgia", status: "Disabled", system: "Socrata", violations: "Yes",
+    url: "https://data.fultoncountyga.gov/resource/w896-7wba.json",
+    notes: "Socrata dataset frozen since Jan 2022. Fulton Co migrated internally. GA state uses Tyler Tech." },
+
+  // Illinois
+  { city: "Chicago", state: "Illinois", status: "Covered", system: "Socrata", violations: "Yes",
+    url: "https://data.cityofchicago.org/resource/cwig-ma7x.json",
+    notes: "Socrata API. Pass/fail system. Violations concatenated in one text field." },
+
+  // Kentucky
+  { city: "Louisville / Jefferson County", state: "Kentucky", status: "Covered", system: "ArcGIS", violations: "No",
+    url: "https://services1.arcgis.com/79kfd2K6fskCAkyg/arcgis/rest/services/",
+    notes: "ArcGIS FeatureServer. 0-100 score, pre-computed most recent." },
+
+  // Maryland
+  { city: "Montgomery County (Rockville/Bethesda)", state: "Maryland", status: "Covered", system: "Socrata", violations: "Yes",
+    url: "https://data.montgomerycountymd.gov/resource/5pue-gfbe.json",
+    notes: "Socrata API. Pass/fail with 14 violation columns." },
+
+  // Michigan
+  { city: "Detroit", state: "Michigan", status: "Covered", system: "ArcGIS", violations: "No",
+    url: "https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/Restaurant_Inspections/FeatureServer/0",
+    notes: "ArcGIS FeatureServer. Pass/fail compliance. City limits only." },
+
+  // Minnesota
+  { city: "Minneapolis", state: "Minnesota", status: "Covered", system: "ArcGIS", violations: "No",
+    url: "https://services.arcgis.com/afSMGVsC7QlRK1kZ/arcgis/rest/services/Food_Inspections/FeatureServer/0",
+    notes: "ArcGIS FeatureServer. 0-100 score. City only, not Hennepin County." },
+
+  // Nevada
+  { city: "Las Vegas / Clark County", state: "Nevada", status: "Covered", system: "Custom", violations: "No",
+    url: "https://www.southernnevadahealthdistrict.org/restaurants/download/restaurants.zip",
+    notes: "SNHD nightly ZIP. Semicolon-delimited CSVs. A/B/C/F grades." },
+
+  // New York
+  { city: "New York City", state: "New York", status: "Covered", system: "Socrata", violations: "Yes",
+    url: "https://data.cityofnewyork.us/resource/43nn-pn8j.json",
+    notes: "Socrata API. One row per violation. A/B/C grades. ~27k restaurants." },
+  { city: "New York State (upstate)", state: "New York", status: "Covered", system: "Custom", violations: "No",
+    url: "https://health.data.ny.gov/resource/cnih-y5dw.json",
+    notes: "NY State DOH Socrata. Synthesized score. Excl. NYC, Erie, Suffolk." },
+
+  // North Carolina
+  { city: "Raleigh / Wake County", state: "North Carolina", status: "Covered", system: "ArcGIS", violations: "No",
+    url: "https://maps.wakegov.com/arcgis/rest/services/Inspections/RestaurantInspectionsOpenData/MapServer/1",
+    notes: "ArcGIS two-layer join. 0-100 score." },
+
+  // South Carolina
+  { city: "South Carolina (statewide)", state: "South Carolina", status: "Covered", system: "ArcGIS", violations: "No",
+    url: "https://services5.arcgis.com/G4BLIH7rTQoIjCFv/arcgis/rest/services/Restaurants/FeatureServer/4",
+    notes: "SCDHEC statewide ArcGIS. A/B/C grades. ~8k establishments." },
+
+  // South Dakota
+  { city: "Sioux Falls", state: "South Dakota", status: "Covered", system: "ArcGIS", violations: "No",
+    url: "https://gis.siouxfalls.gov/arcgis/rest/services/Data/Safety/MapServer/17",
+    notes: "ArcGIS MapServer. 0-100 score. ~964 restaurants." },
+
+  // Texas
+  { city: "Bell County (Killeen/Temple)", state: "Texas", status: "Covered", system: "PDF", violations: "Yes",
+    url: "https://bellcountyhealth.org/",
+    notes: "PDFs parsed via pdf-parse. Weekly refresh." },
+  { city: "Austin / Travis County", state: "Texas", status: "Covered", system: "Socrata", violations: "No",
+    url: "https://data.austintexas.gov/resource/ecmv-9xxi.json",
+    notes: "Socrata API. 0-100 score, no letter grade." },
+  { city: "Williamson County (Round Rock)", state: "Texas", status: "Covered", system: "LIVES", violations: "No",
+    url: "https://storage.googleapis.com/ehyelp/WCCHD%20Food%20Inspections.zip",
+    notes: "LIVES-format ZIP on GCS. Weekly refresh." },
+  { city: "San Antonio / Bexar County", state: "Texas", status: "Covered", system: "Custom", violations: "No",
+    url: "https://www.sa.gov/Directory/Departments/SAMHD/Reports-Statistics/Food-Establishment-Inspections",
+    notes: "Weekly XLSX scrape. 0-100 score + A/B/C/D/F grades." },
+  { city: "Arlington", state: "Texas", status: "Covered", system: "ArcGIS", violations: "No",
+    url: "https://gis2.arlingtontx.gov/agsext2/rest/services/OpenData/OD_Community/MapServer/7",
+    notes: "ArcGIS MapServer. 0-100 score. ~4,333 records." },
+  { city: "Garland", state: "Texas", status: "Covered", system: "ArcGIS", violations: "No",
+    url: "https://maps.garlandtx.gov/arcgis/rest/services/Health/RestaurantScoresView/MapServer/0",
+    notes: "ArcGIS MapServer. 0-100 score. ~1,078 establishments." },
+
+  // Virginia
+  { city: "Fairfax County", state: "Virginia", status: "Covered", system: "ArcGIS", violations: "No",
+    url: "https://www.fairfaxcounty.gov/euclid/rest/services/Health/PermittedFoodEstablishments/FeatureServer/1",
+    notes: "ArcGIS two-layer join. Pass/partial/fail." },
+
+  // Washington
+  { city: "Seattle / King County", state: "Washington", status: "Covered", system: "Socrata", violations: "Yes",
+    url: "https://data.kingcounty.gov/resource/f29f-zza5.json",
+    notes: "Socrata API. Penalty points (lower=better). One row per violation." },
+  { city: "Kitsap County (Bremerton)", state: "Washington", status: "Covered", system: "ArcGIS", violations: "No",
+    url: "https://services3.arcgis.com/rM2bN63KIgsKua6J/arcgis/rest/services/Foodinspections/FeatureServer/0",
+    notes: "ArcGIS FeatureServer. Pre-deduplicated, no date field." },
+
+  // Colorado (disabled)
+  { city: "Aurora / Tri-County", state: "Colorado", status: "Disabled", system: "Socrata", violations: "Yes",
+    url: "https://data.colorado.gov/resource/869n-zj3f.json",
+    notes: "Dataset frozen since Oct 2022. Removed from registry." },
+
+  // Texas (disabled)
+  { city: "Dallas", state: "Texas", status: "Disabled", system: "Tyler Tech", violations: "Yes",
+    url: "https://inspections.myhealthdepartment.com/dallas",
+    notes: "Socrata dataset (dri5-wcct) retired Feb 2024. Now Tyler Tech / myhealthdepartment.com. No public API." },
+
+  // ── NOT COVERED — researched metros ───────────────────────────────────────
+
+  // Arizona
+  { city: "Phoenix / Maricopa County", state: "Arizona", status: "Not Covered", system: "Custom", violations: "Yes",
+    url: "https://envapp.maricopa.gov/EnvironmentalHealth/FoodInspections",
+    notes: "Custom web app backed by SQL Server + ArcGIS map. 8,000+ restaurants. Data is real-time but no public API found." },
+  { city: "Tucson / Pima County", state: "Arizona", status: "Not Covered", system: "Custom", violations: "Yes",
+    url: "https://healthinspect.pima.gov/portal/",
+    notes: "Custom portal (healthinspect.pima.gov). No open data API found." },
+
+  // California
+  { city: "San Diego County", state: "California", status: "Not Covered", system: "Socrata", violations: "Yes",
+    url: "https://data.sandiegocounty.gov/",
+    notes: "Socrata portal (data.sandiegocounty.gov). SD Food Info has 95k+ results. Strong candidate for integration." },
+  { city: "Riverside County", state: "California", status: "Not Covered", system: "Custom", violations: "Yes",
+    url: "https://restaurantgrading.rivcoeh.org/",
+    notes: "Custom web portal with letter grades. Also has an open data portal (data.countyofriverside.us)." },
+  { city: "San Bernardino County", state: "California", status: "Not Covered", system: "Custom", violations: "Yes",
+    url: "https://www.sbcounty.gov/dph/ehsportal/FacilityList/food",
+    notes: "Custom EHS portal. A/B/C grades. Data integrated with Yelp since 2015." },
+
+  // Connecticut
+  { city: "Hartford", state: "Connecticut", status: "Not Covered", system: "None Found", violations: "Unknown",
+    url: "https://data.hartford.gov/",
+    notes: "Open data portal exists but no restaurant inspection dataset. CT requires visiting individual health depts." },
+
+  // District of Columbia
+  { city: "Washington, D.C.", state: "District of Columbia", status: "Not Covered", system: "Custom", violations: "Yes",
+    url: "https://dc.healthinspections.us/",
+    notes: "DC Health inspection portal (HealthSpace-based). Also on opendata.dc.gov. 6,500+ food establishments." },
+
+  // Hawaii
+  { city: "Honolulu", state: "Hawaii", status: "Not Covered", system: "Tyler Tech", violations: "Yes",
+    url: "https://inspections.myhealthdepartment.com/soh",
+    notes: "Tyler Tech / myhealthdepartment.com. State DOH manages all inspections." },
+
+  // Indiana
+  { city: "Indianapolis / Marion County", state: "Indiana", status: "Not Covered", system: "Custom", violations: "Yes",
+    url: "https://hhcwebfood.hhcorp.org/",
+    notes: "Custom web portal. Also has ArcGIS open data hub (data-isdh.opendata.arcgis.com). 10-day posting delay." },
+
+  // Louisiana
+  { city: "New Orleans", state: "Louisiana", status: "Not Covered", system: "Socrata", violations: "Yes",
+    url: "https://data.nola.gov/Health-Education-and-Social-Services/Restaurant-Inspections-Orleans-Parish-/4eex-dv6s",
+    notes: "Socrata (data.nola.gov, dataset 4eex-dv6s). Louisiana DOH data. Strong candidate for integration." },
+
+  // Maryland
+  { city: "Baltimore", state: "Maryland", status: "Not Covered", system: "Custom", violations: "Yes",
+    url: "http://baltimore.foodinspectionreports.com/",
+    notes: "Custom portal + OpenBaltimore open data. 5,000+ food facilities." },
+
+  // Massachusetts
+  { city: "Boston", state: "Massachusetts", status: "Not Covered", system: "CKAN", violations: "Yes",
+    url: "https://data.boston.gov/dataset/food-establishment-inspections",
+    notes: "CKAN (Analyze Boston). Daily updates since 2006. Strong candidate for integration." },
+
+  // Minnesota
+  { city: "St. Paul / Hennepin County", state: "Minnesota", status: "Not Covered", system: "Custom", violations: "Unknown",
+    url: "",
+    notes: "Minneapolis covered but Hennepin County at large and St. Paul (Ramsey County) are not." },
+
+  // Missouri
+  { city: "St. Louis", state: "Missouri", status: "Not Covered", system: "HealthSpace", violations: "Yes",
+    url: "https://www.healthspace.com/Clients/Missouri/StLouis/St_Louis_Web_Live.nsf/food-frameset",
+    notes: "HealthSpace portal + city open data (stlouis-mo.gov/data). Dataset ID 71." },
+  { city: "Kansas City", state: "Missouri", status: "Not Covered", system: "Custom", violations: "Yes",
+    url: "https://www.inspectionsonline.us/foodsafety/mousakansascity/search.htm",
+    notes: "Custom portal (inspectionsonline.us). No open data API found." },
+
+  // New York
+  { city: "Buffalo / Erie County", state: "New York", status: "Not Covered", system: "HealthSpace", violations: "Yes",
+    url: "https://www.healthspace.com/Clients/NewYork/Erie/Erie_Live_Web.nsf",
+    notes: "HealthSpace portal. 3,500+ food service establishments. Reports within ~2 weeks." },
+
+  // North Carolina
+  { city: "Charlotte / Mecklenburg County", state: "North Carolina", status: "Not Covered", system: "Tyler Tech", violations: "Yes",
+    url: "https://inspections.myhealthdepartment.com/mecknc",
+    notes: "Tyler Tech / myhealthdepartment.com. Also accessible via NC CDP system." },
+  { city: "Durham County", state: "North Carolina", status: "Not Covered", system: "Custom", violations: "Yes",
+    url: "https://public.cdpehs.com/NCENVPBL/ESTABLISHMENT/ShowESTABLISHMENTTablePage.aspx?ESTTST_CTY=32",
+    notes: "NC CDP system (public.cdpehs.com). No API, web scraping required." },
+
+  // Ohio
+  { city: "Columbus", state: "Ohio", status: "Not Covered", system: "ArcGIS", violations: "Yes",
+    url: "https://opendata.columbus.gov/maps/restaurant-market-health-inspections",
+    notes: "ArcGIS Hub (opendata.columbus.gov). ~8,000 businesses. Strong candidate." },
+  { city: "Cleveland / Cuyahoga County", state: "Ohio", status: "Not Covered", system: "Tyler Tech", violations: "Yes",
+    url: "https://inspections.myhealthdepartment.com/ccbh",
+    notes: "Tyler Tech / myhealthdepartment.com. Also city health dept portal." },
+  { city: "Cincinnati / Hamilton County", state: "Ohio", status: "Not Covered", system: "Socrata", violations: "Yes",
+    url: "https://data.cincinnati-oh.gov/widgets/ivda-umw7",
+    notes: "Socrata (data.cincinnati-oh.gov). Also HealthSpace for Hamilton County. Daily refresh." },
+
+  // Oklahoma
+  { city: "Oklahoma City", state: "Oklahoma", status: "Not Covered", system: "Custom", violations: "Yes",
+    url: "https://occhd.inspect2go33.com/searchInspection.aspx",
+    notes: "Inspect2Go custom portal. Also state portal at phin.state.ok.us. No open data API." },
+
+  // Oregon
+  { city: "Portland / Multnomah County", state: "Oregon", status: "Not Covered", system: "Tyler Tech", violations: "Yes",
+    url: "https://inspections.myhealthdepartment.com/oregon",
+    notes: "Tyler Tech / myhealthdepartment.com (statewide). 70+ = passing. 14-day posting delay." },
+
+  // Pennsylvania
+  { city: "Philadelphia", state: "Pennsylvania", status: "Not Covered", system: "Custom", violations: "Yes",
+    url: "https://opendataphilly.org/datasets/clean-plates-restaurant-health-inspections/",
+    notes: "OpenDataPhilly (Clean Plates dataset). Also PA state portal (pafoodsafety.pa.gov). Strong candidate." },
+  { city: "Pittsburgh / Allegheny County", state: "Pennsylvania", status: "Not Covered", system: "CKAN", violations: "Yes",
+    url: "https://data.wprdc.org/dataset/allegheny-county-restaurant-food-facility-inspection-violations",
+    notes: "WPRDC CKAN portal. Data feed under maintenance as of 2025. System changed Aug 2025." },
+
+  // Rhode Island
+  { city: "Providence", state: "Rhode Island", status: "Not Covered", system: "Tyler Tech", violations: "Yes",
+    url: "https://ri.healthinspections.us/ri/",
+    notes: "Tyler Tech / healthinspections.us (statewide RI). City has open data portal but no inspection data on it." },
+
+  // Tennessee
+  { city: "Nashville / Davidson County", state: "Tennessee", status: "Not Covered", system: "Tyler Tech", violations: "Yes",
+    url: "https://inspections.myhealthdepartment.com/tennessee",
+    notes: "Tyler Tech / myhealthdepartment.com. 0-100 score. No open data API." },
+  { city: "Memphis / Shelby County", state: "Tennessee", status: "Not Covered", system: "Custom", violations: "Unknown",
+    url: "https://www.shelbycountytn.gov/QuickLinks.aspx?CID=25",
+    notes: "TN Dept of Health website. Weekly scores published via local media. No open data API." },
+
+  // Texas
+  { city: "Houston / Harris County", state: "Texas", status: "Not Covered", system: "Socrata", violations: "Yes",
+    url: "https://data.houstontx.gov/dataset/city-of-houston-health-and-human-services-food-service-facility-inspections",
+    notes: "Socrata (data.houstontx.gov). Multiple datasets for inspections + violations. Strong candidate." },
+
+  // Utah
+  { city: "Salt Lake City / Salt Lake County", state: "Utah", status: "Not Covered", system: "Custom", violations: "Yes",
+    url: "https://www.saltlakecounty.gov/health/food-protection/inspections/",
+    notes: "Custom portal (CDP-based). 10 most recent inspections per establishment." },
+
+  // Virginia
+  { city: "Virginia Beach / Norfolk", state: "Virginia", status: "Not Covered", system: "Socrata", violations: "Yes",
+    url: "https://data.vbgov.com/dataset/restaurant-inspection-results",
+    notes: "Virginia Beach: Socrata open data. Norfolk: Socrata (data.norfolk.gov). VA statewide Tyler Tech." },
+  { city: "Richmond", state: "Virginia", status: "Not Covered", system: "Tyler Tech", violations: "Yes",
+    url: "https://inspections.myhealthdepartment.com/va-richmond",
+    notes: "Tyler Tech / myhealthdepartment.com. VDH CSV/Excel available on request." },
+
+  // Wisconsin
+  { city: "Milwaukee", state: "Wisconsin", status: "Not Covered", system: "Custom", violations: "Yes",
+    url: "https://data.milwaukee.gov/showcase/restaurant-and-food-service-inspections",
+    notes: "City open data portal showcase. A/B/C grading since 2018. Strong candidate." },
+
+  // Colorado
+  { city: "Denver", state: "Colorado", status: "Not Covered", system: "Tyler Tech", violations: "Yes",
+    url: "https://inspections.myhealthdepartment.com/colorado/",
+    notes: "Tyler Tech / myhealthdepartment.com (statewide CO). City also has Accela portal. No open data API." },
+
+  // Georgia
+  { city: "Atlanta (DeKalb/Gwinnett)", state: "Georgia", status: "Not Covered", system: "Tyler Tech", violations: "Yes",
+    url: "https://ga.healthinspections.us/georgia/",
+    notes: "GA state uses Tyler Tech / healthinspections.us. Search by county. No public API." },
+
+  // Alabama
+  { city: "Birmingham / Jefferson County", state: "Alabama", status: "Not Covered", system: "Custom", violations: "Yes",
+    url: "https://www.alabamapublichealth.gov/foodscores/",
+    notes: "ADPH statewide custom portal. 0-100 score. Covers all counties. Below 60 = immediate closure." },
+  { city: "Huntsville / Madison County", state: "Alabama", status: "Not Covered", system: "Custom", violations: "Yes",
+    url: "https://www.alabamapublichealth.gov/foodscores/",
+    notes: "Same ADPH statewide portal. 0-100 scoring system." },
+  { city: "Mobile", state: "Alabama", status: "Not Covered", system: "Custom", violations: "Yes",
+    url: "https://mchd.org/",
+    notes: "Mobile County Health Dept has custom app (My MCHD Health Check). Also on ADPH statewide portal." },
+
+  // Arkansas
+  { city: "Little Rock", state: "Arkansas", status: "Not Covered", system: "Custom", violations: "Yes",
+    url: "https://foodserviceprod.adh.arkansas.gov/Web/inspection/publicinspectionsearch.aspx",
+    notes: "AR Dept of Health custom portal. ~15,000 establishments statewide. Pass/fail, no letter grades." },
+
+  // Delaware
+  { city: "Wilmington / New Castle County", state: "Delaware", status: "Not Covered", system: "Socrata", violations: "Yes",
+    url: "https://data.delaware.gov/Health/Restaurant-Inspection-Violations/384s-wygj",
+    notes: "Delaware Open Data portal (Socrata). 3,500+ permitted food establishments. Strong candidate for integration." },
+
+  // Idaho
+  { city: "Boise", state: "Idaho", status: "Not Covered", system: "Custom", violations: "Yes",
+    url: "https://cdh.idaho.gov/community-health/food-establishments/inspections-and-regulations/",
+    notes: "Central District Health custom searchable database. Inspections since May 2012. Decentralized by health district." },
+
+  // Iowa
+  { city: "Des Moines", state: "Iowa", status: "Not Covered", system: "Custom", violations: "Yes",
+    url: "https://iowa.safefoodinspection.com/Inspection/PublicInspectionSearch.aspx",
+    notes: "USA Food Safety platform (iowa.safefoodinspection.com). Statewide database. No letter grade system." },
+  { city: "Cedar Rapids / Linn County", state: "Iowa", status: "Not Covered", system: "Custom", violations: "Yes",
+    url: "https://iowa.safefoodinspection.com/Inspection/PublicInspectionSearch.aspx",
+    notes: "Same statewide Iowa DIAL system. Searchable by city/name. ~10 years of data." },
+
+  // Kansas
+  { city: "Wichita / Sedgwick County", state: "Kansas", status: "Not Covered", system: "Custom", violations: "Yes",
+    url: "https://foodsafety.kda.ks.gov/FoodSafety/Web/Inspection/PublicInspectionSearch.aspx",
+    notes: "Kansas Dept of Agriculture statewide custom portal. Searchable by name/city/county. No public API." },
+
+  // Maine
+  { city: "Portland", state: "Maine", status: "Not Covered", system: "Custom", violations: "Yes",
+    url: "https://apps.web.maine.gov/online/hip_search/health-inspection-search.html",
+    notes: "Maine CDC HIP portal. Inspections since May 2016. Pass/fail with critical and non-critical violations." },
+
+  // Mississippi
+  { city: "Jackson", state: "Mississippi", status: "Not Covered", system: "Custom", violations: "Yes",
+    url: "https://apps.msdh.ms.gov/food/",
+    notes: "MSDH statewide custom portal. A/B/C letter grades. Searchable database of all food facility inspections." },
+
+  // Montana
+  { city: "Billings", state: "Montana", status: "Not Covered", system: "Custom", violations: "Yes",
+    url: "https://riverstonehealth.org/inspections-permits/restaurants-inspections-licenses/",
+    notes: "RiverStone Health custom portal. Inspection summaries since May 2012. Decentralized by county health dept." },
+
+  // Nebraska
+  { city: "Omaha / Douglas County", state: "Nebraska", status: "Not Covered", system: "Custom", violations: "Yes",
+    url: "https://www.douglascountyfoodinspections.com/",
+    notes: "Douglas County interactive restaurant rating map. Superior/Excellent/Standard/Fair ratings. 2,793 food outlets." },
+
+  // New Hampshire
+  { city: "Manchester", state: "New Hampshire", status: "Not Covered", system: "Custom", violations: "Yes",
+    url: "https://www.dhhs.nh.gov/programs-services/environmental-health-and-you/food-protection/learn-about-food-inspections-view",
+    notes: "NH DHHS state portal with green/yellow/red rating system. Manchester uses 0-100 scoring. ~5,000 establishments statewide." },
+
+  // New Jersey
+  { city: "Newark", state: "New Jersey", status: "Not Covered", system: "Custom", violations: "Yes",
+    url: "https://www.newarknj.gov/205/Health-Inspection-Lookup",
+    notes: "Newark custom health inspection lookup. Satisfactory/Conditionally Satisfactory/Unsatisfactory ratings. NJ has no statewide open data portal for inspections." },
+  { city: "Jersey City", state: "New Jersey", status: "Not Covered", system: "Custom", violations: "Unknown",
+    url: "https://data.jerseycitynj.gov/",
+    notes: "Jersey City open data portal exists but no confirmed inspection dataset. NJ inspections managed per-municipality." },
+  { city: "Camden County", state: "New Jersey", status: "Not Covered", system: "Custom", violations: "Yes",
+    url: "https://www.camdencounty.com/service/health-human-services/restaurant-inspections/",
+    notes: "Camden County custom online restaurant inspection portal. Per-county system typical for NJ." },
+
+  // New Mexico
+  { city: "Albuquerque", state: "New Mexico", status: "Not Covered", system: "Custom", violations: "Yes",
+    url: "https://www.cabq.gov/environmentalhealth/food-safety/restaurant-inspection-results",
+    notes: "ABQ Environmental Health Dept custom portal. Green/yellow/red traffic-light rating. Searchable database." },
+
+  // North Dakota
+  { city: "Fargo", state: "North Dakota", status: "Not Covered", system: "Custom", violations: "Yes",
+    url: "https://fims.doh.nd.gov/Web/Inspection/PublicInspectionSearch.aspx",
+    notes: "ND HHS state food safety portal. Two most recent inspection reports available. Local health units also inspect." },
+
+  // Vermont
+  { city: "Burlington", state: "Vermont", status: "Not Covered", system: "Custom", violations: "Yes",
+    url: "https://vtdoh.safefoodinspection.com/Inspection/PublicInspectionSearch.aspx",
+    notes: "VT DOH USA Food Safety portal. Inspections since May 2016. 0-100 score, 70+ required to pass." },
+
+  // West Virginia
+  { city: "Charleston / Kanawha County", state: "West Virginia", status: "Not Covered", system: "Tyler Tech", violations: "Yes",
+    url: "https://inspections.myhealthdepartment.com/kanawhacharleston",
+    notes: "Tyler Tech / myhealthdepartment.com. 1,200+ permitted food establishments in Kanawha County." },
+
+  // Wyoming
+  { city: "Cheyenne / Laramie County", state: "Wyoming", status: "Not Covered", system: "Tyler Tech", violations: "Yes",
+    url: "https://inspections.myhealthdepartment.com/cheyenne-laramie",
+    notes: "Tyler Tech / myhealthdepartment.com for Cheyenne. WY Dept of Agriculture also has statewide portal (wda.safefoodinspection.com)." },
+
+  // ── HOTEL / LODGING INSPECTIONS ─────────────────────────────────────────
+
+  // Tier 1 — API/Bulk Data (High Priority)
+  { city: "New York State (Lodging)", state: "New York", status: "Not Covered", system: "Socrata", violations: "Yes",
+    url: "https://health.data.ny.gov",
+    notes: "Socrata dataset jcb4-hcyb — statewide hotel/motel inspections with violations" },
+  { city: "New Jersey (Lodging)", state: "New Jersey", status: "Not Covered", system: "ArcGIS", violations: "Yes",
+    url: "https://njdca-data-hub-njdca.hub.arcgis.com",
+    notes: "ArcGIS Housing Inspection Database — statewide hotel inspections" },
+  { city: "Vermont (Lodging)", state: "Vermont", status: "Not Covered", system: "Socrata", violations: "Yes",
+    url: "https://data.vermont.gov",
+    notes: "Socrata — Food & Lodging Program since 2016" },
+  { city: "Delaware (Lodging)", state: "Delaware", status: "Not Covered", system: "Socrata", violations: "Yes",
+    url: "https://data.delaware.gov",
+    notes: "Socrata — food/lodging establishment inspections" },
+
+  // Tier 2 — Statewide Searchable Portals
+  { city: "Georgia (Lodging)", state: "Georgia", status: "Not Covered", system: "Tyler Tech", violations: "Yes",
+    url: "https://ga.healthinspections.us",
+    notes: "Tyler Tech statewide portal — all counties except 3" },
+  { city: "Tennessee (Lodging)", state: "Tennessee", status: "Not Covered", system: "Tyler Tech", violations: "Yes",
+    url: "https://inspections.myhealthdepartment.com/tennessee",
+    notes: "MyHealthDepartment statewide — hotels inspected 2x/year" },
+  { city: "Virginia (Lodging)", state: "Virginia", status: "Not Covered", system: "Tyler Tech", violations: "Yes",
+    url: "https://inspections.myhealthdepartment.com/virginia",
+    notes: "MyHealthDepartment statewide" },
+  { city: "Hawaii (Lodging)", state: "Hawaii", status: "Not Covered", system: "Tyler Tech", violations: "Yes",
+    url: "https://inspections.myhealthdepartment.com/soh",
+    notes: "All islands — ~10,200 establishments" },
+  { city: "Colorado (Lodging)", state: "Colorado", status: "Not Covered", system: "Tyler Tech", violations: "Unknown",
+    url: "https://inspections.myhealthdepartment.com/colorado",
+    notes: "MyHealthDepartment statewide" },
+  { city: "Oregon (Lodging)", state: "Oregon", status: "Not Covered", system: "Custom", violations: "Yes",
+    url: "https://www.oregon.gov/oha",
+    notes: "HealthSpace — 25,000+ licensed facilities across 34 counties" },
+  { city: "North Carolina (Lodging)", state: "North Carolina", status: "Not Covered", system: "Custom", violations: "Yes",
+    url: "https://ehids.eh.ncdhhs.gov/eh-lookup",
+    notes: "Statewide — annual hotel inspections" },
+  { city: "Alabama (Lodging)", state: "Alabama", status: "Not Covered", system: "Custom", violations: "Yes",
+    url: "https://www.alabamapublichealth.gov/foodscores",
+    notes: "Statewide — 67 counties" },
+  { city: "Mississippi (Lodging)", state: "Mississippi", status: "Not Covered", system: "Custom", violations: "Yes",
+    url: "https://msdh.ms.gov/apps/abc",
+    notes: "Statewide A/B/C grades" },
+  { city: "Arkansas (Lodging)", state: "Arkansas", status: "Not Covered", system: "Custom", violations: "Yes",
+    url: "https://foodserviceprod.adh.arkansas.gov",
+    notes: "~15,000 establishments" },
+  { city: "Louisiana (Lodging)", state: "Louisiana", status: "Not Covered", system: "Tyler Tech", violations: "Yes",
+    url: "https://la.healthinspections.us",
+    notes: "Statewide portal with violation details" },
+  { city: "Washington (Lodging)", state: "Washington", status: "Not Covered", system: "Custom", violations: "Yes",
+    url: "https://doh.wa.gov/facilities-search",
+    notes: "HealthSpace — statewide every 3 years" },
+  { city: "South Dakota (Lodging)", state: "South Dakota", status: "Not Covered", system: "Custom", violations: "Yes",
+    url: "https://sddoh.safefoodinspection.com",
+    notes: "5,900+ food/lodging/campground facilities" },
+  { city: "Kansas (Lodging)", state: "Kansas", status: "Not Covered", system: "Custom", violations: "Yes",
+    url: "https://foodsafety.kda.ks.gov",
+    notes: "1,400+ lodging establishments statewide" },
+  { city: "Iowa (Lodging)", state: "Iowa", status: "Not Covered", system: "Custom", violations: "Yes",
+    url: "https://iowa.safefoodinspection.com",
+    notes: "99 counties statewide" },
+  { city: "North Dakota (Lodging)", state: "North Dakota", status: "Not Covered", system: "Custom", violations: "Yes",
+    url: "https://fims.doh.nd.gov",
+    notes: "FIMS portal — 9 health units" },
+  { city: "Illinois (Lodging)", state: "Illinois", status: "Not Covered", system: "Custom", violations: "Yes",
+    url: "https://public.cdpehs.com",
+    notes: "CDP system — 97 counties" },
+  { city: "DC (Lodging)", state: "District of Columbia", status: "Not Covered", system: "Custom", violations: "Yes",
+    url: "https://dc.healthinspections.us",
+    notes: "District-wide since 2007" },
+  { city: "Maine (Lodging)", state: "Maine", status: "Not Covered", system: "Custom", violations: "Yes",
+    url: "https://apps.web.maine.gov/online/hip_search",
+    notes: "Statewide since 2016" },
+  { city: "Rhode Island (Lodging)", state: "Rhode Island", status: "Not Covered", system: "Tyler Tech", violations: "Yes",
+    url: "https://ri.healthinspections.us",
+    notes: "Statewide" },
+
+  // Tier 3 — County/City Level
+  { city: "Las Vegas (Lodging)", state: "Nevada", status: "Not Covered", system: "Custom", violations: "Yes",
+    url: "https://www.southernnevadahealthdistrict.org",
+    notes: "SNHD Public Accommodations — Clark County" },
+  { city: "Montana - Gallatin County (Lodging)", state: "Montana", status: "Not Covered", system: "Custom", violations: "Yes",
+    url: "https://www.healthygallatin.org",
+    notes: "Gallatin County (Bozeman area)" },
+
+  // Florida (Already Covered)
+  { city: "Florida (Lodging)", state: "Florida", status: "Covered", system: "Florida DBPR", violations: "Yes",
+    url: "https://www.myfloridalicense.com",
+    notes: "34 counties, 20K records, 44 violation codes — ALREADY BUILT" },
+];
+
+// Sort by state, then city
+CITIES.sort((a, b) => {
+  const s = a.state.localeCompare(b.state);
+  return s !== 0 ? s : a.city.localeCompare(b.city);
+});
+
+let sortCol = 'state';
+let sortAsc = true;
+
+function badgeHTML(status) {
+  if (status === 'Covered') return '<span class="badge badge-covered">Covered</span>';
+  if (status === 'Disabled') return '<span class="badge badge-disabled">Disabled</span>';
+  return '<span class="badge badge-not-covered">Not Covered</span>';
+}
+
+function systemBadgeHTML(sys) {
+  const cls = {
+    'Socrata': 'socrata', 'ArcGIS': 'arcgis', 'Tyler Tech': 'tyler',
+    'HealthSpace': 'healthspace', 'PDF': 'pdf', 'LIVES': 'lives',
+    'Custom': 'custom', 'CKAN': 'ckan', 'None Found': 'none',
+    'Florida DBPR': 'florida'
+  }[sys] || 'custom';
+  return `<span class="sys-badge ${cls}">${sys}</span>`;
+}
+
+function violHTML(v) {
+  if (v === 'Yes') return '<span class="viol-yes">Yes</span>';
+  if (v === 'No') return '<span class="viol-no">No</span>';
+  return '<span class="viol-unknown">Unknown</span>';
+}
+
+function renderTable(data) {
+  const tbody = document.getElementById('tableBody');
+  let html = '';
+  let currentState = '';
+  data.forEach(r => {
+    if (r.state !== currentState) {
+      currentState = r.state;
+      html += `<tr class="state-row"><td colspan="6" class="state-group-header">${r.state}</td></tr>`;
+    }
+    const urlCell = r.url ? `<a href="${r.url}" target="_blank" rel="noopener">${new URL(r.url).hostname}</a>` : '—';
+    html += `<tr>
+      <td class="city-name">${r.city}</td>
+      <td>${badgeHTML(r.status)}</td>
+      <td>${systemBadgeHTML(r.system)}</td>
+      <td>${violHTML(r.violations)}</td>
+      <td>${urlCell}</td>
+      <td class="notes-col">${r.notes}</td>
+    </tr>`;
+  });
+  tbody.innerHTML = html;
+  document.getElementById('resultCount').textContent = `${data.length} entries`;
+}
+
+function updateStats(data) {
+  document.getElementById('statTotal').textContent = data.length;
+  document.getElementById('statCovered').textContent = data.filter(r => r.status === 'Covered').length;
+  document.getElementById('statNotCovered').textContent = data.filter(r => r.status === 'Not Covered').length;
+  document.getElementById('statStates').textContent = new Set(data.map(r => r.state)).size;
+}
+
+function getFiltered() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const status = document.getElementById('statusFilter').value;
+  const system = document.getElementById('systemFilter').value;
+  return CITIES.filter(r => {
+    if (status && r.status !== status) return false;
+    if (system && r.system !== system) return false;
+    if (q) {
+      const haystack = `${r.city} ${r.state} ${r.system} ${r.notes}`.toLowerCase();
+      if (!haystack.includes(q)) return false;
+    }
+    return true;
+  });
+}
+
+function sortData(data) {
+  return [...data].sort((a, b) => {
+    let va = a[sortCol] || '';
+    let vb = b[sortCol] || '';
+    const cmp = va.localeCompare(vb);
+    return sortAsc ? cmp : -cmp;
+  });
+}
+
+function refresh() {
+  let data = getFiltered();
+  data = sortData(data);
+  renderTable(data);
+  updateStats(data);
+}
+
+document.getElementById('searchInput').addEventListener('input', refresh);
+document.getElementById('statusFilter').addEventListener('change', refresh);
+document.getElementById('systemFilter').addEventListener('change', refresh);
+
+document.querySelectorAll('thead th[data-col]').forEach(th => {
+  th.addEventListener('click', () => {
+    const col = th.dataset.col;
+    if (sortCol === col) {
+      sortAsc = !sortAsc;
+    } else {
+      sortCol = col;
+      sortAsc = true;
+    }
+    document.querySelectorAll('thead th').forEach(t => t.classList.remove('sorted'));
+    th.classList.add('sorted');
+    th.querySelector('.sort-arrow').textContent = sortAsc ? '\u25B2' : '\u25BC';
+    refresh();
+  });
+});
+
+// Initial render
+refresh();
+</script>
+
+<script src="dark-mode.js"></script>
+<script src="toolkit-nav.js"></script>
+</body>
+</html>

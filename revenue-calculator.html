@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SureVera Revenue Calculator</title>
+<link rel="icon" href="favicon.png" type="image/png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #F1F5F9;
+  color: #1E293B;
+  min-height: 100vh;
+}
+.toolbar {
+  background: linear-gradient(135deg, #0D1B2E 0%, #1B3A6B 100%);
+  padding: 1.25rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+}
+.toolbar img { height: 32px; }
+.divider { width: 1px; height: 24px; background: rgba(255,255,255,0.2); }
+.tool-label { font-size: 0.85rem; font-weight: 500; color: rgba(255,255,255,0.6); }
+
+.container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1.5rem 3rem;
+}
+
+/* Input Card */
+.input-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 4px 24px rgba(0,0,0,0.04);
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+.input-card h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1B3A6B;
+  margin-bottom: 1.5rem;
+}
+.input-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.25rem;
+}
+.input-group label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 0.4rem;
+}
+.input-group input {
+  width: 100%;
+  padding: 0.65rem 0.9rem;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1E293B;
+  background: #F8FAFC;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.input-group input:focus {
+  outline: none;
+  border-color: #1B3A6B;
+  box-shadow: 0 0 0 3px rgba(27,58,107,0.1);
+  background: #fff;
+}
+.input-group .unit {
+  font-size: 0.72rem;
+  color: #94A3B8;
+  margin-top: 0.25rem;
+}
+
+/* What-If Buttons */
+.whatif-section {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid #E2E8F0;
+}
+.whatif-section h3 {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 0.75rem;
+}
+.whatif-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.whatif-btn {
+  padding: 0.5rem 1.1rem;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 8px;
+  background: #F8FAFC;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1B3A6B;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.whatif-btn:hover {
+  border-color: #E8612A;
+  color: #E8612A;
+  background: #FFF7ED;
+}
+
+/* Stat Cards */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.stat-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 4px 24px rgba(0,0,0,0.04);
+  text-align: center;
+  transition: transform 0.2s;
+}
+.stat-card:hover { transform: translateY(-2px); }
+.stat-card .stat-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.5rem;
+}
+.stat-card .stat-value {
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: #16A34A;
+  line-height: 1.2;
+}
+.stat-card .stat-value.navy { color: #1B3A6B; }
+.stat-card .stat-value.orange { color: #E8612A; }
+.stat-card.highlight {
+  border: 2px solid #E8612A;
+  background: linear-gradient(135deg, #FFF7ED 0%, #fff 100%);
+}
+
+/* Milestones */
+.milestones-section {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 4px 24px rgba(0,0,0,0.04);
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+.milestones-section h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1B3A6B;
+  margin-bottom: 1.25rem;
+}
+.milestones-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+.milestone {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  background: #F8FAFC;
+  border: 1.5px solid #E2E8F0;
+  transition: all 0.3s;
+}
+.milestone.reached {
+  background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%);
+  border-color: #16A34A;
+}
+.milestone.reached .milestone-icon { background: #16A34A; }
+.milestone-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #CBD5E1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.3s;
+}
+.milestone-icon svg { width: 18px; height: 18px; fill: #fff; }
+.milestone-info { flex: 1; min-width: 0; }
+.milestone-target {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1E293B;
+}
+.milestone-detail {
+  font-size: 0.75rem;
+  color: #64748B;
+  margin-top: 0.15rem;
+}
+
+/* Chart */
+.chart-section {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 4px 24px rgba(0,0,0,0.04);
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+.chart-section h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1B3A6B;
+  margin-bottom: 1.25rem;
+}
+.chart-container {
+  width: 100%;
+  overflow-x: auto;
+}
+canvas#revenueChart {
+  width: 100%;
+  height: 300px;
+}
+
+/* Projection Table */
+.table-section {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 4px 24px rgba(0,0,0,0.04);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  overflow-x: auto;
+}
+.table-section h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1B3A6B;
+  margin-bottom: 1.25rem;
+}
+.projection-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+.projection-table th {
+  background: #F1F5F9;
+  color: #64748B;
+  font-weight: 600;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.75rem 1rem;
+  text-align: right;
+  border-bottom: 2px solid #E2E8F0;
+  position: sticky;
+  top: 0;
+}
+.projection-table th:first-child { text-align: center; }
+.projection-table td {
+  padding: 0.65rem 1rem;
+  text-align: right;
+  border-bottom: 1px solid #F1F5F9;
+  font-variant-numeric: tabular-nums;
+}
+.projection-table td:first-child {
+  text-align: center;
+  font-weight: 700;
+  color: #1B3A6B;
+}
+.projection-table tr:hover { background: #F8FAFC; }
+.projection-table .revenue-cell { color: #16A34A; font-weight: 600; }
+.projection-table .churn-cell { color: #EF4444; }
+.projection-table .growth-cell { color: #16A34A; }
+.projection-table .milestone-row {
+  background: linear-gradient(90deg, #FFF7ED 0%, #fff 40%);
+}
+.projection-table .milestone-badge {
+  display: inline-block;
+  background: #E8612A;
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 6px;
+  margin-left: 0.5rem;
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 2rem;
+  font-size: 0.8rem;
+  color: #94A3B8;
+}
+
+@media (max-width: 640px) {
+  .container { padding: 0 1rem 2rem; }
+  .input-card, .milestones-section, .chart-section, .table-section { padding: 1.25rem; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .stat-card .stat-value { font-size: 1.3rem; }
+  .input-grid { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <img src="surevera-header-white-logo.png" alt="SureVera">
+  <div class="divider"></div>
+  <span class="tool-label">Revenue Calculator</span>
+</div>
+
+<div class="container">
+
+  <!-- Input Card -->
+  <div class="input-card">
+    <h2>Revenue Inputs</h2>
+    <div class="input-grid">
+      <div class="input-group">
+        <label for="subscribers">Current Subscribers</label>
+        <input type="number" id="subscribers" value="0" min="0" step="1">
+      </div>
+      <div class="input-group">
+        <label for="price">Annual Subscription Price</label>
+        <input type="number" id="price" value="20" min="0" step="0.01">
+        <div class="unit">$ per year</div>
+      </div>
+      <div class="input-group">
+        <label for="growth">Monthly Growth Rate</label>
+        <input type="number" id="growth" value="10" min="0" max="100" step="0.1">
+        <div class="unit">% new subscribers/month</div>
+      </div>
+      <div class="input-group">
+        <label for="churn">Monthly Churn Rate</label>
+        <input type="number" id="churn" value="5" min="0" max="100" step="0.1">
+        <div class="unit">% subscribers lost/month</div>
+      </div>
+      <div class="input-group">
+        <label for="commission">App Store Commission</label>
+        <input type="number" id="commission" value="15" min="0" max="50" step="1">
+        <div class="unit">% (15% first-year small dev)</div>
+      </div>
+    </div>
+
+    <div class="whatif-section">
+      <h3>Quick Scenarios</h3>
+      <div class="whatif-buttons">
+        <button class="whatif-btn" onclick="setSubscribers(100)">100 subscribers</button>
+        <button class="whatif-btn" onclick="setSubscribers(500)">500 subscribers</button>
+        <button class="whatif-btn" onclick="setSubscribers(1000)">1,000 subscribers</button>
+        <button class="whatif-btn" onclick="setSubscribers(5000)">5,000 subscribers</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stat Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">Monthly Revenue</div>
+      <div class="stat-value" id="statMonthly">$0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Annual Revenue (Projected)</div>
+      <div class="stat-value" id="statAnnual">$0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Revenue After Commission</div>
+      <div class="stat-value" id="statAfterComm">$0</div>
+    </div>
+    <div class="stat-card highlight">
+      <div class="stat-label">Net Annual Revenue</div>
+      <div class="stat-value" id="statNet">$0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Subscribers @ 12 Months</div>
+      <div class="stat-value navy" id="stat12mo">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Subscribers @ 24 Months</div>
+      <div class="stat-value navy" id="stat24mo">0</div>
+    </div>
+  </div>
+
+  <!-- Milestones -->
+  <div class="milestones-section">
+    <h2>Revenue Milestones</h2>
+    <div class="milestones-grid">
+      <div class="milestone" id="milestone1k">
+        <div class="milestone-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+        </div>
+        <div class="milestone-info">
+          <div class="milestone-target">$1,000/mo</div>
+          <div class="milestone-detail" id="milestone1kDetail">Not yet reached</div>
+        </div>
+      </div>
+      <div class="milestone" id="milestone5k">
+        <div class="milestone-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+        </div>
+        <div class="milestone-info">
+          <div class="milestone-target">$5,000/mo</div>
+          <div class="milestone-detail" id="milestone5kDetail">Not yet reached</div>
+        </div>
+      </div>
+      <div class="milestone" id="milestone10k">
+        <div class="milestone-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+        </div>
+        <div class="milestone-info">
+          <div class="milestone-target">$10,000/mo</div>
+          <div class="milestone-detail" id="milestone10kDetail">Not yet reached</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart -->
+  <div class="chart-section">
+    <h2>12-Month Revenue Projection</h2>
+    <div class="chart-container">
+      <canvas id="revenueChart"></canvas>
+    </div>
+  </div>
+
+  <!-- Projection Table -->
+  <div class="table-section">
+    <h2>Month-by-Month Projection</h2>
+    <table class="projection-table">
+      <thead>
+        <tr>
+          <th>Month</th>
+          <th>Starting Subs</th>
+          <th>New Subs</th>
+          <th>Churned</th>
+          <th>Ending Subs</th>
+          <th>Monthly Revenue</th>
+          <th>Cumulative Revenue</th>
+        </tr>
+      </thead>
+      <tbody id="projectionBody"></tbody>
+    </table>
+  </div>
+
+</div>
+
+<div class="footer">SureVera Revenue Calculator — runs entirely in your browser</div>
+
+<script>
+const $ = id => document.getElementById(id);
+
+function getInputs() {
+  return {
+    subscribers: Math.max(0, parseFloat($('subscribers').value) || 0),
+    price: Math.max(0, parseFloat($('price').value) || 0),
+    growth: Math.max(0, Math.min(100, parseFloat($('growth').value) || 0)) / 100,
+    churn: Math.max(0, Math.min(100, parseFloat($('churn').value) || 0)) / 100,
+    commission: Math.max(0, Math.min(100, parseFloat($('commission').value) || 0)) / 100,
+  };
+}
+
+function fmt(n) {
+  if (n >= 1000000) return '$' + (n / 1000000).toFixed(2) + 'M';
+  if (n >= 10000) return '$' + (n / 1000).toFixed(1) + 'K';
+  return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+}
+
+function fmtFull(n) {
+  return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function buildProjection(inputs, months) {
+  const rows = [];
+  let subs = inputs.subscribers;
+  let cumulative = 0;
+  const monthlyPrice = inputs.price / 12;
+
+  for (let m = 1; m <= months; m++) {
+    const starting = subs;
+    const newSubs = Math.floor(subs * inputs.growth);
+    const churned = Math.floor(subs * inputs.churn);
+    const ending = starting + newSubs - churned;
+    const revenue = ending * monthlyPrice;
+    cumulative += revenue;
+    rows.push({ month: m, starting: Math.round(starting), newSubs, churned, ending: Math.max(0, ending), revenue, cumulative });
+    subs = Math.max(0, ending);
+  }
+  return rows;
+}
+
+function updateMilestone(id, detailId, target, rows, commission) {
+  const el = $(id);
+  const detailEl = $(detailId);
+  const netMultiplier = 1 - commission;
+  const hit = rows.find(r => (r.revenue * netMultiplier) >= target);
+  if (hit) {
+    el.classList.add('reached');
+    detailEl.textContent = 'Month ' + hit.month + ' — ' + fmtFull(hit.revenue * netMultiplier) + ' net';
+  } else {
+    el.classList.remove('reached');
+    detailEl.textContent = 'Not reached within 24 months';
+  }
+}
+
+function drawChart(rows) {
+  const canvas = $('revenueChart');
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.parentElement.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = 300 * dpr;
+  canvas.style.width = rect.width + 'px';
+  canvas.style.height = '300px';
+  ctx.scale(dpr, dpr);
+
+  const w = rect.width;
+  const h = 300;
+  const padLeft = 70, padRight = 20, padTop = 20, padBottom = 40;
+  const chartW = w - padLeft - padRight;
+  const chartH = h - padTop - padBottom;
+
+  ctx.clearRect(0, 0, w, h);
+
+  if (rows.length === 0) return;
+
+  const maxRev = Math.max(...rows.map(r => r.revenue), 1);
+  const barW = Math.max(1, (chartW / rows.length) - 6);
+
+  // Grid lines
+  ctx.strokeStyle = '#E2E8F0';
+  ctx.lineWidth = 1;
+  const gridLines = 5;
+  for (let i = 0; i <= gridLines; i++) {
+    const y = padTop + (chartH / gridLines) * i;
+    ctx.beginPath();
+    ctx.moveTo(padLeft, y);
+    ctx.lineTo(w - padRight, y);
+    ctx.stroke();
+    const val = maxRev - (maxRev / gridLines) * i;
+    ctx.fillStyle = '#94A3B8';
+    ctx.font = '11px Inter, sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(fmt(val), padLeft - 8, y + 4);
+  }
+
+  // Bars
+  rows.forEach((r, i) => {
+    const barH = (r.revenue / maxRev) * chartH;
+    const x = padLeft + (chartW / rows.length) * i + 3;
+    const y = padTop + chartH - barH;
+
+    // Gradient bar
+    const grad = ctx.createLinearGradient(x, y, x, padTop + chartH);
+    grad.addColorStop(0, '#E8612A');
+    grad.addColorStop(1, '#1B3A6B');
+    ctx.fillStyle = grad;
+
+    ctx.beginPath();
+    const radius = Math.min(4, barW / 2);
+    ctx.moveTo(x + radius, y);
+    ctx.lineTo(x + barW - radius, y);
+    ctx.quadraticCurveTo(x + barW, y, x + barW, y + radius);
+    ctx.lineTo(x + barW, padTop + chartH);
+    ctx.lineTo(x, padTop + chartH);
+    ctx.lineTo(x, y + radius);
+    ctx.quadraticCurveTo(x, y, x + radius, y);
+    ctx.fill();
+
+    // Month label
+    ctx.fillStyle = '#64748B';
+    ctx.font = '11px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('M' + r.month, x + barW / 2, h - padBottom + 16);
+  });
+}
+
+function calculate() {
+  const inputs = getInputs();
+  const monthlyPrice = inputs.price / 12;
+
+  // Current monthly revenue
+  const monthlyRev = inputs.subscribers * monthlyPrice;
+  $('statMonthly').textContent = fmtFull(monthlyRev);
+
+  // Build 24-month projection
+  const rows24 = buildProjection(inputs, 24);
+  const rows12 = rows24.slice(0, 12);
+
+  // Annual projected revenue (sum of 12 months)
+  const annualRev = rows12.reduce((s, r) => s + r.revenue, 0);
+  $('statAnnual').textContent = fmtFull(annualRev);
+
+  // After commission
+  const afterComm = annualRev * (1 - inputs.commission);
+  $('statAfterComm').textContent = fmtFull(afterComm);
+
+  // Net (same as after commission for now)
+  $('statNet').textContent = fmtFull(afterComm);
+
+  // Subscriber counts
+  const subs12 = rows24[11] ? rows24[11].ending : 0;
+  const subs24 = rows24[23] ? rows24[23].ending : 0;
+  $('stat12mo').textContent = subs12.toLocaleString();
+  $('stat24mo').textContent = subs24.toLocaleString();
+
+  // Milestones
+  updateMilestone('milestone1k', 'milestone1kDetail', 1000, rows24, inputs.commission);
+  updateMilestone('milestone5k', 'milestone5kDetail', 5000, rows24, inputs.commission);
+  updateMilestone('milestone10k', 'milestone10kDetail', 10000, rows24, inputs.commission);
+
+  // Table
+  const tbody = $('projectionBody');
+  const milestoneTargets = [1000, 5000, 10000];
+  const hitMilestones = new Set();
+
+  tbody.innerHTML = rows12.map(r => {
+    const netRev = r.revenue * (1 - inputs.commission);
+    let badge = '';
+    let isMilestone = false;
+    for (const t of milestoneTargets) {
+      if (netRev >= t && !hitMilestones.has(t)) {
+        hitMilestones.add(t);
+        badge += '<span class="milestone-badge">' + fmt(t) + '/mo</span>';
+        isMilestone = true;
+      }
+    }
+    return '<tr class="' + (isMilestone ? 'milestone-row' : '') + '">'
+      + '<td>' + r.month + badge + '</td>'
+      + '<td>' + r.starting.toLocaleString() + '</td>'
+      + '<td class="growth-cell">+' + r.newSubs.toLocaleString() + '</td>'
+      + '<td class="churn-cell">-' + r.churned.toLocaleString() + '</td>'
+      + '<td>' + r.ending.toLocaleString() + '</td>'
+      + '<td class="revenue-cell">' + fmtFull(r.revenue) + '</td>'
+      + '<td class="revenue-cell">' + fmtFull(r.cumulative) + '</td>'
+      + '</tr>';
+  }).join('');
+
+  // Chart
+  drawChart(rows12);
+}
+
+function setSubscribers(n) {
+  $('subscribers').value = n;
+  calculate();
+}
+
+// Attach listeners
+['subscribers', 'price', 'growth', 'churn', 'commission'].forEach(id => {
+  $(id).addEventListener('input', calculate);
+});
+
+// Redraw chart on resize
+window.addEventListener('resize', calculate);
+
+// Initial calculation
+calculate();
+</script>
+<script src="dark-mode.js"></script>
+<script src="toolkit-nav.js"></script>
+</body>
+</html>

@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SureVera — FAQ Builder</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #F0F3F8;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #1E293B;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .toolbar {
+      width: 100%;
+      background: linear-gradient(135deg, #0D1B2E 0%, #1B3A6B 100%);
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+      margin-bottom: 2rem;
+    }
+    .toolbar img { height: 32px; }
+    .toolbar .divider { width: 1px; height: 24px; background: rgba(255,255,255,0.2); }
+    .toolbar .tool-label { font-size: 0.85rem; font-weight: 500; color: rgba(255,255,255,0.6); }
+
+    .page {
+      padding: 0 2rem 2rem;
+      width: 100%;
+      max-width: 1400px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* Controls Row */
+    .controls-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+    }
+    .search-input {
+      flex: 1;
+      min-width: 200px;
+      padding: 0.6rem 1rem;
+      border: 2px solid #E2E8F0;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-family: inherit;
+      background: #FFF;
+      transition: border-color 0.2s;
+    }
+    .search-input:focus { outline: none; border-color: #1B3A6B; }
+    .filter-select {
+      padding: 0.6rem 1rem;
+      border: 2px solid #E2E8F0;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-family: inherit;
+      background: #FFF;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .filter-select:focus { outline: none; border-color: #1B3A6B; }
+
+    /* Buttons */
+    .btn {
+      padding: 0.6rem 1.25rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .btn-primary {
+      background: #E8612A;
+      color: #FFF;
+    }
+    .btn-primary:hover { background: #D4541F; }
+    .btn-secondary {
+      background: #1B3A6B;
+      color: #FFF;
+    }
+    .btn-secondary:hover { background: #152E55; }
+    .btn-outline {
+      background: #FFF;
+      color: #1E293B;
+      border: 2px solid #E2E8F0;
+    }
+    .btn-outline:hover { border-color: #1B3A6B; background: #F8FAFC; }
+    .btn-danger {
+      background: #FFF;
+      color: #DC2626;
+      border: 2px solid #FEE2E2;
+    }
+    .btn-danger:hover { background: #FEF2F2; border-color: #DC2626; }
+    .btn-sm {
+      padding: 0.35rem 0.75rem;
+      font-size: 0.75rem;
+    }
+
+    /* Stats */
+    .stats-row {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .stat-card {
+      background: #FFF;
+      border-radius: 12px;
+      padding: 1rem 1.5rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      text-align: center;
+      flex: 1;
+      min-width: 120px;
+    }
+    .stat-number {
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: #1B3A6B;
+    }
+    .stat-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #64748B;
+      margin-top: 0.15rem;
+    }
+
+    /* Layout: Editor + Preview */
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    @media (max-width: 960px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+
+    .panel {
+      background: #FFF;
+      border-radius: 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      overflow: hidden;
+    }
+    .panel-header {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid #F1F5F9;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+    .panel-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #1E293B;
+    }
+    .panel-body {
+      padding: 1.25rem;
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+
+    /* FAQ Entry Card */
+    .faq-card {
+      background: #F8FAFC;
+      border: 2px solid #E2E8F0;
+      border-radius: 10px;
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      position: relative;
+    }
+    .faq-card:hover { border-color: #CBD5E1; }
+    .faq-card.dragging {
+      opacity: 0.5;
+      border-color: #E8612A;
+    }
+    .faq-card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+    .faq-order {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .faq-order button {
+      background: none;
+      border: 1px solid #E2E8F0;
+      border-radius: 4px;
+      width: 22px;
+      height: 18px;
+      cursor: pointer;
+      font-size: 0.6rem;
+      color: #64748B;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+    .faq-order button:hover { background: #E2E8F0; color: #1E293B; }
+    .faq-number {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #94A3B8;
+      width: 20px;
+      text-align: center;
+    }
+    .faq-fields {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .faq-fields input,
+    .faq-fields textarea,
+    .faq-fields select {
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-family: inherit;
+      background: #FFF;
+      transition: border-color 0.2s;
+    }
+    .faq-fields input:focus,
+    .faq-fields textarea:focus,
+    .faq-fields select:focus {
+      outline: none;
+      border-color: #1B3A6B;
+    }
+    .faq-fields textarea {
+      min-height: 60px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+    .faq-fields label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #64748B;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .faq-card-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 0.5rem;
+    }
+    .category-badge {
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      background: #EEF2FF;
+      color: #4338CA;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    /* Preview Tabs */
+    .preview-tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 2px solid #F1F5F9;
+    }
+    .preview-tab {
+      padding: 0.6rem 1rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #94A3B8;
+      background: none;
+      border: none;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    .preview-tab:hover { color: #1E293B; }
+    .preview-tab.active {
+      color: #E8612A;
+      border-bottom-color: #E8612A;
+    }
+    .preview-content {
+      padding: 1.25rem;
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+
+    /* App-style accordion preview */
+    .app-faq-item {
+      border-bottom: 1px solid #F1F5F9;
+    }
+    .app-faq-item:last-child { border-bottom: none; }
+    .app-faq-q {
+      padding: 0.9rem 0;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #1E293B;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+    .app-faq-q .chevron {
+      font-size: 0.75rem;
+      color: #94A3B8;
+      transition: transform 0.2s;
+      flex-shrink: 0;
+    }
+    .app-faq-q.open .chevron { transform: rotate(180deg); }
+    .app-faq-a {
+      font-size: 0.8rem;
+      color: #64748B;
+      line-height: 1.6;
+      padding: 0 0 0.9rem 0;
+      display: none;
+    }
+    .app-faq-a.open { display: block; }
+    .app-category-header {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #E8612A;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 1rem 0 0.25rem;
+    }
+    .app-category-header:first-child { padding-top: 0; }
+
+    /* Website preview */
+    .web-faq-section {
+      margin-bottom: 1.5rem;
+    }
+    .web-faq-section h3 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #1B3A6B;
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 2px solid #E8612A;
+    }
+    .web-faq-item {
+      margin-bottom: 1rem;
+    }
+    .web-faq-item h4 {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #1E293B;
+      margin-bottom: 0.3rem;
+    }
+    .web-faq-item p {
+      font-size: 0.78rem;
+      color: #64748B;
+      line-height: 1.6;
+    }
+
+    /* Plain text preview */
+    .plain-text-preview {
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+      font-size: 0.75rem;
+      white-space: pre-wrap;
+      color: #1E293B;
+      line-height: 1.6;
+      background: #F8FAFC;
+      padding: 1rem;
+      border-radius: 8px;
+    }
+
+    /* Copy feedback */
+    .copy-toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #0D1B2E;
+      color: #FFF;
+      padding: 0.6rem 1.25rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      opacity: 0;
+      transition: all 0.3s;
+      z-index: 999;
+    }
+    .copy-toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: #94A3B8;
+    }
+    .empty-state .icon { font-size: 2rem; margin-bottom: 0.75rem; }
+    .empty-state p { font-size: 0.85rem; }
+
+    .footer {
+      margin-top: 3rem;
+      padding: 1.5rem;
+      text-align: center;
+      font-size: 0.75rem;
+      color: #94A3B8;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="toolbar">
+    <img src="surevera-header-white-logo.png" alt="SureVera">
+    <div class="divider"></div>
+    <span class="tool-label">FAQ Builder</span>
+  </div>
+
+  <div class="page">
+    <!-- Stats -->
+    <div class="stats-row" id="statsRow">
+      <div class="stat-card">
+        <div class="stat-number" id="statTotal">0</div>
+        <div class="stat-label">Total FAQs</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="statCategories">0</div>
+        <div class="stat-label">Categories Used</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="statShowing">0</div>
+        <div class="stat-label">Showing</div>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls-row">
+      <input type="text" class="search-input" id="searchInput" placeholder="Search questions and answers...">
+      <select class="filter-select" id="categoryFilter">
+        <option value="">All Categories</option>
+        <option value="General">General</option>
+        <option value="Health Grades">Health Grades</option>
+        <option value="Features">Features</option>
+        <option value="Privacy & Data">Privacy & Data</option>
+        <option value="Subscription">Subscription</option>
+        <option value="Technical">Technical</option>
+        <option value="Other">Other</option>
+      </select>
+      <button class="btn btn-primary" onclick="addFaq()">+ Add FAQ</button>
+      <button class="btn btn-secondary" onclick="exportJson()">Export JSON</button>
+    </div>
+
+    <!-- Layout -->
+    <div class="layout">
+      <!-- Editor Panel -->
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">FAQ Entries</span>
+          <button class="btn btn-outline btn-sm" onclick="resetToDefaults()">Reset to Defaults</button>
+        </div>
+        <div class="panel-body" id="editorBody">
+          <div class="empty-state" id="emptyState">
+            <div class="icon">?</div>
+            <p>No FAQs yet. Click "+ Add FAQ" to get started.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Preview Panel -->
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Live Preview</span>
+        </div>
+        <div class="preview-tabs">
+          <button class="preview-tab active" data-tab="app" onclick="switchTab('app', this)">App</button>
+          <button class="preview-tab" data-tab="website" onclick="switchTab('website', this)">Website</button>
+          <button class="preview-tab" data-tab="plain" onclick="switchTab('plain', this)">Plain Text</button>
+        </div>
+        <div style="padding: 0.75rem 1.25rem 0; display: flex; justify-content: flex-end;">
+          <button class="btn btn-outline btn-sm" onclick="copyPreview()">Copy</button>
+        </div>
+        <div class="preview-content" id="previewContent"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">SureVera FAQ Builder — runs entirely in your browser</div>
+  <div class="copy-toast" id="copyToast">Copied to clipboard</div>
+
+<script>
+const STORAGE_KEY = 'surevera_faq_builder';
+const CATEGORIES = ['General', 'Health Grades', 'Features', 'Privacy & Data', 'Subscription', 'Technical', 'Other'];
+
+const DEFAULT_FAQS = [
+  {
+    id: genId(),
+    question: 'How are health grades calculated?',
+    answer: 'Grades come from official city and county health department inspection reports. Most jurisdictions score restaurants 0\u2013100 and assign a letter grade: A (90+), B (80\u201389), C (70\u201379), or F (below 70). In some states, SureVera estimates a comparable score from inspection results.',
+    category: 'Health Grades'
+  },
+  {
+    id: genId(),
+    question: 'What does \u2018Estimated Score\u2019 mean?',
+    answer: 'Some states don\u2019t publish a numeric score. SureVera calculates an estimated score based on official inspection findings so you can compare restaurants at a glance. Estimated scores are clearly labeled.',
+    category: 'Health Grades'
+  },
+  {
+    id: genId(),
+    question: 'Which cities are supported?',
+    answer: 'SureVera covers 90+ cities and counties across the US, including New York City, Los Angeles, Chicago, Las Vegas, Seattle, Miami, Tampa, Orlando, Austin, and more.',
+    category: 'General'
+  },
+  {
+    id: genId(),
+    question: 'How do I save a restaurant?',
+    answer: 'Open a restaurant\u2019s detail page and tap Save. Saved restaurants appear in the Saved tab and are stored locally on your device.',
+    category: 'Features'
+  },
+  {
+    id: genId(),
+    question: 'What does Follow do?',
+    answer: 'Follow a restaurant to get push notifications when its health grade changes. No account required.',
+    category: 'Features'
+  },
+  {
+    id: genId(),
+    question: 'How current is the inspection data?',
+    answer: 'Data is refreshed from official health department sources regularly. The date of the most recent inspection is shown on each restaurant\u2019s detail page.',
+    category: 'General'
+  },
+  {
+    id: genId(),
+    question: 'Does SureVera collect my personal information?',
+    answer: 'No. SureVera does not collect your name, email, phone number, or any personally identifiable information. No account, no tracking, no ads, no data sold.',
+    category: 'Privacy & Data'
+  },
+  {
+    id: genId(),
+    question: 'How do I delete my data?',
+    answer: 'Tap \u2018Delete My Data\u2019 in the Help screen to permanently remove all server-side data. Your saved favorites are not affected.',
+    category: 'Privacy & Data'
+  }
+];
+
+let faqs = [];
+let currentTab = 'app';
+let dragSrcIndex = null;
+
+function genId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+}
+
+function load() {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
+    try { faqs = JSON.parse(saved); } catch { faqs = []; }
+  }
+  if (!faqs.length) {
+    faqs = DEFAULT_FAQS.map((f, i) => ({ ...f, id: genId() }));
+    save();
+  }
+}
+
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(faqs));
+}
+
+function getFiltered() {
+  const search = document.getElementById('searchInput').value.toLowerCase().trim();
+  const cat = document.getElementById('categoryFilter').value;
+  return faqs.filter(f => {
+    if (cat && f.category !== cat) return false;
+    if (search) {
+      const hay = (f.question + ' ' + f.answer).toLowerCase();
+      return hay.includes(search);
+    }
+    return true;
+  });
+}
+
+function updateStats() {
+  document.getElementById('statTotal').textContent = faqs.length;
+  const cats = new Set(faqs.map(f => f.category));
+  document.getElementById('statCategories').textContent = cats.size;
+  document.getElementById('statShowing').textContent = getFiltered().length;
+}
+
+function renderEditor() {
+  const filtered = getFiltered();
+  const body = document.getElementById('editorBody');
+  const empty = document.getElementById('emptyState');
+
+  if (!faqs.length) {
+    body.innerHTML = '';
+    body.appendChild(createEmptyState());
+    return;
+  }
+
+  let html = '';
+  filtered.forEach((faq, i) => {
+    const globalIdx = faqs.indexOf(faq);
+    html += `
+      <div class="faq-card" draggable="true" data-index="${globalIdx}"
+           ondragstart="onDragStart(event, ${globalIdx})"
+           ondragover="onDragOver(event)"
+           ondrop="onDrop(event, ${globalIdx})"
+           ondragend="onDragEnd(event)">
+        <div class="faq-card-header">
+          <div class="faq-order">
+            <button onclick="moveFaq(${globalIdx}, -1)" title="Move up">\u25B2</button>
+            <button onclick="moveFaq(${globalIdx}, 1)" title="Move down">\u25BC</button>
+          </div>
+          <span class="faq-number">${globalIdx + 1}</span>
+          <span class="category-badge">${esc(faq.category)}</span>
+        </div>
+        <div class="faq-fields">
+          <label>Question</label>
+          <input type="text" value="${escAttr(faq.question)}"
+                 oninput="updateFaq(${globalIdx}, 'question', this.value)">
+          <label>Answer</label>
+          <textarea oninput="updateFaq(${globalIdx}, 'answer', this.value)">${esc(faq.answer)}</textarea>
+          <label>Category</label>
+          <select onchange="updateFaq(${globalIdx}, 'category', this.value)">
+            ${CATEGORIES.map(c => `<option value="${c}" ${c === faq.category ? 'selected' : ''}>${c}</option>`).join('')}
+          </select>
+        </div>
+        <div class="faq-card-actions">
+          <button class="btn btn-danger btn-sm" onclick="deleteFaq(${globalIdx})">Delete</button>
+        </div>
+      </div>`;
+  });
+
+  if (!filtered.length && faqs.length) {
+    html = '<div class="empty-state"><p>No FAQs match your search or filter.</p></div>';
+  }
+
+  body.innerHTML = html;
+  updateStats();
+}
+
+function createEmptyState() {
+  const div = document.createElement('div');
+  div.className = 'empty-state';
+  div.innerHTML = '<div class="icon">?</div><p>No FAQs yet. Click "+ Add FAQ" to get started.</p>';
+  return div;
+}
+
+function esc(str) {
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+function escAttr(str) {
+  return str.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function addFaq() {
+  faqs.push({
+    id: genId(),
+    question: '',
+    answer: '',
+    category: 'General'
+  });
+  save();
+  renderEditor();
+  renderPreview();
+  // Scroll to bottom of editor
+  const body = document.getElementById('editorBody');
+  body.scrollTop = body.scrollHeight;
+}
+
+function deleteFaq(index) {
+  faqs.splice(index, 1);
+  save();
+  renderEditor();
+  renderPreview();
+}
+
+function updateFaq(index, field, value) {
+  faqs[index][field] = value;
+  save();
+  updateStats();
+  renderPreview();
+}
+
+function moveFaq(index, direction) {
+  const newIndex = index + direction;
+  if (newIndex < 0 || newIndex >= faqs.length) return;
+  const item = faqs.splice(index, 1)[0];
+  faqs.splice(newIndex, 0, item);
+  save();
+  renderEditor();
+  renderPreview();
+}
+
+// Drag and drop
+function onDragStart(e, index) {
+  dragSrcIndex = index;
+  e.target.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+}
+
+function onDragOver(e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+}
+
+function onDrop(e, targetIndex) {
+  e.preventDefault();
+  if (dragSrcIndex === null || dragSrcIndex === targetIndex) return;
+  const item = faqs.splice(dragSrcIndex, 1)[0];
+  faqs.splice(targetIndex, 0, item);
+  dragSrcIndex = null;
+  save();
+  renderEditor();
+  renderPreview();
+}
+
+function onDragEnd(e) {
+  e.target.classList.remove('dragging');
+  dragSrcIndex = null;
+}
+
+// Preview
+function switchTab(tab, btn) {
+  currentTab = tab;
+  document.querySelectorAll('.preview-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  renderPreview();
+}
+
+function renderPreview() {
+  const container = document.getElementById('previewContent');
+  const filtered = getFiltered();
+
+  if (currentTab === 'app') {
+    container.innerHTML = renderAppPreview(filtered);
+  } else if (currentTab === 'website') {
+    container.innerHTML = renderWebPreview(filtered);
+  } else {
+    container.innerHTML = `<div class="plain-text-preview">${esc(renderPlainText(filtered))}</div>`;
+  }
+  updateStats();
+}
+
+function renderAppPreview(items) {
+  if (!items.length) return '<div class="empty-state"><p>No FAQs to preview.</p></div>';
+
+  // Group by category
+  const groups = {};
+  items.forEach(f => {
+    if (!groups[f.category]) groups[f.category] = [];
+    groups[f.category].push(f);
+  });
+
+  let html = '';
+  for (const cat of CATEGORIES) {
+    if (!groups[cat]) continue;
+    html += `<div class="app-category-header">${esc(cat)}</div>`;
+    groups[cat].forEach(f => {
+      html += `
+        <div class="app-faq-item">
+          <div class="app-faq-q" onclick="toggleAccordion(this)">
+            <span>${esc(f.question || '(Untitled)')}</span>
+            <span class="chevron">\u25BC</span>
+          </div>
+          <div class="app-faq-a">${esc(f.answer || '(No answer)')}</div>
+        </div>`;
+    });
+  }
+  return html;
+}
+
+function renderWebPreview(items) {
+  if (!items.length) return '<div class="empty-state"><p>No FAQs to preview.</p></div>';
+
+  const groups = {};
+  items.forEach(f => {
+    if (!groups[f.category]) groups[f.category] = [];
+    groups[f.category].push(f);
+  });
+
+  let html = '';
+  for (const cat of CATEGORIES) {
+    if (!groups[cat]) continue;
+    html += `<div class="web-faq-section"><h3>${esc(cat)}</h3>`;
+    groups[cat].forEach(f => {
+      html += `
+        <div class="web-faq-item">
+          <h4>${esc(f.question || '(Untitled)')}</h4>
+          <p>${esc(f.answer || '(No answer)')}</p>
+        </div>`;
+    });
+    html += '</div>';
+  }
+  return html;
+}
+
+function renderPlainText(items) {
+  if (!items.length) return 'No FAQs to display.';
+
+  const groups = {};
+  items.forEach(f => {
+    if (!groups[f.category]) groups[f.category] = [];
+    groups[f.category].push(f);
+  });
+
+  let text = 'FREQUENTLY ASKED QUESTIONS\n';
+  text += '='.repeat(40) + '\n\n';
+
+  for (const cat of CATEGORIES) {
+    if (!groups[cat]) continue;
+    text += cat.toUpperCase() + '\n';
+    text += '-'.repeat(cat.length) + '\n\n';
+    groups[cat].forEach(f => {
+      text += 'Q: ' + (f.question || '(Untitled)') + '\n';
+      text += 'A: ' + (f.answer || '(No answer)') + '\n\n';
+    });
+  }
+  return text.trim();
+}
+
+function toggleAccordion(el) {
+  const answer = el.nextElementSibling;
+  const isOpen = el.classList.contains('open');
+  el.classList.toggle('open');
+  answer.classList.toggle('open');
+}
+
+// Copy
+function copyPreview() {
+  const filtered = getFiltered();
+  let text = '';
+
+  if (currentTab === 'app' || currentTab === 'website') {
+    // Copy as formatted HTML source
+    text = generateHtmlExport(filtered);
+  } else {
+    text = renderPlainText(filtered);
+  }
+
+  navigator.clipboard.writeText(text).then(() => showToast('Copied to clipboard'));
+}
+
+function generateHtmlExport(items) {
+  const groups = {};
+  items.forEach(f => {
+    if (!groups[f.category]) groups[f.category] = [];
+    groups[f.category].push(f);
+  });
+
+  let html = '';
+  for (const cat of CATEGORIES) {
+    if (!groups[cat]) continue;
+    html += `<section>\n  <h3>${esc(cat)}</h3>\n`;
+    groups[cat].forEach(f => {
+      html += `  <details>\n    <summary>${esc(f.question)}</summary>\n    <p>${esc(f.answer)}</p>\n  </details>\n`;
+    });
+    html += '</section>\n\n';
+  }
+  return html.trim();
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('copyToast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2000);
+}
+
+// Export JSON
+function exportJson() {
+  const data = JSON.stringify(faqs, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'surevera-faqs.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('JSON exported');
+}
+
+// Reset
+function resetToDefaults() {
+  if (!confirm('Reset all FAQs to the default set? This will overwrite your current entries.')) return;
+  faqs = DEFAULT_FAQS.map(f => ({ ...f, id: genId() }));
+  save();
+  renderEditor();
+  renderPreview();
+}
+
+// Init
+document.getElementById('searchInput').addEventListener('input', () => { renderEditor(); renderPreview(); });
+document.getElementById('categoryFilter').addEventListener('change', () => { renderEditor(); renderPreview(); });
+
+load();
+renderEditor();
+renderPreview();
+</script>
+<script src="dark-mode.js"></script>
+<script src="toolkit-nav.js"></script>
+</body>
+</html>

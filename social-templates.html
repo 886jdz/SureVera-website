@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SureVera — Social Templates</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #F0F3F8;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #1E293B;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .toolbar {
+      width: 100%;
+      background: linear-gradient(135deg, #0D1B2E 0%, #1B3A6B 100%);
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+      margin-bottom: 2rem;
+    }
+    .toolbar img { height: 32px; }
+    .toolbar .divider {
+      width: 1px;
+      height: 24px;
+      background: rgba(255,255,255,0.2);
+    }
+    .toolbar .tool-label {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: rgba(255,255,255,0.6);
+    }
+
+    .page {
+      padding: 0 2rem 2rem;
+      width: 100%;
+      max-width: 1200px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .subtitle { color: #64748B; font-size: 0.85rem; margin-bottom: 1.5rem; }
+
+    /* Size preset cards */
+    .size-presets {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+    .size-card {
+      padding: 0.55rem 1rem;
+      background: #FFF;
+      border: 2px solid #E2E8F0;
+      border-radius: 10px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #475569;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+      line-height: 1.4;
+      font-family: inherit;
+    }
+    .size-card:hover {
+      border-color: #1B3A6B;
+      background: #F0F3F8;
+    }
+    .size-card.active {
+      border-color: #1B3A6B;
+      background: #1B3A6B;
+      color: #FFF;
+    }
+    .size-card .dims {
+      display: block;
+      font-size: 0.65rem;
+      font-weight: 400;
+      opacity: 0.7;
+      margin-top: 2px;
+    }
+
+    /* Controls card */
+    .controls {
+      width: 100%;
+      background: #FFF;
+      padding: 1.25rem 1.5rem;
+      border-radius: 14px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      border: 1px solid #E2E8F0;
+      margin-bottom: 1.5rem;
+    }
+    .controls-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    @media (max-width: 700px) {
+      .controls-grid { grid-template-columns: 1fr; }
+    }
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .control-group label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .control-group input[type="text"],
+    .control-group select {
+      padding: 0.5rem 0.75rem;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-family: inherit;
+      background: #F8FAFC;
+      color: #1E293B;
+    }
+    .control-group input[type="text"]:focus,
+    .control-group select:focus {
+      outline: 2px solid #1B3A6B;
+      outline-offset: 1px;
+    }
+    .control-group input[type="color"] {
+      width: 42px;
+      height: 34px;
+      padding: 2px;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #F8FAFC;
+    }
+
+    /* Toggle switches */
+    .toggles-row {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin-top: 0.75rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid #F1F5F9;
+    }
+    .toggle-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      color: #475569;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .toggle-item input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #1B3A6B;
+      cursor: pointer;
+    }
+
+    /* Drop zone */
+    .drop-zone {
+      width: 100%;
+      min-height: 120px;
+      border: 2px dashed #94A3B8;
+      border-radius: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      background: #FFF;
+    }
+    .drop-zone:hover, .drop-zone.drag-over {
+      border-color: #E8612A;
+      background: #FFF7F3;
+    }
+    .drop-zone p { color: #64748B; font-size: 0.85rem; }
+    .drop-zone .browse {
+      color: #E8612A;
+      font-weight: 600;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+    .drop-zone input { display: none; }
+    .drop-zone .file-name {
+      font-size: 0.75rem;
+      color: #1B3A6B;
+      font-weight: 600;
+      margin-top: 0.25rem;
+    }
+    .drop-zone .icon {
+      font-size: 1.75rem;
+      opacity: 0.4;
+    }
+
+    /* Preview area */
+    .preview-section {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .preview-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #94A3B8;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .preview-container {
+      background: #FFF;
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      border: 1px solid #E2E8F0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .preview-container canvas {
+      max-width: 100%;
+      max-height: 600px;
+      border-radius: 4px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+
+    /* Download button */
+    .download-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 2rem;
+      background: #1B3A6B;
+      color: #FFF;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .download-btn:hover { background: #15305A; }
+
+    .footer {
+      margin-top: 3rem;
+      padding: 1.5rem;
+      text-align: center;
+      font-size: 0.75rem;
+      color: #94A3B8;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="toolbar">
+    <img src="surevera-header-white-logo.png" alt="SureVera" style="height:32px">
+    <div class="divider" style="width:1px;height:24px;background:rgba(255,255,255,0.2)"></div>
+    <span class="tool-label" style="font-size:0.85rem;font-weight:500;color:rgba(255,255,255,0.6)">Social Templates</span>
+  </div>
+
+  <div class="page">
+    <p class="subtitle">Create branded social media graphics — 100% offline, nothing leaves your browser</p>
+
+    <!-- Size presets -->
+    <div class="size-presets" id="sizePresets">
+      <button class="size-card active" data-w="1080" data-h="1080">Instagram Post<span class="dims">1080 &times; 1080</span></button>
+      <button class="size-card" data-w="1080" data-h="1920">Instagram Story<span class="dims">1080 &times; 1920</span></button>
+      <button class="size-card" data-w="1200" data-h="630">Facebook Post<span class="dims">1200 &times; 630</span></button>
+      <button class="size-card" data-w="1200" data-h="628">Facebook Ad<span class="dims">1200 &times; 628</span></button>
+      <button class="size-card" data-w="1600" data-h="900">Twitter/X Post<span class="dims">1600 &times; 900</span></button>
+      <button class="size-card" data-w="1200" data-h="627">LinkedIn Post<span class="dims">1200 &times; 627</span></button>
+    </div>
+
+    <!-- Upload phone mockup -->
+    <div class="drop-zone" id="dropZone">
+      <div class="icon">&#128241;</div>
+      <p>Drag &amp; drop a phone mockup image here</p>
+      <p>or <span class="browse" id="browseBtn">browse files</span></p>
+      <input type="file" id="fileInput" accept="image/*">
+      <div class="file-name" id="fileName"></div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+      <div class="controls-grid">
+        <div class="control-group">
+          <label>Headline</label>
+          <input type="text" id="headline" value="Be Sure. Verify." maxlength="60">
+        </div>
+        <div class="control-group">
+          <label>Body Text</label>
+          <input type="text" id="bodyText" value="Check restaurant health grades instantly" maxlength="100">
+        </div>
+        <div class="control-group">
+          <label>Layout</label>
+          <select id="layout">
+            <option value="phone-left">Phone Left + Text Right</option>
+            <option value="phone-center">Phone Center + Text Below</option>
+            <option value="phone-right">Phone Right + Text Left</option>
+            <option value="text-overlay">Text Overlay on Gradient</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label>Background</label>
+          <select id="bgStyle">
+            <option value="solid-navy">Solid Navy</option>
+            <option value="gradient" selected>Gradient (Navy to Dark Navy)</option>
+            <option value="white">White</option>
+            <option value="custom">Custom Color</option>
+          </select>
+        </div>
+        <div class="control-group" id="customColorGroup" style="display:none">
+          <label>Custom Color</label>
+          <input type="color" id="customColor" value="#1B3A6B">
+        </div>
+      </div>
+      <div class="toggles-row">
+        <label class="toggle-item">
+          <input type="checkbox" id="showLogo" checked>
+          Show "SureVera" branding
+        </label>
+        <label class="toggle-item">
+          <input type="checkbox" id="showCta" checked>
+          Show "Download Free" badge
+        </label>
+      </div>
+    </div>
+
+    <!-- Preview -->
+    <div class="preview-section">
+      <span class="preview-label">Live Preview</span>
+      <div class="preview-container">
+        <canvas id="preview"></canvas>
+      </div>
+    </div>
+
+    <!-- Download -->
+    <button class="download-btn" id="downloadBtn">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Download PNG
+    </button>
+  </div>
+
+  <div class="footer">SureVera Social Templates — runs entirely in your browser</div>
+
+<script>
+(() => {
+  // --- State ---
+  let canvasW = 1080, canvasH = 1080;
+  let phoneImg = null;
+
+  const $ = id => document.getElementById(id);
+  const canvas = $('preview');
+  const ctx = canvas.getContext('2d');
+
+  // --- Size presets ---
+  const presetBtns = document.querySelectorAll('.size-card');
+  presetBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      presetBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      canvasW = parseInt(btn.dataset.w);
+      canvasH = parseInt(btn.dataset.h);
+      render();
+    });
+  });
+
+  // --- File upload ---
+  const dropZone = $('dropZone');
+  const fileInput = $('fileInput');
+
+  $('browseBtn').addEventListener('click', e => { e.stopPropagation(); fileInput.click(); });
+  dropZone.addEventListener('click', () => fileInput.click());
+
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+  dropZone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropZone.classList.remove('drag-over');
+    if (e.dataTransfer.files.length) loadImage(e.dataTransfer.files[0]);
+  });
+  fileInput.addEventListener('change', () => { if (fileInput.files.length) loadImage(fileInput.files[0]); });
+
+  function loadImage(file) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => { phoneImg = img; render(); };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+    $('fileName').textContent = file.name;
+  }
+
+  // --- Controls ---
+  $('bgStyle').addEventListener('change', () => {
+    $('customColorGroup').style.display = $('bgStyle').value === 'custom' ? '' : 'none';
+    render();
+  });
+
+  [$('headline'), $('bodyText'), $('layout'), $('customColor'), $('showLogo'), $('showCta')].forEach(el => {
+    el.addEventListener('input', render);
+    el.addEventListener('change', render);
+  });
+
+  // --- Render ---
+  function render() {
+    canvas.width = canvasW;
+    canvas.height = canvasH;
+
+    drawBackground();
+
+    const layout = $('layout').value;
+    const headline = $('headline').value;
+    const body = $('bodyText').value;
+    const showLogo = $('showLogo').checked;
+    const showCta = $('showCta').checked;
+
+    const pad = canvasW * 0.06;
+    const isLandscape = canvasW > canvasH;
+
+    if (layout === 'phone-left') {
+      drawPhoneLeft(pad, headline, body, showCta);
+    } else if (layout === 'phone-right') {
+      drawPhoneRight(pad, headline, body, showCta);
+    } else if (layout === 'phone-center') {
+      drawPhoneCenter(pad, headline, body, showCta);
+    } else {
+      drawTextOverlay(pad, headline, body, showCta);
+    }
+
+    if (showLogo) drawBranding(pad);
+  }
+
+  function drawBackground() {
+    const bg = $('bgStyle').value;
+    if (bg === 'solid-navy') {
+      ctx.fillStyle = '#1B3A6B';
+      ctx.fillRect(0, 0, canvasW, canvasH);
+    } else if (bg === 'gradient') {
+      const grad = ctx.createLinearGradient(0, 0, canvasW, canvasH);
+      grad.addColorStop(0, '#0D1B2E');
+      grad.addColorStop(1, '#1B3A6B');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, canvasW, canvasH);
+    } else if (bg === 'white') {
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, canvasW, canvasH);
+    } else {
+      ctx.fillStyle = $('customColor').value;
+      ctx.fillRect(0, 0, canvasW, canvasH);
+    }
+  }
+
+  function textColor() {
+    const bg = $('bgStyle').value;
+    if (bg === 'white') return '#1B3A6B';
+    if (bg === 'custom') {
+      const c = $('customColor').value;
+      const r = parseInt(c.slice(1,3),16), g = parseInt(c.slice(3,5),16), b = parseInt(c.slice(5,7),16);
+      return (r*0.299 + g*0.587 + b*0.114) > 150 ? '#1B3A6B' : '#FFFFFF';
+    }
+    return '#FFFFFF';
+  }
+
+  function subTextColor() {
+    const tc = textColor();
+    return tc === '#FFFFFF' ? 'rgba(255,255,255,0.75)' : 'rgba(27,58,107,0.65)';
+  }
+
+  function drawPhone(x, y, maxW, maxH) {
+    if (!phoneImg) {
+      // Placeholder
+      ctx.save();
+      ctx.fillStyle = 'rgba(255,255,255,0.08)';
+      roundRect(ctx, x, y, maxW, maxH, maxW * 0.06);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+      ctx.lineWidth = 2;
+      roundRect(ctx, x, y, maxW, maxH, maxW * 0.06);
+      ctx.stroke();
+      ctx.fillStyle = 'rgba(255,255,255,0.2)';
+      ctx.font = `${Math.round(maxW * 0.12)}px Inter, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('Phone', x + maxW/2, y + maxH/2 - maxW*0.08);
+      ctx.fillText('Mockup', x + maxW/2, y + maxH/2 + maxW*0.08);
+      ctx.restore();
+      return;
+    }
+
+    const imgAR = phoneImg.width / phoneImg.height;
+    let drawW, drawH;
+    if (maxW / maxH > imgAR) {
+      drawH = maxH;
+      drawW = drawH * imgAR;
+    } else {
+      drawW = maxW;
+      drawH = drawW / imgAR;
+    }
+    const dx = x + (maxW - drawW) / 2;
+    const dy = y + (maxH - drawH) / 2;
+
+    ctx.save();
+    ctx.shadowColor = 'rgba(0,0,0,0.25)';
+    ctx.shadowBlur = canvasW * 0.03;
+    ctx.shadowOffsetY = canvasW * 0.01;
+    ctx.drawImage(phoneImg, dx, dy, drawW, drawH);
+    ctx.restore();
+  }
+
+  function drawTextBlock(x, y, maxW, headline, body, showCta, align) {
+    const tc = textColor();
+    const sc = subTextColor();
+    const headSize = Math.round(canvasW * 0.055);
+    const bodySize = Math.round(canvasW * 0.028);
+
+    ctx.textAlign = align || 'left';
+    const ax = align === 'center' ? x + maxW / 2 : x;
+
+    // Headline
+    ctx.fillStyle = tc;
+    ctx.font = `800 ${headSize}px Inter, sans-serif`;
+    const headLines = wrapText(ctx, headline, maxW, headSize);
+    let cy = y;
+    headLines.forEach(line => {
+      ctx.fillText(line, ax, cy);
+      cy += headSize * 1.2;
+    });
+
+    cy += headSize * 0.4;
+
+    // Body
+    ctx.fillStyle = sc;
+    ctx.font = `400 ${bodySize}px Inter, sans-serif`;
+    const bodyLines = wrapText(ctx, body, maxW, bodySize);
+    bodyLines.forEach(line => {
+      ctx.fillText(line, ax, cy);
+      cy += bodySize * 1.5;
+    });
+
+    // CTA badge
+    if (showCta) {
+      cy += headSize * 0.5;
+      drawCtaBadge(align === 'center' ? x + maxW/2 : x, cy, align === 'center');
+    }
+  }
+
+  function drawCtaBadge(x, y, centered) {
+    const badgeH = Math.round(canvasH * 0.048);
+    const fontSize = Math.round(badgeH * 0.48);
+    const text = 'Download Free';
+    ctx.font = `700 ${fontSize}px Inter, sans-serif`;
+    const tw = ctx.measureText(text).width;
+    const badgeW = tw + badgeH * 1.2;
+    const bx = centered ? x - badgeW / 2 : x;
+
+    ctx.fillStyle = '#E8612A';
+    roundRect(ctx, bx, y - badgeH * 0.7, badgeW, badgeH, badgeH / 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#FFFFFF';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(text, bx + badgeW / 2, y - badgeH * 0.2);
+    ctx.textBaseline = 'alphabetic';
+  }
+
+  function drawBranding(pad) {
+    const tc = textColor();
+    const size = Math.round(canvasW * 0.032);
+    ctx.save();
+    ctx.fillStyle = tc === '#FFFFFF' ? 'rgba(255,255,255,0.4)' : 'rgba(27,58,107,0.35)';
+    ctx.font = `700 ${size}px Inter, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'bottom';
+    ctx.fillText('SureVera', canvasW / 2, canvasH - pad * 0.6);
+    ctx.restore();
+  }
+
+  // --- Layouts ---
+  function drawPhoneLeft(pad, headline, body, showCta) {
+    const phoneW = canvasW * 0.35;
+    const phoneH = canvasH * 0.7;
+    const phoneX = pad;
+    const phoneY = (canvasH - phoneH) / 2;
+    drawPhone(phoneX, phoneY, phoneW, phoneH);
+
+    const textX = phoneX + phoneW + pad;
+    const textW = canvasW - textX - pad;
+    const textY = canvasH * 0.3;
+    drawTextBlock(textX, textY, textW, headline, body, showCta, 'left');
+  }
+
+  function drawPhoneRight(pad, headline, body, showCta) {
+    const phoneW = canvasW * 0.35;
+    const phoneH = canvasH * 0.7;
+    const phoneX = canvasW - pad - phoneW;
+    const phoneY = (canvasH - phoneH) / 2;
+    drawPhone(phoneX, phoneY, phoneW, phoneH);
+
+    const textX = pad;
+    const textW = phoneX - pad * 2;
+    const textY = canvasH * 0.3;
+    drawTextBlock(textX, textY, textW, headline, body, showCta, 'left');
+  }
+
+  function drawPhoneCenter(pad, headline, body, showCta) {
+    const phoneW = canvasW * 0.32;
+    const phoneH = canvasH * 0.55;
+    const phoneX = (canvasW - phoneW) / 2;
+    const phoneY = pad;
+    drawPhone(phoneX, phoneY, phoneW, phoneH);
+
+    const textY = phoneY + phoneH + pad * 0.8;
+    const textW = canvasW - pad * 2;
+    drawTextBlock(pad, textY, textW, headline, body, showCta, 'center');
+  }
+
+  function drawTextOverlay(pad, headline, body, showCta) {
+    // Darken overlay for readability when phone is behind
+    if (phoneImg) {
+      const phoneW = canvasW * 0.35;
+      const phoneH = canvasH * 0.75;
+      const phoneX = (canvasW - phoneW) / 2;
+      const phoneY = (canvasH - phoneH) / 2;
+
+      ctx.save();
+      ctx.globalAlpha = 0.2;
+      drawPhone(phoneX, phoneY, phoneW, phoneH);
+      ctx.restore();
+
+      // Overlay
+      ctx.fillStyle = 'rgba(13,27,46,0.55)';
+      ctx.fillRect(0, 0, canvasW, canvasH);
+    }
+
+    const textW = canvasW * 0.75;
+    const textX = (canvasW - textW) / 2;
+    const textY = canvasH * 0.35;
+    drawTextBlock(textX, textY, textW, headline, body, showCta, 'center');
+  }
+
+  // --- Helpers ---
+  function roundRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+  }
+
+  function wrapText(ctx, text, maxW, fontSize) {
+    if (!text) return [];
+    const words = text.split(' ');
+    const lines = [];
+    let current = '';
+    words.forEach(word => {
+      const test = current ? current + ' ' + word : word;
+      if (ctx.measureText(test).width > maxW && current) {
+        lines.push(current);
+        current = word;
+      } else {
+        current = test;
+      }
+    });
+    if (current) lines.push(current);
+    return lines;
+  }
+
+  // --- Download ---
+  $('downloadBtn').addEventListener('click', () => {
+    render();
+
+    const link = document.createElement('a');
+    const activePreset = document.querySelector('.size-card.active');
+    // Use childNodes[0] to get only the button's own text, not the dims span
+    const label = activePreset
+      ? activePreset.childNodes[0].textContent.trim().replace(/[^a-zA-Z0-9]+/g, '-').replace(/-$/, '').toLowerCase()
+      : 'template';
+    link.download = `surevera-${label}-${canvasW}x${canvasH}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  });
+
+  // --- Initial render ---
+  render();
+})();
+</script>
+<script src="dark-mode.js"></script>
+<script src="toolkit-nav.js"></script>
+</body>
+</html>

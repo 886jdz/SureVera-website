@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SureVera — City Expansion Planner</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #F0F3F8;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #1E293B;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .toolbar {
+      width: 100%;
+      background: linear-gradient(135deg, #0D1B2E 0%, #1B3A6B 100%);
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+      margin-bottom: 2rem;
+    }
+    .toolbar img { height: 32px; }
+    .toolbar .divider { width: 1px; height: 24px; background: rgba(255,255,255,0.2); }
+    .toolbar .tool-label { font-size: 0.85rem; font-weight: 500; color: rgba(255,255,255,0.6); }
+
+    .page {
+      padding: 0 2rem 2rem;
+      width: 100%;
+      max-width: 1400px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* Summary Stats */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1rem;
+    }
+    .stat-card {
+      background: #FFF;
+      border-radius: 12px;
+      padding: 1.25rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      text-align: center;
+    }
+    .stat-card .stat-number {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #1B3A6B;
+    }
+    .stat-card .stat-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #64748B;
+      margin-top: 0.25rem;
+    }
+    .stat-card.live .stat-number { color: #16a34a; }
+    .stat-card.dev .stat-number { color: #E8612A; }
+    .stat-card.planned .stat-number { color: #2563eb; }
+
+    /* Controls Row */
+    .controls-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+    }
+    .search-box {
+      flex: 1;
+      min-width: 220px;
+      padding: 0.6rem 1rem;
+      border: 1px solid #D1D5DB;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-family: inherit;
+      background: #FFF;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .search-box:focus { border-color: #1B3A6B; }
+
+    .filter-select {
+      padding: 0.6rem 0.75rem;
+      border: 1px solid #D1D5DB;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-family: inherit;
+      background: #FFF;
+      color: #1E293B;
+      cursor: pointer;
+      outline: none;
+    }
+    .filter-select:focus { border-color: #1B3A6B; }
+
+    .btn {
+      padding: 0.6rem 1.25rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .btn-primary {
+      background: #E8612A;
+      color: #FFF;
+    }
+    .btn-primary:hover { background: #d45520; }
+    .btn-secondary {
+      background: #1B3A6B;
+      color: #FFF;
+    }
+    .btn-secondary:hover { background: #14305a; }
+    .btn-outline {
+      background: #FFF;
+      color: #1B3A6B;
+      border: 1px solid #D1D5DB;
+    }
+    .btn-outline:hover { background: #F0F3F8; }
+
+    /* Table */
+    .table-card {
+      background: #FFF;
+      border-radius: 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      overflow: hidden;
+    }
+    .table-wrapper {
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 1100px;
+    }
+    thead {
+      background: #F8FAFC;
+      border-bottom: 2px solid #E2E8F0;
+    }
+    th {
+      padding: 0.75rem 0.75rem;
+      text-align: left;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #64748B;
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+      position: relative;
+    }
+    th:hover { color: #1B3A6B; }
+    th .sort-arrow {
+      margin-left: 4px;
+      opacity: 0.3;
+      font-size: 0.6rem;
+    }
+    th.sorted .sort-arrow { opacity: 1; color: #E8612A; }
+
+    td {
+      padding: 0.5rem 0.75rem;
+      border-bottom: 1px solid #F1F5F9;
+      font-size: 0.825rem;
+      vertical-align: middle;
+    }
+    tr:hover td { background: #FAFBFE; }
+
+    /* Inline editable cells */
+    td input, td select, td textarea {
+      width: 100%;
+      padding: 0.35rem 0.5rem;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-family: inherit;
+      background: transparent;
+      color: #1E293B;
+      transition: all 0.15s;
+    }
+    td input:hover, td select:hover, td textarea:hover {
+      border-color: #E2E8F0;
+      background: #F8FAFC;
+    }
+    td input:focus, td select:focus, td textarea:focus {
+      border-color: #1B3A6B;
+      background: #FFF;
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(27,58,107,0.1);
+    }
+    td select { cursor: pointer; }
+    td textarea {
+      resize: vertical;
+      min-height: 32px;
+      max-height: 120px;
+    }
+    td input[type="number"] { width: 100px; }
+
+    .city-input { min-width: 140px; }
+    .notes-input { min-width: 150px; }
+
+    /* Status badges */
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.5rem;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    /* Delete button */
+    .btn-delete {
+      background: none;
+      border: 1px solid transparent;
+      color: #94A3B8;
+      cursor: pointer;
+      padding: 0.3rem 0.5rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+    }
+    .btn-delete:hover {
+      color: #ef4444;
+      background: #fef2f2;
+      border-color: #fecaca;
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: #94A3B8;
+    }
+    .empty-state .empty-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+    .empty-state p { font-size: 0.9rem; }
+
+    /* Footer */
+    .footer {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      text-align: center;
+      font-size: 0.75rem;
+      color: #94A3B8;
+      width: 100%;
+    }
+
+    /* Row count */
+    .row-count {
+      font-size: 0.75rem;
+      color: #94A3B8;
+      padding: 0.75rem;
+      text-align: right;
+    }
+
+    @media (max-width: 768px) {
+      .page { padding: 0 1rem 1rem; }
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+      .controls-row { flex-direction: column; align-items: stretch; }
+      .search-box { min-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="toolbar">
+    <img src="surevera-header-white-logo.png" alt="SureVera">
+    <span class="divider"></span>
+    <span class="tool-label">City Planner</span>
+  </div>
+
+  <div class="page">
+    <!-- Summary Stats -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-number" id="statTotal">0</div>
+        <div class="stat-label">Total Cities</div>
+      </div>
+      <div class="stat-card live">
+        <div class="stat-number" id="statLive">0</div>
+        <div class="stat-label">Live</div>
+      </div>
+      <div class="stat-card dev">
+        <div class="stat-number" id="statDev">0</div>
+        <div class="stat-label">In Development</div>
+      </div>
+      <div class="stat-card planned">
+        <div class="stat-number" id="statPlanned">0</div>
+        <div class="stat-label">Planned</div>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls-row">
+      <input type="text" class="search-box" id="searchBox" placeholder="Search cities...">
+      <select class="filter-select" id="filterStatus">
+        <option value="">All Statuses</option>
+        <option value="Live">Live</option>
+        <option value="In Development">In Development</option>
+        <option value="Planned">Planned</option>
+        <option value="On Hold">On Hold</option>
+        <option value="Not Viable">Not Viable</option>
+      </select>
+      <select class="filter-select" id="filterPriority">
+        <option value="">All Priorities</option>
+        <option value="High">High</option>
+        <option value="Medium">Medium</option>
+        <option value="Low">Low</option>
+      </select>
+      <button class="btn btn-primary" id="addCityBtn">+ Add City</button>
+      <button class="btn btn-outline" id="exportBtn">Export CSV</button>
+    </div>
+
+    <!-- Table -->
+    <div class="table-card">
+      <div class="table-wrapper">
+        <table id="cityTable">
+          <thead>
+            <tr>
+              <th data-col="city">City <span class="sort-arrow">&#9650;</span></th>
+              <th data-col="state">State <span class="sort-arrow">&#9650;</span></th>
+              <th data-col="sourceType">Source Type <span class="sort-arrow">&#9650;</span></th>
+              <th data-col="sourceStatus">Source Status <span class="sort-arrow">&#9650;</span></th>
+              <th data-col="population">Population <span class="sort-arrow">&#9650;</span></th>
+              <th data-col="priority">Priority <span class="sort-arrow">&#9650;</span></th>
+              <th data-col="notes">Notes <span class="sort-arrow">&#9650;</span></th>
+              <th data-col="status">Status <span class="sort-arrow">&#9650;</span></th>
+              <th style="cursor:default;"></th>
+            </tr>
+          </thead>
+          <tbody id="cityBody"></tbody>
+        </table>
+      </div>
+      <div class="row-count" id="rowCount"></div>
+    </div>
+  </div>
+
+  <div class="footer">SureVera City Planner — runs entirely in your browser</div>
+
+  <script>
+    const STORAGE_KEY = 'surevera_city_planner';
+
+    const US_STATES = [
+      'AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA',
+      'KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ',
+      'NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT',
+      'VA','WA','WV','WI','WY','DC','PR','GU','VI','AS','MP'
+    ];
+
+    const SOURCE_TYPES = ['Socrata','ArcGIS','PDF/Manual','LIVES','Other','Unknown'];
+    const SOURCE_STATUSES = ['Available','Researching','Not Available','Contacted Agency'];
+    const PRIORITIES = ['High','Medium','Low'];
+    const STATUSES = ['Live','In Development','Planned','On Hold','Not Viable'];
+
+    let cities = [];
+    let sortCol = 'city';
+    let sortAsc = true;
+
+    function generateId() {
+      return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+    }
+
+    function load() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) cities = JSON.parse(raw);
+      } catch(e) { cities = []; }
+    }
+
+    function save() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(cities));
+    }
+
+    function makeSelectHTML(options, selected, name) {
+      return `<select data-field="${name}">${options.map(o =>
+        `<option value="${o}"${o === selected ? ' selected' : ''}>${o}</option>`
+      ).join('')}</select>`;
+    }
+
+    function makeStateSelectHTML(selected) {
+      return `<select data-field="state"><option value="">--</option>${US_STATES.map(s =>
+        `<option value="${s}"${s === selected ? ' selected' : ''}>${s}</option>`
+      ).join('')}</select>`;
+    }
+
+    function getFilteredSorted() {
+      const search = document.getElementById('searchBox').value.toLowerCase().trim();
+      const fStatus = document.getElementById('filterStatus').value;
+      const fPriority = document.getElementById('filterPriority').value;
+
+      let list = cities.filter(c => {
+        if (fStatus && c.status !== fStatus) return false;
+        if (fPriority && c.priority !== fPriority) return false;
+        if (search) {
+          const haystack = `${c.city} ${c.state} ${c.notes}`.toLowerCase();
+          if (!haystack.includes(search)) return false;
+        }
+        return true;
+      });
+
+      list.sort((a, b) => {
+        let va = a[sortCol] ?? '';
+        let vb = b[sortCol] ?? '';
+        if (sortCol === 'population') {
+          va = Number(va) || 0;
+          vb = Number(vb) || 0;
+          return sortAsc ? va - vb : vb - va;
+        }
+        if (sortCol === 'priority') {
+          const order = { High: 0, Medium: 1, Low: 2 };
+          va = order[va] ?? 9;
+          vb = order[vb] ?? 9;
+          return sortAsc ? va - vb : vb - va;
+        }
+        va = String(va).toLowerCase();
+        vb = String(vb).toLowerCase();
+        if (va < vb) return sortAsc ? -1 : 1;
+        if (va > vb) return sortAsc ? 1 : -1;
+        return 0;
+      });
+
+      return list;
+    }
+
+    function updateStats() {
+      document.getElementById('statTotal').textContent = cities.length;
+      document.getElementById('statLive').textContent = cities.filter(c => c.status === 'Live').length;
+      document.getElementById('statDev').textContent = cities.filter(c => c.status === 'In Development').length;
+      document.getElementById('statPlanned').textContent = cities.filter(c => c.status === 'Planned').length;
+    }
+
+    function render() {
+      const list = getFilteredSorted();
+      const tbody = document.getElementById('cityBody');
+
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state">
+          <div class="empty-icon">&#127961;</div>
+          <p>${cities.length === 0 ? 'No cities yet. Click <strong>+ Add City</strong> to get started.' : 'No cities match your filters.'}</p>
+        </div></td></tr>`;
+        document.getElementById('rowCount').textContent = '';
+      } else {
+        tbody.innerHTML = list.map(c => `
+          <tr data-id="${c.id}">
+            <td><input type="text" class="city-input" data-field="city" value="${esc(c.city)}" placeholder="City name"></td>
+            <td>${makeStateSelectHTML(c.state)}</td>
+            <td>${makeSelectHTML(SOURCE_TYPES, c.sourceType, 'sourceType')}</td>
+            <td>${makeSelectHTML(SOURCE_STATUSES, c.sourceStatus, 'sourceStatus')}</td>
+            <td><input type="number" data-field="population" value="${c.population || ''}" placeholder="—"></td>
+            <td>${makeSelectHTML(PRIORITIES, c.priority, 'priority')}</td>
+            <td><input type="text" class="notes-input" data-field="notes" value="${esc(c.notes)}" placeholder="Notes..."></td>
+            <td>${makeSelectHTML(STATUSES, c.status, 'status')}</td>
+            <td><button class="btn-delete" title="Delete city" data-delete="${c.id}">&#10005;</button></td>
+          </tr>
+        `).join('');
+        document.getElementById('rowCount').textContent = `Showing ${list.length} of ${cities.length} cities`;
+      }
+
+      updateStats();
+      updateSortHeaders();
+    }
+
+    function esc(str) {
+      if (!str) return '';
+      return str.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function updateSortHeaders() {
+      document.querySelectorAll('#cityTable th[data-col]').forEach(th => {
+        const col = th.dataset.col;
+        const arrow = th.querySelector('.sort-arrow');
+        if (col === sortCol) {
+          th.classList.add('sorted');
+          arrow.innerHTML = sortAsc ? '&#9650;' : '&#9660;';
+        } else {
+          th.classList.remove('sorted');
+          arrow.innerHTML = '&#9650;';
+        }
+      });
+    }
+
+    // Event: sort
+    document.querySelectorAll('#cityTable th[data-col]').forEach(th => {
+      th.addEventListener('click', () => {
+        const col = th.dataset.col;
+        if (sortCol === col) {
+          sortAsc = !sortAsc;
+        } else {
+          sortCol = col;
+          sortAsc = true;
+        }
+        render();
+      });
+    });
+
+    // Event: inline edits
+    document.getElementById('cityBody').addEventListener('input', e => {
+      const el = e.target;
+      const field = el.dataset.field;
+      if (!field) return;
+      const row = el.closest('tr');
+      const id = row.dataset.id;
+      const city = cities.find(c => c.id === id);
+      if (!city) return;
+      if (field === 'population') {
+        city[field] = el.value ? parseInt(el.value, 10) : null;
+      } else {
+        city[field] = el.value;
+      }
+      save();
+      updateStats();
+    });
+
+    document.getElementById('cityBody').addEventListener('change', e => {
+      const el = e.target;
+      const field = el.dataset.field;
+      if (!field) return;
+      const row = el.closest('tr');
+      const id = row.dataset.id;
+      const city = cities.find(c => c.id === id);
+      if (!city) return;
+      city[field] = el.value;
+      save();
+      updateStats();
+    });
+
+    // Event: delete
+    document.getElementById('cityBody').addEventListener('click', e => {
+      const btn = e.target.closest('[data-delete]');
+      if (!btn) return;
+      const id = btn.dataset.delete;
+      const city = cities.find(c => c.id === id);
+      const label = city ? `${city.city || 'Untitled'}${city.state ? ', ' + city.state : ''}` : 'this city';
+      if (!confirm(`Delete ${label}?`)) return;
+      cities = cities.filter(c => c.id !== id);
+      save();
+      render();
+    });
+
+    // Event: add city
+    document.getElementById('addCityBtn').addEventListener('click', () => {
+      cities.unshift({
+        id: generateId(),
+        city: '',
+        state: '',
+        sourceType: 'Unknown',
+        sourceStatus: 'Researching',
+        population: null,
+        priority: 'Medium',
+        notes: '',
+        status: 'Planned'
+      });
+      save();
+      // Reset filters so new row is visible
+      document.getElementById('filterStatus').value = '';
+      document.getElementById('filterPriority').value = '';
+      document.getElementById('searchBox').value = '';
+      sortCol = 'city';
+      sortAsc = true;
+      render();
+      // Focus the first city input
+      const firstInput = document.querySelector('#cityBody tr:first-child input[data-field="city"]');
+      if (firstInput) firstInput.focus();
+    });
+
+    // Event: search and filters
+    document.getElementById('searchBox').addEventListener('input', render);
+    document.getElementById('filterStatus').addEventListener('change', render);
+    document.getElementById('filterPriority').addEventListener('change', render);
+
+    // Event: export CSV
+    document.getElementById('exportBtn').addEventListener('click', () => {
+      if (cities.length === 0) { alert('No cities to export.'); return; }
+      const headers = ['City','State','Source Type','Source Status','Population','Priority','Notes','Status'];
+      const rows = cities.map(c => [
+        csvCell(c.city), csvCell(c.state), csvCell(c.sourceType), csvCell(c.sourceStatus),
+        c.population || '', csvCell(c.priority), csvCell(c.notes), csvCell(c.status)
+      ]);
+      const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `surevera-city-planner-${new Date().toISOString().slice(0,10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    function csvCell(val) {
+      if (!val) return '';
+      val = String(val);
+      if (val.includes(',') || val.includes('"') || val.includes('\n')) {
+        return '"' + val.replace(/"/g, '""') + '"';
+      }
+      return val;
+    }
+
+    // Init
+    load();
+    render();
+  </script>
+  <script src="dark-mode.js"></script>
+  <script src="toolkit-nav.js"></script>
+</body>
+</html>

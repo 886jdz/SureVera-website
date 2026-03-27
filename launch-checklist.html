@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Launch Checklist — SureVera</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy: #1B3A6B;
+      --dark-navy: #0D1B2E;
+      --orange: #E8612A;
+      --bg: #F4F5F7;
+      --card-bg: #FFFFFF;
+      --text: #1a1a1a;
+      --text-secondary: #6B7280;
+      --border: #E5E7EB;
+      --checked-text: #9CA3AF;
+      --progress-bg: #E5E7EB;
+      --section-hover: #F9FAFB;
+      --reset-bg: #FEE2E2;
+      --reset-text: #DC2626;
+      --footer-bg: #F9FAFB;
+      --footer-text: #9CA3AF;
+      --checkbox-border: #94A3B8;
+    }
+
+    body.dark-mode, [data-theme="dark"],
+    [data-theme="dark"] body,
+    [data-theme="dark"] {
+      --bg: #0D1B2E;
+      --card-bg: #132240;
+      --text: #FFFFFF;
+      --text-secondary: #8B9EC7;
+      --border: rgba(255,255,255,0.20);
+      --checked-text: #5A6E99;
+      --progress-bg: #1A3060;
+      --section-hover: #1A3060;
+      --reset-bg: #2D0A0A;
+      --reset-text: #F87171;
+      --footer-bg: #0A1422;
+      --footer-text: #5A6E99;
+      --checkbox-border: #8B9EC7;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    .toolbar {
+      background: linear-gradient(135deg, #0D1B2E 0%, #1B3A6B 100%);
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+    }
+
+    .progress-wrapper {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+
+    .progress-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+
+    .progress-label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .progress-pct {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--orange);
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: var(--progress-bg);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--orange), #F28C5E);
+      border-radius: 999px;
+      transition: width 0.4s ease;
+      width: 0%;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 1.5rem 1rem 3rem;
+    }
+
+    .section-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      margin-bottom: 1rem;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.25rem;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.15s;
+    }
+
+    .section-header:hover {
+      background: var(--section-hover);
+    }
+
+    .section-header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .section-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .section-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .section-count {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    .section-chevron {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      transition: transform 0.2s;
+      margin-left: 0.75rem;
+    }
+
+    .section-card.collapsed .section-chevron {
+      transform: rotate(-90deg);
+    }
+
+    .section-card.collapsed .section-items {
+      display: none;
+    }
+
+    .section-items {
+      border-top: 1px solid var(--border);
+      padding: 0.5rem 0;
+    }
+
+    .checklist-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.6rem 1.25rem;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+
+    .checklist-item:hover {
+      background: var(--section-hover);
+    }
+
+    .checklist-item input[type="checkbox"] {
+      display: none;
+    }
+
+    .custom-check {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--checkbox-border);
+      border-radius: 5px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1px;
+      transition: all 0.15s;
+      cursor: pointer;
+    }
+
+    .checklist-item.checked .custom-check {
+      background: var(--orange);
+      border-color: var(--orange);
+    }
+
+    .custom-check svg {
+      width: 12px;
+      height: 12px;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+
+    .checklist-item.checked .custom-check svg {
+      opacity: 1;
+    }
+
+    .item-text {
+      font-size: 0.875rem;
+      color: var(--text);
+      transition: all 0.2s;
+      line-height: 1.5;
+    }
+
+    .item-text code {
+      font-size: 0.8rem;
+      background: var(--section-hover);
+      padding: 0.1rem 0.35rem;
+      border-radius: 4px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      color: var(--orange);
+      border: 1px solid var(--border);
+    }
+
+    .checklist-item.checked .item-text {
+      text-decoration: line-through;
+      color: var(--checked-text);
+    }
+
+    .checklist-item.checked .item-text code {
+      opacity: 0.5;
+    }
+
+    /* Sub-steps */
+    .item-expand-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-secondary);
+      font-size: 0.7rem;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      margin-left: 0.5rem;
+      transition: all 0.15s;
+      font-family: inherit;
+      white-space: nowrap;
+    }
+    .item-expand-btn:hover { background: var(--section-hover); color: var(--text); }
+
+    .sub-steps {
+      margin-left: 2.75rem;
+      padding: 0.25rem 0 0.5rem;
+      display: none;
+    }
+    .sub-steps.open { display: block; }
+
+    .sub-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      padding: 0.35rem 0;
+      cursor: pointer;
+    }
+    .sub-step:hover { opacity: 0.85; }
+
+    .sub-check {
+      width: 16px;
+      height: 16px;
+      border: 1.5px solid var(--checkbox-border);
+      border-radius: 4px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 2px;
+      transition: all 0.15s;
+    }
+    .sub-step.checked .sub-check {
+      background: var(--orange);
+      border-color: var(--orange);
+    }
+    .sub-check svg {
+      width: 10px;
+      height: 10px;
+      opacity: 0;
+    }
+    .sub-step.checked .sub-check svg { opacity: 1; }
+
+    .sub-step-text {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+    .sub-step.checked .sub-step-text {
+      text-decoration: line-through;
+      color: var(--checked-text);
+    }
+
+    .sub-step-progress {
+      font-size: 0.65rem;
+      color: var(--text-secondary);
+      margin-left: auto;
+      white-space: nowrap;
+    }
+
+    .reset-wrapper {
+      text-align: center;
+      margin-top: 2rem;
+    }
+
+    .reset-btn {
+      background: var(--reset-bg);
+      color: var(--reset-text);
+      border: none;
+      padding: 0.6rem 1.5rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: opacity 0.15s;
+    }
+
+    .reset-btn:hover {
+      opacity: 0.85;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      font-size: 0.8rem;
+      color: var(--footer-text);
+      background: var(--footer-bg);
+      border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 600px) {
+      .toolbar { padding: 1rem; }
+      .progress-wrapper { padding: 0.75rem 1rem; }
+      .container { padding: 1rem 0.75rem 2rem; }
+      .section-header { padding: 0.85rem 1rem; }
+      .checklist-item { padding: 0.5rem 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="toolbar">
+    <img src="surevera-header-white-logo.png" alt="SureVera" style="height:32px">
+    <div style="width:1px;height:24px;background:rgba(255,255,255,0.2)"></div>
+    <span style="font-size:0.85rem;font-weight:500;color:rgba(255,255,255,0.6)">Launch Checklist</span>
+  </div>
+
+  <div class="progress-wrapper">
+    <div class="progress-header">
+      <span class="progress-label">Launch Progress</span>
+      <span class="progress-pct" id="progressPct">0%</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+  </div>
+
+  <div class="container" id="checklistContainer"></div>
+
+  <div class="footer">SureVera Launch Checklist &mdash; runs entirely in your browser</div>
+
+  <script>
+    const STORAGE_KEY = 'surevera_launch_checklist';
+    const COLLAPSED_KEY = 'surevera_launch_collapsed';
+
+    // Items can be a string (no sub-steps) or { text, steps: [] }
+    const sections = [
+      {
+        id: 'ios', title: 'App Store Submission (iOS)', icon: '\uD83C\uDF4F', color: '#E8F5E9',
+        items: [
+          { text: 'Replace RevenueCat test API key with production key', steps: [
+            '<b>What this is:</b> RevenueCat manages your app subscriptions. The test key connects to a sandbox environment where no real money is charged. You need the production key so real payments work when users subscribe.',
+            'Log in to RevenueCat dashboard at app.revenuecat.com',
+            'Go to your iOS app > API Keys',
+            'Copy the production (public) API key',
+            'Open <code>src/config/revenuecat.ts</code>',
+            'Replace the <code>test_</code> key on line 5 with your production key',
+            'Save the file'
+          ]},
+          { text: 'Update iOS Bundle ID to production ID', steps: [
+            '<b>What this is:</b> The Bundle ID is your app\'s unique identifier in Apple\'s system (like a fingerprint). The current one (<code>com.h886jdz.surevera</code>) is a development ID. You need a clean production ID that matches what you registered in App Store Connect.',
+            'Open <code>app.json</code>',
+            'Find <code>"bundleIdentifier"</code> under <code>ios</code> (currently <code>com.h886jdz.surevera</code>)',
+            'Change to your production bundle ID (e.g. <code>com.surevera.app</code>)',
+            'Make sure this matches your App Store Connect app'
+          ]},
+          { text: 'Restrict network security for production', steps: [
+            '<b>What this is:</b> During development, your app allows unencrypted HTTP connections so it can talk to your local computer. For production, you need to lock this down so the app only communicates over secure HTTPS, protecting user data from interception.',
+            'Open <code>app.json</code>',
+            'Find <code>NSAllowsArbitraryLoads</code> under <code>ios.infoPlist</code>',
+            'Set to <code>false</code> or remove the entire <code>NSAppTransportSecurity</code> block',
+            'Your API uses HTTPS so this is safe to restrict'
+          ]},
+          { text: 'Create App Store Connect listing', steps: [
+            '<b>What this is:</b> App Store Connect is Apple\'s portal where you set up your app\'s listing — name, description, screenshots, pricing, and more. This is what users see when they find your app on the App Store.',
+            'Go to appstoreconnect.apple.com',
+            'Click "My Apps" > "+" > "New App"',
+            'Select iOS, enter app name "SureVera"',
+            'Choose your Bundle ID from the dropdown',
+            'Set primary language to English (US)',
+            'Click Create'
+          ]},
+          { text: 'Upload app icon (1024×1024)', steps: [
+            '<b>What this is:</b> Apple requires a high-resolution version of your app icon for the App Store listing. This is separate from the icon that appears on the home screen — it\'s used in search results, featured sections, and your app\'s store page.',
+            'Prepare a 1024×1024 PNG with no transparency and no rounded corners',
+            'In App Store Connect, go to your app > App Information',
+            'Upload the icon in the App Icon field'
+          ]},
+          { text: 'Upload screenshots for all required device sizes', steps: [
+            '<b>What this is:</b> Screenshots are the most important part of your App Store listing — most users decide to download based on screenshots alone. Apple requires screenshots for each iPhone screen size you support.',
+            'Use the SureVera Mockup Tool or Screenshot Builder',
+            'Take screenshots on: iPhone 15 Pro Max (6.7"), iPhone 15 Pro (6.1"), iPhone 8 Plus (5.5")',
+            'Upload at least 3 screenshots per device size',
+            'In App Store Connect, go to your app version > Screenshots',
+            'Upload to each device size section'
+          ]},
+          { text: 'Write App Store description', steps: [
+            '<b>What this is:</b> The App Store description appears below your screenshots and tells potential users what your app does. A compelling description improves downloads and helps Apple\'s search algorithm surface your app.',
+            'Open the Store Listing Helper in the SureVera Toolkit',
+            'Choose from the 5 description templates or write your own',
+            'Copy the description (4000 char max)',
+            'Paste into App Store Connect > App Version > Description'
+          ]},
+          'Set App Store subtitle (30 chars max)',
+          { text: 'Add keywords (100 chars max)', steps: [
+            '<b>What this is:</b> Keywords are hidden search terms that help users find your app when they search the App Store. You get 100 characters total, so every word counts. Good keywords dramatically increase your app\'s discoverability.',
+            'Open the Store Listing Helper',
+            'Use the keyword suggestion chips to build your keyword list',
+            'Keep total under 100 characters, comma-separated',
+            'Paste into App Store Connect > App Version > Keywords'
+          ]},
+          'Set Privacy Policy URL: <code>https://surevera.app/privacy-policy.html</code>',
+          'Set Terms of Service URL: <code>https://surevera.app/terms-of-service.html</code>',
+          'Set support URL: <code>https://surevera.app</code>',
+          'Set contact email: <code>support@sureveraapp.com</code>',
+          'Select appropriate age rating',
+          { text: 'Complete App Privacy section', steps: [
+            '<b>What this is:</b> Apple requires every app to disclose what user data it collects and how it\'s used. This generates the "App Privacy" nutrition label that users see on your App Store page. Getting this wrong can delay your review or erode user trust.',
+            'In App Store Connect, go to App Privacy',
+            'You collect: Identifiers (Expo push token) — for App Functionality',
+            'You collect: Coarse Location — for App Functionality (finding nearby restaurants)',
+            'You do NOT collect: Name, Email, Phone, Payment Info, Health, Fitness, Contacts, etc.',
+            'Data is NOT linked to user identity',
+            'Data is NOT used for tracking'
+          ]},
+          { text: 'Configure subscriptions in App Store Connect', steps: [
+            '<b>What this is:</b> This is where you create the actual subscription product that users will purchase. Apple handles all payment processing, but you need to define the price, trial period, and subscription group in App Store Connect first.',
+            'Go to App Store Connect > your app > Subscriptions',
+            'Create a subscription group (e.g. "SureVera Premium")',
+            'Add a subscription product: $20/year',
+            'Set the free trial duration to 3 days',
+            'Add localized display name and description',
+            'Submit for review (subscriptions need separate approval)'
+          ]},
+          'Set pricing for subscription ($20/year)',
+          { text: 'Build production binary', steps: [
+            '<b>What this is:</b> A production binary is the final compiled version of your app that gets submitted to Apple. Unlike development builds, it\'s optimized, signed with your distribution certificate, and ready for the App Store.',
+            'Run <code>eas build --platform ios --profile production</code>',
+            'Wait for the build to complete (check status at expo.dev)',
+            'Download the .ipa file when ready'
+          ]},
+          { text: 'Test production build on real device', steps: [
+            '<b>What this is:</b> Testing on a real device catches issues that simulators miss — like performance problems, notification permissions, and payment flows. This is your last chance to find bugs before real users see your app.',
+            'Install the production build on your iPhone via TestFlight or ad hoc',
+            'Test: search, filter, favorites, follow, notifications, dark mode',
+            'Test: onboarding flow, paywall, subscription purchase (sandbox)',
+            'Test: Delete My Data, Help screen links, Contact Us',
+            'Verify no beta-only buttons are visible'
+          ]},
+          'Submit for App Store Review'
+        ]
+      },
+      {
+        id: 'android', title: 'Google Play Store Submission (Android)', icon: '\uD83E\uDD16', color: '#E3F2FD',
+        items: [
+          'Replace RevenueCat test API key with production key in <code>src/config/revenuecat.ts</code>',
+          { text: 'Update Android package name to production ID', steps: [
+            '<b>What this is:</b> The package name is Android\'s equivalent of Apple\'s Bundle ID — it uniquely identifies your app on Google Play. The current development ID needs to be replaced with a clean production name that matches your Play Console listing.',
+            'Open <code>app.json</code>',
+            'Find <code>"package"</code> under <code>android</code> (currently <code>com.h886jdz.surevera</code>)',
+            'Change to your production package name',
+            'Make sure this matches your Google Play Console app'
+          ]},
+          { text: 'Disable cleartext traffic', steps: [
+            '<b>What this is:</b> Cleartext traffic means unencrypted HTTP connections. Like the iOS equivalent, this was enabled during development so the app could talk to your local machine. Disabling it forces all connections through secure HTTPS.',
+            'Open <code>app.json</code>',
+            'Find <code>"usesCleartextTraffic"</code> under <code>android</code>',
+            'Set to <code>false</code>',
+            'Your API uses HTTPS so this is safe'
+          ]},
+          { text: 'Create Google Play Console listing', steps: [
+            '<b>What this is:</b> Google Play Console is Google\'s equivalent of App Store Connect — it\'s the portal where you create your app listing, upload builds, and manage your Play Store presence. This is required before you can publish on Android.',
+            'Go to play.google.com/console',
+            'Click "Create app"',
+            'Enter app name "SureVera", select "App", "Free", target age',
+            'Complete the app content declarations'
+          ]},
+          'Upload app icon (512×512)',
+          'Upload feature graphic (1024×500)',
+          { text: 'Upload screenshots for phone and tablet', steps: [
+            '<b>What this is:</b> Google Play requires screenshots to show users what your app looks like. High-quality screenshots with device frames and captions significantly increase install rates.',
+            'Use the SureVera Mockup Tool or Screenshot Builder',
+            'Take screenshots on Android device sizes',
+            'Upload at least 4 screenshots',
+            'In Play Console, go to Store listing > Graphics'
+          ]},
+          'Write Play Store description (use Store Listing Helper)',
+          'Write short description (80 chars max)',
+          'Set Privacy Policy URL: <code>https://surevera.app/privacy-policy.html</code>',
+          { text: 'Complete Data Safety section', steps: [
+            '<b>What this is:</b> Google\'s Data Safety section is the Android equivalent of Apple\'s App Privacy labels. It tells users what data your app collects and how it\'s used. Google requires this before you can publish, and inaccurate declarations can get your app suspended.',
+            'In Play Console, go to App content > Data safety',
+            'You collect: Device ID (Expo push token) — for App Functionality',
+            'You collect: Approximate Location — for App Functionality',
+            'Data is NOT shared with third parties',
+            'Data is NOT used for advertising or personalization',
+            'Users can request data deletion (via Delete My Data button)'
+          ]},
+          { text: 'Configure subscriptions in Play Console', steps: [
+            '<b>What this is:</b> Just like on iOS, you need to create the subscription product in Google\'s system. Google handles billing and payment processing, but you define the price, trial period, and link it to RevenueCat so purchases sync across platforms.',
+            'Go to Play Console > Monetize > Subscriptions',
+            'Create a subscription: $20/year with 3-day free trial',
+            'Add a base plan and offer',
+            'Link to RevenueCat'
+          ]},
+          'Set pricing for subscription ($20/year)',
+          'Set content rating questionnaire',
+          'Build production binary: <code>eas build --platform android --profile production</code>',
+          'Test production build on real device',
+          'Submit for Google Play Review'
+        ]
+      },
+      {
+        id: 'revenuecat', title: 'RevenueCat Setup', icon: '\uD83D\uDCB3', color: '#FFF3E0',
+        items: [
+          { text: 'Create production app in RevenueCat dashboard', steps: [
+            '<b>What this is:</b> RevenueCat is the service that manages subscriptions across iOS and Android. Creating a production app connects RevenueCat to your real App Store and Play Store accounts so it can verify purchases and track subscribers.',
+            'Go to app.revenuecat.com',
+            'Click "Add New App"',
+            'Select Apple App Store and/or Google Play Store',
+            'Enter your app name and bundle ID / package name',
+            'Add your App Store Connect shared secret (for iOS)',
+            'Add your Google Play service account JSON (for Android)'
+          ]},
+          'Create iOS production API key and update <code>src/config/revenuecat.ts</code>',
+          'Create Android production API key and update <code>src/config/revenuecat.ts</code>',
+          { text: 'Create "premium" entitlement', steps: [
+            '<b>What this is:</b> An entitlement is what RevenueCat uses to decide if a user has paid access. Your app checks for the "premium" entitlement to unlock features. Without this, RevenueCat won\'t know what to grant when someone subscribes.',
+            'In RevenueCat, go to Entitlements',
+            'Create entitlement with ID <code>premium</code>',
+            'This must match <code>ENTITLEMENT_ID</code> in <code>src/config/revenuecat.ts</code>'
+          ]},
+          { text: 'Create subscription product ($20/year)', steps: [
+            '<b>What this is:</b> RevenueCat needs to know about the subscription products you created in App Store Connect and Play Console. Linking them here lets RevenueCat track purchases from both platforms in one dashboard and present the right offering to users.',
+            'In RevenueCat, go to Products',
+            'Add the product IDs from App Store Connect and Play Console',
+            'Create an Offering and attach the products',
+            'Set the offering as "Current"'
+          ]},
+          'Link App Store Connect subscription to RevenueCat',
+          'Link Google Play subscription to RevenueCat',
+          { text: 'Test purchase flow with sandbox account (iOS)', steps: [
+            '<b>What this is:</b> Apple provides a sandbox environment where you can test real purchase flows without spending actual money. This verifies that the entire payment pipeline works — from the paywall UI to RevenueCat granting the premium entitlement.',
+            'Create a sandbox tester in App Store Connect > Users and Access',
+            'Sign out of your real Apple ID on the test device',
+            'Open SureVera and attempt a purchase',
+            'Verify the trial starts and entitlement unlocks',
+            'Verify the purchase appears in RevenueCat dashboard'
+          ]},
+          { text: 'Test purchase flow with test account (Android)', steps: [
+            '<b>What this is:</b> Google Play has its own test environment for verifying purchases without real charges. Testing on Android is especially important because the billing flow looks and behaves differently from iOS.',
+            'Add a license tester in Play Console > Settings > License testing',
+            'Install the app on an Android device with that account',
+            'Attempt a purchase and verify trial + entitlement',
+            'Verify the purchase appears in RevenueCat dashboard'
+          ]},
+          { text: 'Verify trial period (3 days) works correctly', steps: [
+            '<b>What this is:</b> Your app offers a 3-day free trial before the paywall activates. If the trial logic is misconfigured, users might get no trial at all (losing potential subscribers) or an infinite trial (losing revenue). This verifies the full trial lifecycle.',
+            'Confirm <code>TRIAL_DAYS = 3</code> in production channel',
+            'Install fresh (clear all data) and verify 3-day trial countdown',
+            'Verify paywall appears after trial expires',
+            'Verify subscribing unlocks the app'
+          ]}
+        ]
+      },
+      {
+        id: 'mobile-code', title: 'Mobile App \u2014 Code Changes', icon: '\uD83D\uDCF1', color: '#F3E5F5',
+        items: [
+          'Verify TRIAL_DAYS = 3 in production channel (<code>src/config/revenuecat.ts</code>)',
+          'Verify beta-only buttons are hidden in production builds (TRIAL_DAYS !== 999)',
+          'Update app version in <code>app.json</code> if needed (currently 1.0.0)',
+          { text: 'Test onboarding flow end-to-end', steps: [
+            '<b>What this is:</b> The onboarding flow is the first thing new users see when they open your app. If any slide is broken, the privacy disclaimer is missing, or the completion button doesn\'t work, users will get stuck or abandon the app immediately.',
+            'Use "Show Onboarding (Beta Only)" in Help screen',
+            'Verify all slides display correctly including "Your Privacy Matters"',
+            'Test Back and Skip buttons',
+            'Verify "I Understand, Let\'s Go" completes onboarding'
+          ]},
+          { text: 'Test "Delete My Data" flow', steps: [
+            '<b>What this is:</b> Apple requires apps to let users delete their data (App Store guideline 5.1.1). This button removes all server-side data tied to the user\'s device — follows, notification logs, and device tokens. If it\'s broken, Apple will reject your app.',
+            'Go to Help > Legal > Delete My Data',
+            'Verify confirmation dialog shows',
+            'Tap Delete Everything',
+            'Verify success message with counts',
+            'Verify follows are removed'
+          ]},
+          'Test follow/unfollow and push notification flow',
+          'Test search, filter, and sort functionality',
+          'Test favorites save/load',
+          'Test dark mode toggle',
+          'Test all Help screen links (Privacy Policy, Terms of Service, Contact)',
+          'Run app on multiple device sizes to check layout'
+        ]
+      },
+      {
+        id: 'backend', title: 'Backend / Server', icon: '\u2699\uFE0F', color: '#E0F2F1',
+        items: [
+          { text: 'Verify delete-data endpoint is deployed', steps: [
+            '<b>What this is:</b> The delete-data endpoint is what the "Delete My Data" button in the app calls. If this endpoint isn\'t live on your production server, the button will fail silently or error out — and Apple will reject your app for not honoring data deletion requests.',
+            'Push code to GitHub (Railway auto-deploys)',
+            'Test: <code>curl -X DELETE .../api/account/delete-data -H "Content-Type: application/json" -d \'{"token":"test"}\'</code>',
+            'Should return <code>{"ok":true,"message":"No data found..."}</code>'
+          ]},
+          'Add <code>GOOGLE_PLACES_API_KEY</code> to Railway environment variables if needed',
+          { text: 'Verify all cron jobs are running', steps: [
+            '<b>What this is:</b> Cron jobs are scheduled tasks that keep your app\'s data fresh — refreshing inspection scores, checking provider health, and sending score-change notifications. If they stop running, users will see stale or missing health grades.',
+            'Check Railway dashboard for cron service logs',
+            'Verify socrata-refresh ran successfully',
+            'Verify audit-all shows healthy providers',
+            'Check that score-change notifications cron is active'
+          ]},
+          'Run <code>POST /api/admin/socrata-refresh</code> to ensure fresh data',
+          'Run audit-all to verify provider health',
+          'Verify Overpass caches are seeded for all cities',
+          'Test API endpoints from production app build'
+        ]
+      },
+      {
+        id: 'website', title: 'Website (surevera.app) — Publish First', icon: '\uD83C\uDF10', color: '#E8EAF6',
+        items: [
+          { text: 'Create a GitHub repo for the website', steps: [
+            '<b>What this is:</b> A GitHub repository stores your website code and enables free hosting through GitHub Pages. This is the first step to getting surevera.app live — you need the code in a repo before GitHub can serve it as a website.',
+            'Go to github.com and create a new public repo (e.g. <code>surevera-website</code>)',
+            'On your Mac, open Terminal and navigate to the <code>surevera-landing</code> folder',
+            'Run: <code>git init</code>',
+            'Run: <code>git add .</code>',
+            'Run: <code>git commit -m "Initial website"</code>',
+            'Run: <code>git remote add origin https://github.com/YOUR_USERNAME/surevera-website.git</code>',
+            'Run: <code>git branch -M main</code>',
+            'Run: <code>git push -u origin main</code>'
+          ]},
+          { text: 'Enable GitHub Pages', steps: [
+            '<b>What this is:</b> GitHub Pages is a free hosting service that serves your website directly from your GitHub repo. Once enabled, your site will be live at a github.io URL, which you\'ll later point your custom domain to.',
+            'Go to your repo on GitHub',
+            'Click Settings > Pages (in the left sidebar)',
+            'Under "Source", select <code>Deploy from a branch</code>',
+            'Select <code>main</code> branch and <code>/ (root)</code> folder',
+            'Click Save',
+            'Wait 1-2 minutes, then visit <code>https://YOUR_USERNAME.github.io/surevera-website/</code> to verify it works'
+          ]},
+          { text: 'Add CNAME file for custom domain', steps: [
+            '<b>What this is:</b> The CNAME file tells GitHub Pages which custom domain should point to your site. Without it, GitHub won\'t know to serve your website when someone visits surevera.app.',
+            'In your repo, create a file called <code>CNAME</code> (no extension)',
+            'The file should contain only: <code>surevera.app</code>',
+            'Commit and push the file'
+          ]},
+          { text: 'Point GoDaddy domain to GitHub Pages', steps: [
+            '<b>What this is:</b> DNS records tell the internet where to find your website. Right now, surevera.app doesn\'t know to go to GitHub Pages. You need to add A records (for the root domain) and a CNAME record (for www) so visitors reach your site.',
+            'Log in to GoDaddy > My Products > DNS',
+            'Delete any existing A records for <code>@</code>',
+            'Add 4 A records for <code>@</code> pointing to GitHub Pages IPs:',
+            '<code>185.199.108.153</code>',
+            '<code>185.199.109.153</code>',
+            '<code>185.199.110.153</code>',
+            '<code>185.199.111.153</code>',
+            'Add a CNAME record: name <code>www</code>, value <code>YOUR_USERNAME.github.io</code>',
+            'Wait for DNS propagation (can take 10 minutes to 48 hours)'
+          ]},
+          { text: 'Enable HTTPS on GitHub Pages', steps: [
+            '<b>What this is:</b> HTTPS encrypts the connection between your website and visitors, showing the padlock icon in the browser. Without it, browsers will warn users your site is "Not Secure," which destroys trust — especially for an app about food safety.',
+            'Go to repo Settings > Pages',
+            'Check "Enforce HTTPS" (may take a few minutes to become available after DNS propagates)',
+            'Verify <code>https://surevera.app</code> loads with the padlock icon'
+          ]},
+          { text: 'Verify all pages load correctly', steps: [
+            '<b>What this is:</b> Both Apple and Google require working Privacy Policy and Terms of Service URLs before they\'ll approve your app. If any page is broken or missing, your app submission will be rejected.',
+            'Visit <code>https://surevera.app</code> — landing page',
+            'Visit <code>https://surevera.app/privacy-policy.html</code>',
+            'Visit <code>https://surevera.app/terms-of-service.html</code>',
+            'Test all navigation links and buttons',
+            'Test on mobile (resize browser or use phone)',
+            'Verify screenshots display correctly'
+          ]},
+          { text: 'Set up support@sureveraapp.com email', steps: [
+            '<b>What this is:</b> Both app stores require a working support email. This is also what users see in your app\'s Contact Us section. Having a professional @sureveraapp.com address builds trust compared to a personal Gmail.',
+            'In GoDaddy, set up email forwarding or a workspace email for support@sureveraapp.com',
+            'Or use a free email forwarding service to forward to your personal email',
+            'Send a test email to verify it arrives'
+          ]},
+          'Add real App Store link to landing page download buttons (after app is approved)',
+          'Add real Play Store link to landing page download buttons (after app is approved)',
+          'Update Link in Bio page with real social media links'
+        ]
+      },
+      {
+        id: 'llc', title: 'Business / LLC Setup (Arrio Technologies)', icon: '\uD83C\uDFE2', color: '#E0F2F1',
+        items: [
+          { text: 'Verify Arrio Technologies LLC is in good standing', steps: [
+            '<b>What this is:</b> An LLC in "good standing" means it\'s current on all state filings and fees. If it\'s lapsed, you can\'t legally do business under it, and Apple/Google may reject your developer account application.',
+            'Go to your state\'s Secretary of State website (likely Texas)',
+            'Search for "Arrio Technologies LLC"',
+            'Verify status is "Active" or "In Good Standing"',
+            'If lapsed, file reinstatement paperwork and pay any back fees',
+            'Note your EIN (Employer Identification Number) — you\'ll need it for app store accounts'
+          ]},
+          { text: 'Update Registered Agent to a professional agency', steps: [
+            '<b>What this is:</b> A registered agent receives legal documents (lawsuits, tax notices) on your LLC\'s behalf. If you\'re currently your own agent, your home address is on public record. A professional agency keeps your address private and ensures nothing gets missed.',
+            'Choose a registered agent service (e.g. Northwest Registered Agent, LegalZoom, Incfile, ZenBusiness)',
+            'Sign up with your chosen agency — typical cost is $100-$300/year',
+            'They will provide you with their registered agent name and address',
+            'File a "Change of Registered Agent" form with your state\'s Secretary of State',
+            'In Texas: file Form 401 online at sos.state.tx.us — filing fee is $15',
+            'Using an agency keeps your personal address off public records and ensures legal documents are handled professionally'
+          ]},
+          { text: 'Get a D-U-N-S Number (required for Apple Organization account)', steps: [
+            '<b>What this is:</b> A D-U-N-S Number is a unique business identifier assigned by Dun & Bradstreet. Apple requires it to verify your LLC is a real business before granting an Organization developer account. It\'s free but takes about a week to get.',
+            'Go to developer.apple.com/enroll/duns-lookup',
+            'Search for Arrio Technologies LLC',
+            'If not found, request a free D-U-N-S number from Dun & Bradstreet',
+            'Takes about 5-7 business days to receive',
+            'Save the number — Apple will ask for it during enrollment'
+          ]},
+          { text: 'Enroll Apple Developer as Organization', steps: [
+            '<b>What this is:</b> An Organization developer account shows "Arrio Technologies LLC" as the seller on the App Store instead of your personal name. This looks more professional and provides legal separation between you and the business.',
+            'Go to developer.apple.com/account',
+            'If currently enrolled as Individual, contact Apple to convert to Organization',
+            'Or enroll as a new Organization account ($99/year)',
+            'You\'ll need: D-U-N-S Number, EIN, legal entity name "Arrio Technologies LLC"',
+            'Once approved, App Store will show "Arrio Technologies LLC" as the seller'
+          ]},
+          { text: 'Set up Google Play Console under the LLC', steps: [
+            '<b>What this is:</b> Similar to Apple, Google Play shows a developer name on your app listing. Setting it to your LLC name looks professional and keeps your personal name off the public listing.',
+            'In Google Play Console, go to Settings > Developer account > Developer page',
+            'Set developer name to "Arrio Technologies LLC" or "Arriotech"',
+            'Update contact information with business address and email'
+          ]},
+          { text: 'Open a business bank account (if not already)', steps: [
+            '<b>What this is:</b> A dedicated business bank account keeps your LLC\'s finances separate from personal funds. Apple and Google pay subscription revenue to a bank account, and mixing business and personal money can compromise your LLC\'s legal protection.',
+            'Open a checking account under Arrio Technologies LLC',
+            'You\'ll need: EIN, LLC formation documents, photo ID',
+            'Link this account to Apple and Google for subscription revenue payouts',
+            'Link to RevenueCat if handling payments through them'
+          ]},
+          'Update RevenueCat account with business information',
+          'Update Railway billing to business account if desired',
+          { text: 'Consider business insurance', steps: [
+            '<b>What this is:</b> Business insurance protects your LLC if something goes wrong — like a user claiming they got sick relying on your health grade data. It\'s not required to launch, but it\'s a safety net as your user base grows.',
+            'General liability insurance protects against lawsuits',
+            'Errors & omissions (E&O) insurance covers data accuracy claims',
+            'Not required to launch, but recommended as you grow'
+          ]}
+        ]
+      },
+      {
+        id: 'marketing', title: 'Marketing & Launch', icon: '\uD83D\uDE80', color: '#FFF8E1',
+        items: [
+          { text: 'Prepare App Store screenshots', steps: [
+            '<b>What this is:</b> App Store screenshots are the #1 factor in whether someone downloads your app. Professional screenshots with device frames and captions convert browsers into users. The SureVera toolkit has tools to make this easy.',
+            'Take screenshots on iPhone simulator (Cmd+S)',
+            'Open the Phone Mockup Tool',
+            'Wrap in iPhone 16 Pro frame',
+            'Open the Screenshot Builder',
+            'Add headlines and branding',
+            'Export for 6.7", 6.1", and 5.5" sizes'
+          ]},
+          { text: 'Prepare Play Store screenshots', steps: [
+            '<b>What this is:</b> Google Play needs its own set of screenshots wrapped in Android device frames. You can reuse the same app screenshots from iOS but wrap them in an Android phone frame so they look native to the platform.',
+            'Use same screenshots from iOS',
+            'Wrap in a Galaxy S23 Ultra or Pixel 9 frame in Mockup Tool',
+            'Export at 1080×1920 via Screenshot Builder'
+          ]},
+          'Create social media announcement posts using Social Templates',
+          'Generate QR codes for print materials',
+          'Set up Instagram account for SureVera',
+          'Set up TikTok account for SureVera',
+          'Update Link in Bio page with real social links',
+          'Prepare launch day social posts',
+          'Prepare "Now Available" city cards for major cities'
+        ]
+      },
+      {
+        id: 'security-now', title: 'Security — Fix Now (During Beta)', icon: '\uD83D\uDD12', color: '#FEE2E2',
+        items: [
+          { text: 'Remove <code>.env.production</code> from git tracking', steps: [
+            '<b>What this is:</b> Your <code>.env.production</code> file contains your database password and admin secret. It was being tracked by git, meaning anyone with access to the repo could see those credentials in the commit history.',
+            '<b>What the fix does:</b> Removes the file from git tracking (but keeps it on your computer) and adds it to <code>.gitignore</code> so it can never be accidentally committed again.',
+            'Run: <code>git rm --cached .env.production</code>',
+            'Verify <code>.env.production</code> is in <code>.gitignore</code>',
+            'Commit and push to GitHub'
+          ]},
+          { text: 'Use timing-safe comparison for admin secret on all endpoints', steps: [
+            '<b>What this is:</b> All 23 admin API endpoints (socrata-refresh, bell-county-refresh, audit-all, etc.) verify your secret using a simple <code>!==</code> string comparison. This is vulnerable to "timing attacks" — an attacker can guess your secret one character at a time by measuring how long the server takes to respond.',
+            '<b>What the fix does:</b> Replaces all secret checks with Node.js\'s <code>crypto.timingSafeEqual()</code>, which always takes the same amount of time regardless of how many characters match. This makes timing attacks impossible.',
+            'A shared <code>isValidSecret()</code> helper was created in <code>src/lib/adminAuth.ts</code>',
+            'All 23 admin routes now use this helper instead of direct string comparison'
+          ]},
+          { text: 'Add rate limiting to admin endpoints', steps: [
+            '<b>What this is:</b> Your public search endpoints already have rate limiting (60 req/min), but admin endpoints like socrata-refresh, seed-cities, and bell-county-refresh had no limits. If someone got your secret, they could hammer these expensive endpoints and run up your Railway bill or crash the server.',
+            '<b>What the fix does:</b> Adds a 10 requests per minute limit to the 11 most expensive admin endpoints. Uses the same rate limiter already built into <code>src/lib/rateLimit.ts</code>. If someone exceeds the limit, they get a 429 "Too Many Requests" response.',
+            'Applied to: socrata-refresh, seed-cities, bell-county-refresh, san-antonio-refresh, wcchd-refresh, snhd-refresh, anchorage-refresh, florida-refresh, sc-refresh, match-quality, check-score-changes'
+          ]},
+          { text: 'Restrict CORS on Stripe checkout endpoint', steps: [
+            '<b>What this is:</b> CORS (Cross-Origin Resource Sharing) controls which websites can make requests to your API. The Stripe checkout endpoint was set to <code>*</code> (allow any website), meaning any random website could create checkout sessions on your behalf.',
+            '<b>What the fix does:</b> Restricts it to only <code>https://surevera.app</code>, so only your official website can initiate Stripe checkouts. Requests from any other website will be blocked by the browser.',
+            'Changed in <code>src/app/api/stripe/create-checkout/route.ts</code>'
+          ]},
+          { text: 'Redact Stripe error details from API responses', steps: [
+            '<b>What this is:</b> When the Stripe checkout endpoint hit an error, it was returning the raw Stripe error message to the user (e.g. <code>details: e?.message</code>). These error messages can contain internal info like API key fragments or session IDs that help attackers.',
+            '<b>What the fix does:</b> Returns only a generic "Failed to create checkout session" message to the user. The real error is still logged server-side in Railway for debugging.',
+            'Changed in <code>src/app/api/stripe/create-checkout/route.ts</code>'
+          ]},
+          { text: 'Validate deep link restaurantId parameter', steps: [
+            '<b>What this is:</b> Deep links let users open the app directly to a restaurant (e.g. <code>surevera://restaurant/node:12345</code>). The restaurantId from the URL was used without any validation, meaning a malicious link could pass in harmful characters like <code>../../</code> or script injections.',
+            '<b>What the fix does:</b> Validates that the restaurantId only contains safe characters (letters, numbers, colons, dots). If someone crafts a malicious deep link, the invalid ID is rejected and the user sees a "Missing restaurant ID" error instead.',
+            'Validation regex: <code>/^[\\w:.]+$/</code> in <code>RestaurantDetailScreen.tsx</code>'
+          ]},
+          { text: 'Validate PDF URL scheme before opening', steps: [
+            '<b>What this is:</b> The Inspector Notes screen has a button to open the original inspection PDF. It used <code>Linking.openURL()</code> to open whatever URL was provided, without checking if it was actually an HTTPS link. A malicious URL like <code>javascript://</code> or <code>tel:+1234567890</code> could trigger unintended actions.',
+            '<b>What the fix does:</b> Checks that the URL starts with <code>https://</code> before opening it. If it doesn\'t, an alert is shown instead of opening the link.',
+            'Changed in <code>InspectorNotesScreen.tsx</code>'
+          ]},
+          { text: 'Disable source maps in production Next.js build', steps: [
+            '<b>What this is:</b> Source maps are files that map the compiled/minified code back to your original source code. They\'re great for debugging, but in production they let anyone reverse-engineer your entire backend — see your logic, find secrets, and identify vulnerabilities.',
+            '<b>What the fix does:</b> Adds <code>productionBrowserSourceMaps: false</code> to <code>next.config.ts</code>, so Next.js no longer generates source maps in production builds. Your Railway deployment will no longer expose your source code.',
+            'Changed in <code>next.config.ts</code>'
+          ]}
+        ]
+      },
+      {
+        id: 'security-golive', title: 'Security — Before Go-Live', icon: '\uD83D\uDEE1\uFE0F', color: '#FEF3C7',
+        items: [
+          { text: 'Set <code>NSAllowsArbitraryLoads</code> to <code>false</code> in app.json', steps: [
+            '<b>What this is:</b> This iOS setting controls whether your app can make unencrypted HTTP connections. When set to <code>true</code>, the app can talk to any server over plain HTTP — meaning anyone on the same WiFi network could intercept the data being sent (passwords, tokens, user data). It was set to <code>true</code> during development so the app could talk to your local computer.',
+            '<b>What the fix does:</b> Setting it to <code>false</code> forces the app to only use encrypted HTTPS connections. Since your production API already uses HTTPS, this is safe to turn off.',
+            'Open <code>app.json</code>',
+            'Find <code>NSAllowsArbitraryLoads</code> under <code>ios.infoPlist</code>',
+            'Set to <code>false</code>'
+          ]},
+          { text: 'Set <code>usesCleartextTraffic</code> to <code>false</code> in app.json', steps: [
+            '<b>What this is:</b> This is the Android equivalent of the iOS setting above. When <code>true</code>, the Android app allows unencrypted HTTP traffic, making it vulnerable to the same interception attacks.',
+            '<b>What the fix does:</b> Setting it to <code>false</code> ensures Android only allows HTTPS connections.',
+            'Open <code>app.json</code>',
+            'Find <code>usesCleartextTraffic</code> under <code>android</code>',
+            'Set to <code>false</code>'
+          ]},
+          { text: 'Replace RevenueCat test API key with production key', steps: [
+            '<b>What this is:</b> RevenueCat manages your app subscriptions ($20/year plan). Right now the app uses a test API key (<code>test_VaAJvH...</code>) which connects to RevenueCat\'s sandbox/testing environment. Test keys don\'t process real payments.',
+            '<b>What the fix does:</b> Swapping to the production key connects to RevenueCat\'s live environment so real payments work. The test key should be completely removed from source code so it doesn\'t ship in the app bundle.',
+            'Get production API key from RevenueCat dashboard',
+            'Update <code>src/config/revenuecat.ts</code>',
+            'Remove the test key entirely from source code'
+          ]},
+          { text: 'Change APS environment to production', steps: [
+            '<b>What this is:</b> APS (Apple Push Notification service) has two environments: "development" (for testing) and "production" (for App Store). Your entitlements file is set to "development", which means push notifications will only work on test builds — not on the version users download from the App Store.',
+            '<b>What the fix does:</b> Switching to "production" ensures push notifications (grade change alerts) work for real App Store users.',
+            'Open <code>ios/SureVera/SureVera.entitlements</code>',
+            'Change <code>aps-environment</code> from <code>development</code> to <code>production</code>'
+          ]},
+          { text: 'Rotate database password in Railway', steps: [
+            '<b>What this is:</b> Your PostgreSQL database password was previously committed to git in <code>.env.production</code>. Even though you\'re the only one with access and we removed the file from tracking, best practice is to rotate (change) the password so the old one in git history is useless.',
+            '<b>What the fix does:</b> Generates a new database password. Even if someone somehow got the old password from git history, it would no longer work.',
+            'Go to Railway dashboard > Postgres service > Settings',
+            'Generate a new password',
+            'Update <code>.env</code> and <code>.env.local</code> locally with the new connection string',
+            'Railway app will auto-pick up the new env var'
+          ]},
+          { text: 'Rotate IMPORT_SECRET and update all cron jobs', steps: [
+            '<b>What this is:</b> The IMPORT_SECRET is the password that protects all your admin API endpoints (data refresh, audits, seed commands, etc.). Like the database password, it was previously in git history. You rotated it 2 weeks ago, but rotating again before launch ensures a clean slate.',
+            '<b>What the fix does:</b> Generates a brand new secret. All Railway cron jobs that call admin endpoints need to be updated with the new secret.',
+            'Generate a new secret (e.g. <code>openssl rand -base64 32</code>)',
+            'Update IMPORT_SECRET in Railway environment variables',
+            'Update all Railway cron service commands with the new secret',
+            'Test an admin endpoint to verify'
+          ]},
+          { text: 'Move push token to SecureStore instead of AsyncStorage', steps: [
+            '<b>What this is:</b> The Expo push token (your user\'s unique device identifier for notifications) is currently stored in AsyncStorage, which is basically a plain text file on the device. Anyone with physical access to the device (or a malicious app on a rooted/jailbroken phone) could read it.',
+            '<b>What the fix does:</b> Moves the push token to <code>expo-secure-store</code>, which uses the iOS Keychain and Android Keystore — hardware-backed encrypted storage that even other apps on the device can\'t access. Favorites and follows stay in AsyncStorage since they\'re not sensitive.',
+            'Install <code>expo-secure-store</code> if not already installed',
+            'Replace <code>AsyncStorage.getItem("expo_push_token")</code> with <code>SecureStore.getItemAsync</code>',
+            'Replace <code>AsyncStorage.setItem("expo_push_token")</code> with <code>SecureStore.setItemAsync</code>',
+            'Update all files that read/write the push token'
+          ]}
+        ]
+      },
+      {
+        id: 'security-postlaunch', title: 'Security — After Go-Live', icon: '\uD83D\uDD0D', color: '#E0F2F1',
+        items: [
+          { text: 'Implement server-side subscription validation', steps: [
+            '<b>What this is:</b> Right now, the paywall is enforced entirely on the mobile app (client-side). The backend API has no idea if a user is subscribed or not — anyone can call the API directly (using curl or a script) and get full results without paying. This is the #1 revenue-protection issue.',
+            '<b>What the fix does:</b> Adds a check on the backend that verifies a user\'s subscription status with RevenueCat before returning premium data. The mobile app would send a subscription token in API request headers, and the backend would validate it with RevenueCat\'s API.',
+            'Add middleware that checks for an <code>Authorization</code> header on premium endpoints',
+            'Validate the token with RevenueCat\'s REST API server-side',
+            'Return limited data (or 403) for unsubscribed users'
+          ]},
+          { text: 'Implement server-side trial tracking', steps: [
+            '<b>What this is:</b> The 3-day free trial is tracked entirely in AsyncStorage on the user\'s device. A user can get unlimited free trials by simply clearing the app data, reinstalling, or using the "Delete My Data" button. The server has no record of when a trial started.',
+            '<b>What the fix does:</b> Stores the trial start date on the server (tied to the device\'s push token). When the app asks "am I still in my trial?", the server checks its own records instead of trusting the device. Reinstalling or clearing data won\'t reset the trial.',
+            'Create a <code>POST /api/device/trial-start</code> endpoint (idempotent — only sets the date once)',
+            'Store trial start date in the DeviceToken table',
+            'Return trial status in API responses',
+            'Mobile app reads trial status from server, not AsyncStorage'
+          ]},
+          { text: 'Clean <code>.env.production</code> from git history', steps: [
+            '<b>What this is:</b> Even though we removed <code>.env.production</code> from git tracking, the old commits that added it still exist in git history. Someone with repo access could look at those old commits and see the database password and admin secret that were there (even though they\'ve been rotated).',
+            '<b>What the fix does:</b> Rewrites git history to permanently erase the file from all past commits. After this, even looking at old commits won\'t show the secrets.',
+            'Use <code>BFG Repo-Cleaner</code> (easier) or <code>git filter-branch</code> to remove the file from all commits',
+            'Force push to GitHub: <code>git push --force</code>',
+            'This is safe since you\'re the only contributor'
+          ]},
+          { text: 'Add request logging for admin endpoints', steps: [
+            '<b>What this is:</b> Currently there\'s no record of who called your admin endpoints or when. If someone somehow got your secret, you\'d have no way to know they were using it.',
+            '<b>What the fix does:</b> Logs the timestamp, IP address, and endpoint for every admin API call. This creates an audit trail so you can detect suspicious activity — like someone calling socrata-refresh from an IP that isn\'t yours.',
+            'Add a simple logger in the <code>isValidSecret</code> helper or as middleware',
+            'Log to Railway\'s built-in logging (console.log is captured automatically)',
+            'Optionally store in a database table for longer retention'
+          ]},
+          { text: 'Set up uptime monitoring for production API', steps: [
+            '<b>What this is:</b> If your Railway server goes down at 3am, you won\'t know until users complain. Uptime monitoring pings your API on a schedule and alerts you immediately when it\'s unreachable.',
+            '<b>What the fix does:</b> A monitoring service (free options: UptimeRobot, Better Stack, Cronitor) checks your API every few minutes and sends you an email/text if it goes down.',
+            'Sign up for a free monitoring service',
+            'Add a health check URL (e.g. your API root or a <code>/api/health</code> endpoint)',
+            'Set up email or SMS alerts'
+          ]},
+          { text: 'Schedule quarterly security review', steps: [
+            '<b>What this is:</b> Security isn\'t a one-time thing. As you add features, new vulnerabilities can creep in. A quarterly review catches issues before they become problems.',
+            '<b>What the fix does:</b> Set a recurring calendar reminder to re-run the vibe-security audit (or a similar review) every 3 months. Check for new hardcoded secrets, review new endpoints, and verify existing protections still work.',
+            'Set a calendar reminder for every 3 months',
+            'Re-run the security audit skill',
+            'Review any new API endpoints or features added since last review'
+          ]}
+        ]
+      },
+      {
+        id: 'post-launch', title: 'Post-Launch', icon: '\uD83D\uDCCA', color: '#FCE4EC',
+        items: [
+          'Monitor App Store reviews and respond',
+          'Monitor Google Play reviews and respond',
+          'Check RevenueCat dashboard for subscription metrics',
+          'Monitor Railway server health and error logs',
+          'Check admin dashboard for provider health',
+          'Plan first content update / "What\'s New" release'
+        ]
+      }
+    ];
+
+    // Load state
+    function loadChecked() {
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch { return {}; }
+    }
+    function saveChecked(state) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+    function loadCollapsed() {
+      try { return JSON.parse(localStorage.getItem(COLLAPSED_KEY)) || {}; } catch { return {}; }
+    }
+    function saveCollapsed(state) {
+      localStorage.setItem(COLLAPSED_KEY, JSON.stringify(state));
+    }
+
+    let checkedState = loadChecked();
+    let collapsedState = loadCollapsed();
+
+    function itemKey(sectionId, idx) {
+      return sectionId + ':' + idx;
+    }
+    function subKey(sectionId, idx, subIdx) {
+      return sectionId + ':' + idx + ':' + subIdx;
+    }
+    function getItemText(item) {
+      return typeof item === 'string' ? item : item.text;
+    }
+    function getItemSteps(item) {
+      return (typeof item === 'object' && item.steps) ? item.steps : null;
+    }
+
+    function getTotalCounts() {
+      let total = 0, done = 0;
+      sections.forEach(s => {
+        s.items.forEach((item, i) => {
+          var steps = getItemSteps(item);
+          if (steps) {
+            steps.forEach((_, si) => { total++; if (checkedState[subKey(s.id, i, si)]) done++; });
+          } else {
+            total++;
+            if (checkedState[itemKey(s.id, i)]) done++;
+          }
+        });
+      });
+      return { total, done };
+    }
+
+    function getSectionCounts(sectionId, items) {
+      let total = 0, done = 0;
+      items.forEach((item, i) => {
+        var steps = getItemSteps(item);
+        if (steps) {
+          steps.forEach((_, si) => { total++; if (checkedState[subKey(sectionId, i, si)]) done++; });
+        } else {
+          total++;
+          if (checkedState[itemKey(sectionId, i)]) done++;
+        }
+      });
+      return { total, done };
+    }
+
+    function updateProgress() {
+      const { total, done } = getTotalCounts();
+      const pct = total === 0 ? 0 : Math.round((done / total) * 100);
+      document.getElementById('progressPct').textContent = pct + '%';
+      document.getElementById('progressFill').style.width = pct + '%';
+    }
+
+    function render() {
+      const container = document.getElementById('checklistContainer');
+      container.innerHTML = '';
+
+      sections.forEach(section => {
+        const { total, done } = getSectionCounts(section.id, section.items);
+        const isCollapsed = collapsedState[section.id] || false;
+
+        const card = document.createElement('div');
+        card.className = 'section-card' + (isCollapsed ? ' collapsed' : '');
+
+        const header = document.createElement('div');
+        header.className = 'section-header';
+        header.innerHTML = `
+          <div class="section-header-left">
+            <div class="section-icon" style="background:${section.color}">${section.icon}</div>
+            <span class="section-title">${section.title}</span>
+          </div>
+          <div style="display:flex;align-items:center">
+            <span class="section-count">${done} / ${total} completed</span>
+            <span class="section-chevron">\u25BC</span>
+          </div>
+        `;
+        header.addEventListener('click', () => {
+          collapsedState[section.id] = !collapsedState[section.id];
+          saveCollapsed(collapsedState);
+          render();
+        });
+
+        const itemsDiv = document.createElement('div');
+        itemsDiv.className = 'section-items';
+
+        section.items.forEach((rawItem, idx) => {
+          const text = getItemText(rawItem);
+          const steps = getItemSteps(rawItem);
+          const key = itemKey(section.id, idx);
+
+          if (steps) {
+            // Item with sub-steps — parent is not directly checkable
+            const subDone = steps.filter((_, si) => checkedState[subKey(section.id, idx, si)]).length;
+            const allDone = subDone === steps.length;
+            const expandKey = 'expand:' + key;
+            const isExpanded = !!collapsedState[expandKey];
+
+            const wrapper = document.createElement('div');
+
+            const item = document.createElement('div');
+            item.className = 'checklist-item' + (allDone ? ' checked' : '');
+            item.style.cursor = 'default';
+            item.innerHTML = `
+              <div class="custom-check">
+                <svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="2,6 5,9 10,3"/>
+                </svg>
+              </div>
+              <span class="item-text">${text}</span>
+              <span class="sub-step-progress">${subDone}/${steps.length}</span>
+              <button class="item-expand-btn">${isExpanded ? 'Hide steps \u25B2' : 'Show steps \u25BC'}</button>
+            `;
+            item.querySelector('.item-expand-btn').addEventListener('click', (e) => {
+              e.stopPropagation();
+              collapsedState[expandKey] = !collapsedState[expandKey];
+              saveCollapsed(collapsedState);
+              render();
+            });
+            // Clicking the checkbox area toggles all sub-steps
+            item.querySelector('.custom-check').addEventListener('click', (e) => {
+              e.stopPropagation();
+              const newState = !allDone;
+              steps.forEach((_, si) => {
+                checkedState[subKey(section.id, idx, si)] = newState;
+              });
+              saveChecked(checkedState);
+              // Auto-expand when checking, so user sees the sub-steps
+              if (newState && !isExpanded) {
+                collapsedState[expandKey] = true;
+                saveCollapsed(collapsedState);
+              }
+              render();
+              updateProgress();
+            });
+            // Clicking the text toggles expand/collapse
+            item.querySelector('.item-text').addEventListener('click', () => {
+              collapsedState[expandKey] = !collapsedState[expandKey];
+              saveCollapsed(collapsedState);
+              render();
+            });
+
+            const subDiv = document.createElement('div');
+            subDiv.className = 'sub-steps' + (isExpanded ? ' open' : '');
+
+            steps.forEach((stepText, si) => {
+              const sk = subKey(section.id, idx, si);
+              const isSubChecked = !!checkedState[sk];
+
+              const step = document.createElement('label');
+              step.className = 'sub-step' + (isSubChecked ? ' checked' : '');
+              step.innerHTML = `
+                <input type="checkbox" style="display:none" ${isSubChecked ? 'checked' : ''}>
+                <div class="sub-check">
+                  <svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="2,6 5,9 10,3"/>
+                  </svg>
+                </div>
+                <span class="sub-step-text">${stepText}</span>
+              `;
+              step.querySelector('input').addEventListener('change', (e) => {
+                checkedState[sk] = e.target.checked;
+                saveChecked(checkedState);
+                render();
+                updateProgress();
+              });
+              subDiv.appendChild(step);
+            });
+
+            wrapper.appendChild(item);
+            wrapper.appendChild(subDiv);
+            itemsDiv.appendChild(wrapper);
+          } else {
+            // Simple item — directly checkable
+            const isChecked = !!checkedState[key];
+
+            const item = document.createElement('label');
+            item.className = 'checklist-item' + (isChecked ? ' checked' : '');
+
+            item.innerHTML = `
+              <input type="checkbox" ${isChecked ? 'checked' : ''}>
+              <div class="custom-check">
+                <svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="2,6 5,9 10,3"/>
+                </svg>
+              </div>
+              <span class="item-text">${text}</span>
+            `;
+
+            item.querySelector('input').addEventListener('change', (e) => {
+              checkedState[key] = e.target.checked;
+              saveChecked(checkedState);
+              render();
+              updateProgress();
+            });
+
+            itemsDiv.appendChild(item);
+          }
+        });
+
+        card.appendChild(header);
+        card.appendChild(itemsDiv);
+        container.appendChild(card);
+      });
+
+      // Reset button
+      const resetDiv = document.createElement('div');
+      resetDiv.className = 'reset-wrapper';
+      resetDiv.innerHTML = '<button class="reset-btn">Reset All Progress</button>';
+      resetDiv.querySelector('button').addEventListener('click', () => {
+        if (confirm('Are you sure you want to reset all checklist progress? This cannot be undone.')) {
+          checkedState = {};
+          collapsedState = {};
+          saveChecked(checkedState);
+          saveCollapsed(collapsedState);
+          render();
+          updateProgress();
+        }
+      });
+      container.appendChild(resetDiv);
+
+      updateProgress();
+    }
+
+    render();
+  </script>
+  <script src="dark-mode.js"></script>
+  <script src="toolkit-nav.js"></script>
+</body>
+</html>

@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>City Data Expansion — Outreach Toolkit</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy: #1B3A6B;
+      --dark-navy: #0D1B2E;
+      --orange: #E8612A;
+      --bg: #F4F5F7;
+      --card-bg: #FFFFFF;
+      --text: #1a1a1a;
+      --text-secondary: #6B7280;
+      --border: #E5E7EB;
+      --section-hover: #F9FAFB;
+      --footer-bg: #F9FAFB;
+      --footer-text: #9CA3AF;
+      --tag-bg: #EFF6FF;
+      --tag-text: #1D4ED8;
+      --copy-bg: #F0FDF4;
+      --copy-text: #15803D;
+      --tip-bg: #FFFBEB;
+      --tip-border: #FCD34D;
+      --tip-text: #92400E;
+      --pre-bg: #F8FAFC;
+    }
+
+    body.dark-mode, [data-theme="dark"],
+    [data-theme="dark"] body,
+    [data-theme="dark"] {
+      --bg: #0D1B2E;
+      --card-bg: #132240;
+      --text: #FFFFFF;
+      --text-secondary: #8B9EC7;
+      --border: rgba(255,255,255,0.20);
+      --section-hover: #1A3060;
+      --footer-bg: #0A1422;
+      --footer-text: #5A6E99;
+      --tag-bg: #1A3060;
+      --tag-text: #60A5FA;
+      --copy-bg: #0A2A1A;
+      --copy-text: #4ADE80;
+      --tip-bg: #2A2000;
+      --tip-border: #854D0E;
+      --tip-text: #FCD34D;
+      --pre-bg: #0D1B2E;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    .toolbar {
+      background: linear-gradient(135deg, #0D1B2E 0%, #1B3A6B 100%);
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 1.5rem 1rem 3rem;
+    }
+
+    .page-header {
+      text-align: center;
+      padding: 2rem 1rem 1rem;
+    }
+
+    .page-header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+    }
+
+    .page-header p {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      max-width: 560px;
+      margin: 0 auto;
+    }
+
+    /* Section cards */
+    .section-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      margin-bottom: 1rem;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.25rem;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.15s;
+    }
+
+    .section-header:hover {
+      background: var(--section-hover);
+    }
+
+    .section-header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .section-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .section-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .section-count {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    .section-chevron {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      transition: transform 0.2s;
+      margin-left: 0.75rem;
+    }
+
+    .section-card.collapsed .section-chevron {
+      transform: rotate(-90deg);
+    }
+
+    .section-card.collapsed .section-items {
+      display: none;
+    }
+
+    .section-items {
+      border-top: 1px solid var(--border);
+      padding: 1.25rem;
+    }
+
+    /* Template cards */
+    .template-card {
+      background: var(--card-bg);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      margin-bottom: 0.75rem;
+      overflow: hidden;
+    }
+
+    .template-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.85rem 1rem;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.15s;
+    }
+
+    .template-header:hover {
+      background: var(--section-hover);
+    }
+
+    .template-header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      min-width: 0;
+    }
+
+    .template-num {
+      background: var(--orange);
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 700;
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .template-title {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .template-chevron {
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+      transition: transform 0.2s;
+      flex-shrink: 0;
+      margin-left: 0.5rem;
+    }
+
+    .template-card.collapsed .template-chevron {
+      transform: rotate(-90deg);
+    }
+
+    .template-card.collapsed .template-body {
+      display: none;
+    }
+
+    .template-body {
+      border-top: 1px solid var(--border);
+      padding: 1rem 1.25rem;
+    }
+
+    .template-scenario {
+      font-size: 0.8rem;
+      font-style: italic;
+      color: var(--text-secondary);
+      margin-bottom: 0.75rem;
+      padding: 0.5rem 0.75rem;
+      background: var(--section-hover);
+      border-radius: 6px;
+    }
+
+    .template-subject {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--tag-text);
+      background: var(--tag-bg);
+      padding: 0.4rem 0.75rem;
+      border-radius: 6px;
+      margin-bottom: 0.75rem;
+      display: inline-block;
+    }
+
+    .template-email {
+      font-size: 0.85rem;
+      color: var(--text);
+      white-space: pre-wrap;
+      line-height: 1.7;
+      background: var(--pre-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .template-note {
+      font-size: 0.78rem;
+      color: var(--tip-text);
+      background: var(--tip-bg);
+      border-left: 3px solid var(--tip-border);
+      padding: 0.5rem 0.75rem;
+      border-radius: 0 6px 6px 0;
+      margin-bottom: 0.75rem;
+    }
+
+    .copy-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--copy-bg);
+      color: var(--copy-text);
+      border: 1px solid var(--copy-text);
+      padding: 0.45rem 1rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+
+    .copy-btn:hover {
+      opacity: 0.85;
+    }
+
+    .copy-btn.copied {
+      background: var(--orange);
+      color: #fff;
+      border-color: var(--orange);
+    }
+
+    /* One-pager content */
+    .onepager-content h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--orange);
+      margin: 1.25rem 0 0.5rem;
+    }
+
+    .onepager-content h3:first-child {
+      margin-top: 0;
+    }
+
+    .onepager-content p,
+    .onepager-content li {
+      font-size: 0.875rem;
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    .onepager-content ul {
+      padding-left: 1.25rem;
+      margin: 0.25rem 0 0.75rem;
+    }
+
+    .onepager-content li {
+      margin-bottom: 0.25rem;
+    }
+
+    /* Tips */
+    .tip-item {
+      display: flex;
+      gap: 0.75rem;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tip-item:last-child {
+      border-bottom: none;
+    }
+
+    .tip-num {
+      background: var(--navy);
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 700;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .tip-text {
+      font-size: 0.875rem;
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .tip-text strong {
+      color: var(--orange);
+    }
+
+    .footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      font-size: 0.8rem;
+      color: var(--footer-text);
+      background: var(--footer-bg);
+      border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 600px) {
+      .toolbar { padding: 1rem; }
+      .container { padding: 1rem 0.75rem 2rem; }
+      .page-header h1 { font-size: 1.35rem; }
+      .section-header { padding: 0.85rem 1rem; }
+      .section-items { padding: 1rem; }
+      .template-header { padding: 0.75rem 0.85rem; }
+      .template-body { padding: 0.85rem 1rem; }
+      .template-title { font-size: 0.8rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="toolbar">
+    <img src="surevera-header-white-logo.png" alt="SureVera" style="height:32px">
+    <div style="width:1px;height:24px;background:rgba(255,255,255,0.2)"></div>
+    <span style="font-size:0.85rem;font-weight:500;color:rgba(255,255,255,0.6)">City Expansion Outreach</span>
+  </div>
+
+  <div class="page-header">
+    <h1>City Data Expansion &mdash; Outreach Toolkit</h1>
+    <p>Email templates and partnership documents for health department outreach</p>
+  </div>
+
+  <div class="container">
+
+    <!-- ============================================================ -->
+    <!-- SECTION 1: Partnership One-Pager -->
+    <!-- ============================================================ -->
+    <div class="section-card collapsed" id="sec-onepager">
+      <div class="section-header" onclick="toggleSection('sec-onepager')">
+        <div class="section-header-left">
+          <div class="section-icon" style="background:#EFF6FF">&#128196;</div>
+          <span class="section-title">Partnership One-Pager (Quick Reference)</span>
+        </div>
+        <div style="display:flex;align-items:center">
+          <span class="section-count">Full pitch document</span>
+          <span class="section-chevron">&#9660;</span>
+        </div>
+      </div>
+      <div class="section-items">
+        <div class="onepager-content">
+
+          <h3>What SureVera Does</h3>
+          <p>SureVera is a mobile app (iOS and Android) that shows consumers restaurant health inspection grades from official government sources. Users search for any restaurant and instantly see its most recent health score, grade, and violation details &mdash; sourced directly from the local health department.</p>
+          <p>The service is funded by a modest consumer subscription of <strong>$20/year</strong>. There is no cost to health departments.</p>
+
+          <h3>Why This Matters</h3>
+          <ul>
+            <li>The CDC estimates <strong>48 million Americans</strong> get foodborne illness each year</li>
+            <li><strong>128,000 hospitalizations</strong> and <strong>3,000 deaths</strong> annually from foodborne disease</li>
+            <li>Most outbreaks are linked to restaurants and food service establishments</li>
+            <li>Health departments conduct inspections, but the results are often buried in PDFs or hard-to-navigate portals that consumers never see</li>
+          </ul>
+
+          <h3>The Gap We're Trying to Close</h3>
+          <p>Health inspectors do critical work, but the data they produce rarely reaches the people who need it most &mdash; the consumer standing on a street corner deciding where to eat. SureVera bridges that gap by putting official health grades in consumers' pockets at the moment of decision.</p>
+
+          <h3>What Your Department Gets</h3>
+          <ul>
+            <li><strong>Extended reach:</strong> Your inspection data reaches consumers who would never visit your website or data portal</li>
+            <li><strong>Official attribution:</strong> Every restaurant listing credits your department as the official data source</li>
+            <li><strong>Fewer records requests:</strong> Consumers can self-serve through the app instead of filing individual FOIA requests</li>
+            <li><strong>Modern mobile interface:</strong> A polished, mobile-first experience for your data at no cost to your department</li>
+            <li><strong>Public health impact:</strong> Informed consumers reward compliant restaurants and incentivize better food safety practices</li>
+          </ul>
+
+          <h3>Data Formats We Support</h3>
+          <p>We are extremely flexible and can work with whatever your systems produce:</p>
+          <ul>
+            <li>Open data portals (Socrata, ArcGIS, CKAN)</li>
+            <li>CSV or Excel exports</li>
+            <li>PDF inspection reports</li>
+            <li>LIVES standard feeds</li>
+            <li>Custom APIs or database exports</li>
+            <li>Even emailed spreadsheets on a schedule</li>
+          </ul>
+
+          <h3>Current Coverage</h3>
+          <p>SureVera currently covers <strong>90+ cities across 20+ states</strong>, including major metros like New York City, Chicago, San Francisco, Seattle, Las Vegas, San Antonio, and many more. We are actively expanding coverage and prioritize cities where departments are willing to partner.</p>
+
+          <h3>About Arrio Technologies</h3>
+          <p>SureVera is built by <strong>Arrio Technologies LLC</strong> ("Arriotech"), a small technology company focused on making public health data accessible to everyday consumers. We are not a government contractor, and we do not seek government funding. Our infrastructure is entirely self-funded through consumer subscriptions.</p>
+
+          <h3>Contact</h3>
+          <p>
+            <strong>Email:</strong> support@arriotech.com<br>
+            <strong>Website:</strong> arriotech.com | surevera.app
+          </p>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SECTION 2: Tyler Technologies Platform Partnership -->
+    <!-- ============================================================ -->
+    <div class="section-card collapsed" id="sec-tyler">
+      <div class="section-header" onclick="toggleSection('sec-tyler')">
+        <div class="section-header-left">
+          <div class="section-icon" style="background:#E8EAF6">&#127961;</div>
+          <span class="section-title">Tyler Technologies Platform Partnership</span>
+        </div>
+        <div style="display:flex;align-items:center">
+          <span class="section-count">Highest-value target</span>
+          <span class="section-chevron">&#9660;</span>
+        </div>
+      </div>
+      <div class="section-items">
+        <div class="onepager-content">
+
+          <p style="font-style:italic;color:var(--orange);font-weight:600;margin-bottom:1rem;">The single highest-value partnership target &mdash; one deal unlocks 30+ jurisdictions for both restaurant AND hotel data</p>
+
+          <h3>Why Tyler Tech Matters</h3>
+          <ul>
+            <li>Tyler Technologies owns <strong>MyHealthDepartment.com</strong> &mdash; used by 30+ health departments to publish inspection results</li>
+            <li>Contains <strong>BOTH restaurant AND hotel inspection data</strong></li>
+            <li>Jurisdictions include: Tennessee, Virginia, Hawaii, Colorado, Oregon, 10+ Texas cities, Orange County CA, Riverside CA, Sonoma CA, Louisiana, Rhode Island, Georgia</li>
+            <li>One partnership could add <strong>hundreds of thousands of records</strong></li>
+            <li>Tyler is a <strong>$6B company (NYSE: TYL)</strong> &mdash; they sell to governments, not consumers. No competitive risk.</li>
+          </ul>
+
+          <h3>Contact Info</h3>
+          <ul>
+            <li><strong>Platform Alliance:</strong> tylertech.com/about-us/partners/tyler-platform-alliance</li>
+            <li><strong>General Phone:</strong> (800) 800-2581</li>
+            <li><strong>Support:</strong> (888) 654-3293</li>
+            <li><strong>Address:</strong> One Tyler Way, Moraine, OH 45439</li>
+            <li><strong>Environmental Health Product:</strong> tylertech.com/products/enterprise-permitting-licensing/enterprise-environmental-health</li>
+          </ul>
+
+          <h3>Email Templates</h3>
+        </div>
+
+        <div id="tylerTemplateContainer"></div>
+
+        <div class="onepager-content" style="margin-top:1rem;">
+          <h3>Strategy Notes</h3>
+        </div>
+        <div style="padding:0 0.25rem;">
+          <div class="tip-item">
+            <div class="tip-num">1</div>
+            <div class="tip-text"><strong>Start with the Platform Alliance form</strong> &mdash; this is Tyler's official developer partnership channel</div>
+          </div>
+          <div class="tip-item">
+            <div class="tip-num">2</div>
+            <div class="tip-text"><strong>Follow up via phone after 2 weeks:</strong> (800) 800-2581, ask for Platform Alliance or Government Solutions</div>
+          </div>
+          <div class="tip-item">
+            <div class="tip-num">3</div>
+            <div class="tip-text"><strong>Emphasize mutual benefit</strong> &mdash; Tyler's clients benefit from more public engagement with their data</div>
+          </div>
+          <div class="tip-item">
+            <div class="tip-num">4</div>
+            <div class="tip-text"><strong>Never mention scraping</strong> &mdash; position yourself as wanting to do this through official channels</div>
+          </div>
+          <div class="tip-item">
+            <div class="tip-num">5</div>
+            <div class="tip-text"><strong>Attach the SureVera partnership one-pager PDF</strong> to every email</div>
+          </div>
+          <div class="tip-item">
+            <div class="tip-num">6</div>
+            <div class="tip-text"><strong>Be patient</strong> &mdash; Tyler is a large enterprise company, 2-4 week response times are normal</div>
+          </div>
+          <div class="tip-item">
+            <div class="tip-num">7</div>
+            <div class="tip-text"><strong>If Tyler declines platform-level access,</strong> ask if individual clients can authorize data sharing</div>
+          </div>
+          <div class="tip-item">
+            <div class="tip-num">8</div>
+            <div class="tip-text"><strong>Don't mention any competitors</strong> or alternative data sources</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SECTION 3: Email Templates -->
+    <!-- ============================================================ -->
+    <div class="section-card" id="sec-templates">
+      <div class="section-header" onclick="toggleSection('sec-templates')">
+        <div class="section-header-left">
+          <div class="section-icon" style="background:#FFF3E0">&#9993;</div>
+          <span class="section-title">Email Templates</span>
+        </div>
+        <div style="display:flex;align-items:center">
+          <span class="section-count">15 templates</span>
+          <span class="section-chevron">&#9660;</span>
+        </div>
+      </div>
+      <div class="section-items" id="templateContainer"></div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SECTION 4: General Tips -->
+    <!-- ============================================================ -->
+    <div class="section-card collapsed" id="sec-tips">
+      <div class="section-header" onclick="toggleSection('sec-tips')">
+        <div class="section-header-left">
+          <div class="section-icon" style="background:#E0F2F1">&#128161;</div>
+          <span class="section-title">General Outreach Tips</span>
+        </div>
+        <div style="display:flex;align-items:center">
+          <span class="section-count">10 best practices</span>
+          <span class="section-chevron">&#9660;</span>
+        </div>
+      </div>
+      <div class="section-items">
+        <div class="tip-item">
+          <div class="tip-num">1</div>
+          <div class="tip-text"><strong>Personalize every email.</strong> Replace all brackets with real names, cities, and details. Generic emails get ignored.</div>
+        </div>
+        <div class="tip-item">
+          <div class="tip-num">2</div>
+          <div class="tip-text"><strong>Research before you write.</strong> Check their website, find the right contact person, and reference their specific dataset or portal by name.</div>
+        </div>
+        <div class="tip-item">
+          <div class="tip-num">3</div>
+          <div class="tip-text"><strong>Keep it short.</strong> Government employees are busy. If your email is longer than 2 scrolls on a phone, trim it.</div>
+        </div>
+        <div class="tip-item">
+          <div class="tip-num">4</div>
+          <div class="tip-text"><strong>Attach the one-pager.</strong> Always include the partnership PDF when relevant.</div>
+        </div>
+        <div class="tip-item">
+          <div class="tip-num">5</div>
+          <div class="tip-text"><strong>Follow up, but don't pester.</strong> 2 weeks, then 4 weeks, then move on. Three touches maximum.</div>
+        </div>
+        <div class="tip-item">
+          <div class="tip-num">6</div>
+          <div class="tip-text"><strong>Be genuinely grateful.</strong> These people protect public health for a living. Respect that.</div>
+        </div>
+        <div class="tip-item">
+          <div class="tip-num">7</div>
+          <div class="tip-text"><strong>Track everything.</strong> Keep a spreadsheet: department, contact name, date sent, response, next step.</div>
+        </div>
+        <div class="tip-item">
+          <div class="tip-num">8</div>
+          <div class="tip-text"><strong>Start with friendly departments.</strong> Cities that already have Socrata/ArcGIS portals believe in open data. Start there.</div>
+        </div>
+        <div class="tip-item">
+          <div class="tip-num">9</div>
+          <div class="tip-text"><strong>One big win opens doors.</strong> Getting one major city to add violations to their feed becomes social proof for the next pitch.</div>
+        </div>
+        <div class="tip-item">
+          <div class="tip-num">10</div>
+          <div class="tip-text"><strong>Consider the timing.</strong> Avoid budget season (Sept&ndash;Nov for most governments) and holidays. January&ndash;March and June&ndash;August are usually best.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">SureVera Outreach Toolkit &mdash; Arrio Technologies LLC</div>
+
+  <script>
+    // ── Section collapse/expand ──
+    function toggleSection(id) {
+      document.getElementById(id).classList.toggle('collapsed');
+    }
+
+    // ── Template data ──
+    const templates = [
+      {
+        num: 1,
+        title: "Initial FOIA / Public Records Request",
+        scenario: "Use this when you have no existing relationship with a department and want to formally request their inspection data under public records law.",
+        subject: "Public Records Request - Food Establishment Inspection Violation Data",
+        body: `Dear [City/County Health Department] Records Office,
+
+I am submitting a public records request under the [State Public Records Act / Texas Public Information Act / Freedom of Information Act] for the following records:
+
+Food establishment inspection records for [City/County], including:
+- Establishment name and address
+- Inspection date
+- Inspection score or grade
+- Individual violation descriptions, codes, or categories
+- Inspector notes or comments (if recorded)
+
+I am requesting records from the past 12 months in an electronic format. CSV, Excel, JSON, or database export is strongly preferred over paper records. If the complete dataset exceeds a reasonable scope, I am happy to discuss narrowing the request.
+
+Please let me know if there are any fees associated with this request or if you need additional information to process it.
+
+Thank you for your time and service to public health.
+
+Best regards,
+[Your Name]
+Arrio Technologies LLC
+support@arriotech.com`
+      },
+      {
+        num: 2,
+        title: "Cold Outreach to Open Data Team",
+        scenario: "Use this when a department already publishes inspection data on an open data portal but is missing violation-level detail.",
+        subject: "Feature Request - Adding Violation Details to Your Open Data Portal",
+        body: `Hi [Open Data Team / Health Department Contact],
+
+I'm a developer who works with public health inspection data, and I wanted to reach out about your food establishment inspection dataset on [Socrata / ArcGIS / your open data portal].
+
+First, thank you for publishing this data - it's a great transparency initiative and we use it to help consumers make informed dining decisions.
+
+I noticed the current dataset includes inspection scores and dates, but does not include individual violation descriptions or inspector notes. This is the data point consumers find most valuable - understanding why a restaurant scored the way it did, not just the number.
+
+Would it be possible to add a violations or notes column to the existing dataset? Many other departments include this information in their open data feeds (NYC, Chicago, Seattle, and others publish violation-level detail).
+
+I understand this may require coordination with your IT or data teams. I'm happy to work with whatever format is easiest on your end - even a separate dataset that we can join by facility ID would work great.
+
+Would you be open to a brief conversation about this?
+
+Best regards,
+[Your Name]
+Arrio Technologies LLC
+support@arriotech.com`
+      },
+      {
+        num: 3,
+        title: "Partnership Pitch (After Getting Data)",
+        scenario: "Use this after you've already received data or found their open data portal, and want to formalize the relationship.",
+        subject: "Data Partnership Opportunity - Making Your Inspection Data More Accessible",
+        body: `Hi [Contact Name],
+
+Thank you for [fulfilling my recent records request / publishing your inspection data]. I wanted to share what we're building with it and explore whether there's a way we can work together.
+
+I'm the founder of Arrio Technologies. We built SureVera, a mobile app that shows consumers restaurant health inspection grades from official government sources. Think of it as a health-score version of checking a restaurant's rating before you eat. We currently cover 90+ cities across the US.
+
+Here's what a partnership would look like:
+
+For your department:
+- Your inspection data reaches consumers who would never visit your website
+- Every restaurant listing credits your department as the official data source
+- Fewer individual records requests from the public
+- Modern mobile interface for your data at no cost to you
+
+What we'd need:
+- An automated data feed (API, scheduled export, or an additional column on your existing open data portal) so we can keep data current
+- Ideally including violation descriptions alongside scores
+
+We're not asking for funding or contracts. SureVera's infrastructure is funded by a modest consumer subscription ($20/year). We just need access to data you're already collecting.
+
+I'd love to do a quick 15-minute call to show you the app and discuss how this could work. Would you be open to that?
+
+Best regards,
+[Your Name]
+Founder, Arrio Technologies LLC
+support@arriotech.com
+arriotech.com | surevera.app`
+      },
+      {
+        num: 4,
+        title: "Follow-Up When No Response (2 Weeks)",
+        scenario: "Use this exactly 2 weeks after your initial outreach if you haven't received a reply.",
+        subject: "Following Up - Food Inspection Data Partnership",
+        body: `Hi [Contact Name / Health Department],
+
+I wanted to follow up on my email from [date] regarding a potential data partnership for restaurant health inspection data.
+
+I understand your team is busy - I just wanted to make sure my message didn't get lost. I'm reaching out because I believe this could be a great way to increase public engagement with your inspection program at no cost or effort on your end.
+
+If there's a better person to direct this to, I'd appreciate being pointed in the right direction.
+
+Happy to work around your schedule for a brief call or to provide any additional information.
+
+Best regards,
+[Your Name]
+Arrio Technologies LLC
+support@arriotech.com`
+      },
+      {
+        num: 5,
+        title: "Follow-Up When No Response (4 Weeks)",
+        scenario: "Use this as your final follow-up, approximately 4 weeks after the initial outreach. Keep it gracious.",
+        subject: "Final Follow-Up - Restaurant Inspection Data",
+        body: `Hi [Contact Name / Health Department],
+
+I reached out a few weeks ago about working together to make your restaurant inspection data more accessible to the public through our app, SureVera.
+
+I don't want to be a bother, so this will be my last follow-up. If the timing isn't right or this isn't something your department is interested in, I completely understand.
+
+If anything changes in the future, or if your department starts publishing violation-level data through your open data portal, I'd love to hear about it. You can always reach me at support@arriotech.com.
+
+Thank you for the work your department does to keep the public safe.
+
+Best regards,
+[Your Name]
+Arrio Technologies LLC
+support@arriotech.com`
+      },
+      {
+        num: 6,
+        title: 'Response to "We Need to Check with Legal"',
+        scenario: "Use this when a contact says they need legal approval before sharing data or partnering.",
+        subject: "Re: Food Inspection Data Partnership - Happy to Support Your Review",
+        body: `Hi [Contact Name],
+
+Absolutely understand - I appreciate you looking into this.
+
+To help with your legal team's review, here are some key points that may be relevant:
+
+- All health inspection data we use is public record, sourced exclusively from publicly accessible government data portals and published reports
+- We do not access any restricted, internal, or password-protected systems
+- We attribute your department as the official data source on every restaurant listing
+- We do not modify, misrepresent, or editorialize the inspection data
+- Our app is a consumer tool, not a competitor to any government service
+- We're happy to sign a data use agreement if your department requires one
+
+I've also attached a one-page overview of our platform that may be helpful for the review.
+
+Please take whatever time you need. I'm available if your legal team has any questions.
+
+Best regards,
+[Your Name]
+Arrio Technologies LLC
+support@arriotech.com`
+      },
+      {
+        num: 7,
+        title: 'Response to "We Don\'t Have the Resources"',
+        scenario: "Use this when a department says they're too busy or lack staff to help with data exports.",
+        subject: "Re: Inspection Data - We'll Do All the Heavy Lifting",
+        body: `Hi [Contact Name],
+
+I completely understand - your team's priority should be inspections, not data exports.
+
+The good news is we need very little from your side. Here are some zero-effort options:
+
+1. If you already publish data on an open data portal (Socrata, ArcGIS, etc.), we can pull from it automatically. Adding a violations column to your existing dataset would be the only ask.
+
+2. If you can do a one-time database export (CSV or Excel), we can handle everything from there. We already parse PDFs, spreadsheets, and custom data formats from other departments.
+
+3. If your inspection software has a built-in export or reporting feature, even a scheduled email with an attached report would work. We'll figure out the rest.
+
+We're not asking for a custom API or dedicated IT project. Whatever is easiest for your team - even if it's imperfect - we can work with it.
+
+Would any of these options work for your department?
+
+Best regards,
+[Your Name]
+Arrio Technologies LLC
+support@arriotech.com`
+      },
+      {
+        num: 8,
+        title: 'Response to "Why Should We Help a Paid App?"',
+        scenario: "Use this when a department questions why they should provide data to an app that charges users.",
+        subject: "Re: About SureVera's Subscription Model",
+        body: `Hi [Contact Name],
+
+Great question, and I appreciate the directness.
+
+SureVera charges a $20/year subscription to cover the real infrastructure costs of running the service - server hosting, API calls, data processing across 90+ cities, and mobile app maintenance. Without the subscription, the service wouldn't exist.
+
+But here's what's important: we're not selling your data. Your data is and remains public. What we're selling is the product - the app experience, the search, the matching algorithm, the grade change alerts, and the ability to check any restaurant in 90+ cities from your phone in seconds.
+
+This is the same model used across the industry:
+- Weather apps charge subscriptions using free NOAA data
+- Real estate apps charge using free county property records
+- Navigation apps are built on free government road data
+
+Your department's data is one ingredient. The product we build around it is what consumers pay for.
+
+Most importantly, SureVera extends your department's reach to consumers who would never find your data otherwise. Every listing attributes your department as the source. It's free marketing for your inspection program.
+
+I hope that context is helpful. Happy to discuss further if you have any other concerns.
+
+Best regards,
+[Your Name]
+Arrio Technologies LLC
+support@arriotech.com`
+      },
+      {
+        num: 9,
+        title: 'Response to "Stop Using Our Data" (Cease & Desist)',
+        scenario: "Use this carefully when a department sends a cease and desist or demands you stop using their data. Consider consulting an attorney before sending.",
+        subject: "Re: Your Request Regarding Inspection Data Usage",
+        body: `Dear [Contact Name],
+
+Thank you for reaching out. I take your concerns seriously and want to address them directly.
+
+SureVera accesses food establishment inspection data exclusively through publicly available channels - your department's open data portal, published reports, and public records. We do not access any restricted or internal systems.
+
+Health inspection data is public record under [state public records law], and we believe making this data accessible to consumers supports both the letter and spirit of public transparency laws.
+
+That said, we value our relationship with health departments and want to be good partners. I'd welcome a conversation about your specific concerns. In particular:
+
+- If there are data accuracy concerns, we want to know so we can correct them
+- If you'd prefer we present the data differently, we're open to feedback
+- If there's a preferred data access method, we're happy to use it
+- If you'd like us to add specific disclaimers or attribution language, we will
+
+Our goal is the same as yours: helping the public make informed decisions about food safety. I believe we can find an approach that works for everyone.
+
+Could we schedule a call to discuss this? I think a conversation would be more productive than email.
+
+Best regards,
+[Your Name]
+Founder, Arrio Technologies LLC
+support@arriotech.com`,
+        note: "Before sending this, consider consulting with a business attorney familiar with public records law in your state."
+      },
+      {
+        num: 10,
+        title: 'Response to "We Already Have Our Own App/Portal"',
+        scenario: "Use this when a department says they already have a public-facing lookup tool and don't see the need for SureVera.",
+        subject: "Re: SureVera as a Complement to Your Existing Portal",
+        body: `Hi [Contact Name],
+
+That's great that your department has its own lookup tool - not every department does, and it shows your commitment to transparency.
+
+SureVera isn't meant to replace your portal. Think of us as an additional distribution channel for your data. Here's how we're different:
+
+- Your portal serves people who already know to look for inspection data. SureVera reaches people who don't - the casual diner deciding where to eat tonight.
+- Your portal covers your jurisdiction. SureVera covers 90+ cities, so travelers and people moving to a new area can check restaurants anywhere.
+- SureVera sends push notifications when a restaurant's grade changes - something a static portal can't do.
+- We're a mobile-first experience designed for the moment of decision: standing on a street corner choosing between two restaurants.
+
+We'd actually love to link directly to your portal from within the app for users who want the full official record. That drives traffic back to your site.
+
+Would you be open to exploring how the two could complement each other?
+
+Best regards,
+[Your Name]
+Arrio Technologies LLC
+support@arriotech.com`
+      },
+      {
+        num: 11,
+        title: 'Response to "Send Us More Information"',
+        scenario: "Use this when a contact expresses interest and asks for more details about SureVera or the partnership.",
+        subject: "Re: SureVera Overview - Partnership Information Attached",
+        body: `Hi [Contact Name],
+
+Thank you for your interest. I've attached a one-page overview of SureVera and our data partnership model.
+
+The quick summary:
+
+- SureVera is a mobile app (iOS/Android) that shows restaurant health inspection grades to consumers
+- We source 100% of our data from official government health departments - never from user submissions or third-party aggregators
+- We currently cover 90+ cities across 20 states
+- No cost to your department - our infrastructure is funded by a $20/year consumer subscription
+- We attribute your department on every listing and link to your official records when available
+
+What we'd love from your department:
+- Access to violation-level data (descriptions, codes, or inspector notes) alongside your existing inspection scores
+- An automated feed is ideal, but we can work with any format including CSV exports or PDFs
+
+I'd be happy to do a live demo of the app over a quick call, or answer any questions your team has.
+
+Best regards,
+[Your Name]
+Arrio Technologies LLC
+support@arriotech.com
+
+[Attach: SureVera - Public Health Data Partnership.pdf]`
+      },
+      {
+        num: 12,
+        title: "Thank You After Receiving Data",
+        scenario: "Use this after you've successfully integrated a department's data and their restaurants are live in the app.",
+        subject: "[City/County] Inspection Data Now Live on SureVera - Thank You!",
+        body: `Hi [Contact Name],
+
+I wanted to let you know that we've integrated the inspection data from [Department Name] into SureVera. Consumers in [City/Region] can now see health inspection grades - including violation details - for restaurants in your jurisdiction.
+
+Every listing includes attribution to your department as the official data source.
+
+A few things I wanted to share:
+
+- If you'd like to see how your data appears in the app, you can download SureVera on [iOS/Android] and search for any restaurant in [City]
+- If you notice any data accuracy issues or have feedback on how we present the information, please don't hesitate to reach out
+- We'd be happy to provide usage analytics (how many consumers are viewing your data) if that's useful for your department's reporting
+
+Thank you again for your support of public health transparency. This kind of partnership makes a real difference for consumers.
+
+Best regards,
+[Your Name]
+Arrio Technologies LLC
+support@arriotech.com`
+      },
+      {
+        num: 13,
+        title: "Requesting a Meeting / Phone Call",
+        scenario: "Use this when you want to move the conversation from email to a live demo or phone call.",
+        subject: "Quick Call? 15 Minutes to Show You SureVera",
+        body: `Hi [Contact Name],
+
+I know email can only convey so much. Would you have 15 minutes this week or next for a quick call? I'd love to:
+
+1. Give you a live demo of SureVera so you can see how your data is presented
+2. Walk through how our data pipeline works (it's simpler than you'd expect)
+3. Discuss what a violation data feed could look like - tailored to whatever's easiest for your team
+
+I'm flexible on timing. Here are a few slots that work for me:
+- [Day], [Time] [Timezone]
+- [Day], [Time] [Timezone]
+- [Day], [Time] [Timezone]
+
+Or feel free to suggest a time that works better. I can also send a calendar invite if that's easier.
+
+Looking forward to connecting.
+
+Best regards,
+[Your Name]
+Arrio Technologies LLC
+support@arriotech.com`
+      },
+      {
+        num: 14,
+        title: "Pitching to a State-Level Agency (Multiple Counties)",
+        scenario: "Use this when reaching out to a state health agency that oversees inspection data for multiple counties at once.",
+        subject: "Statewide Data Partnership - Restaurant Inspection Transparency",
+        body: `Dear [State Agency Name],
+
+I'm reaching out regarding your statewide restaurant inspection data. My company, Arrio Technologies, builds consumer health transparency tools, and we believe a partnership with your agency could significantly advance public access to inspection information across [State].
+
+We've built SureVera, a mobile app that makes restaurant health inspection data accessible to everyday consumers. We currently cover 90+ cities nationwide, including [X] counties in [State] using your published data.
+
+Your dataset currently includes [scores/grades/pass-fail results], which is valuable. However, the most requested feature from our users is violation-level detail - knowing why a restaurant received its score, not just the number.
+
+A single conversation with your agency could unlock violation data for [all X counties we cover in your state] at once - rather than us approaching each county individually. This would:
+
+- Expand public access to inspection details across the entire state
+- Support your agency's transparency mission at scale
+- Reduce individual county-level records requests
+- Provide a modern mobile interface for data your inspectors are already collecting
+
+We're flexible on format and can work with whatever your systems produce - CSV, API, bulk export, or even your existing data portal with an additional violations field.
+
+Would someone on your team be available for a brief call to explore this?
+
+Best regards,
+[Your Name]
+Founder, Arrio Technologies LLC
+support@arriotech.com
+arriotech.com | surevera.app`
+      },
+      {
+        num: 15,
+        title: "Reaching Out to an Elected Official / City Council Member",
+        scenario: "Use this when you want political support to push a department toward publishing violation data. Write as a constituent when possible.",
+        subject: "Constituent Request - Restaurant Health Inspection Data Transparency",
+        body: `Dear [Council Member / Commissioner Name],
+
+I'm a [resident of / business operating in] [City/County] and I'm writing about an opportunity to improve public health transparency for your constituents at no cost to the city.
+
+The CDC reports that 48 million Americans get foodborne illness each year, with most outbreaks linked to restaurants. [City/County]'s health department conducts regular restaurant inspections - which is great - but the detailed results (specific violations found) aren't easily accessible to the public.
+
+My company has built SureVera, a mobile app that shows restaurant health inspection grades to consumers. We already cover 90+ cities nationwide using open government data. We'd like to include detailed violation data for [City/County], but this information isn't currently published in your open data portal.
+
+What I'm asking:
+- Could you champion adding violation-level detail to [City/County]'s existing open data feed for restaurant inspections?
+- Many peer cities already do this (New York City, Chicago, Seattle, San Francisco) and it's been well-received by the public
+
+This requires no new budget or contracts. The data already exists in your health department's inspection system - it just needs to be included in the public feed.
+
+I'd welcome the opportunity to discuss this with you or your staff. This is the kind of small, no-cost transparency win that constituents notice and appreciate.
+
+Thank you for your service to [City/County].
+
+Respectfully,
+[Your Name]
+[Your Address if writing as a constituent]
+support@arriotech.com`
+      }
+    ];
+
+    // ── Render templates ──
+    function renderTemplates() {
+      const container = document.getElementById('templateContainer');
+      container.innerHTML = '';
+
+      templates.forEach((t, i) => {
+        const card = document.createElement('div');
+        card.className = 'template-card collapsed';
+        card.id = 'tpl-' + t.num;
+
+        const header = document.createElement('div');
+        header.className = 'template-header';
+        header.innerHTML = `
+          <div class="template-header-left">
+            <div class="template-num">${t.num}</div>
+            <span class="template-title">${escapeHtml(t.title)}</span>
+          </div>
+          <span class="template-chevron">&#9660;</span>
+        `;
+        header.addEventListener('click', () => {
+          card.classList.toggle('collapsed');
+        });
+
+        const body = document.createElement('div');
+        body.className = 'template-body';
+
+        let bodyHTML = '';
+        bodyHTML += `<div class="template-scenario">${escapeHtml(t.scenario)}</div>`;
+        bodyHTML += `<div class="template-subject">Subject: ${escapeHtml(t.subject)}</div>`;
+        bodyHTML += `<div class="template-email">${escapeHtml(t.body)}</div>`;
+        if (t.note) {
+          bodyHTML += `<div class="template-note">&#9888;&#65039; ${escapeHtml(t.note)}</div>`;
+        }
+        bodyHTML += `<button class="copy-btn" data-idx="${i}">&#128203; Copy to Clipboard</button>`;
+
+        body.innerHTML = bodyHTML;
+
+        body.querySelector('.copy-btn').addEventListener('click', (e) => {
+          const btn = e.currentTarget;
+          const fullText = "Subject: " + t.subject + "\n\n" + t.body;
+          navigator.clipboard.writeText(fullText).then(() => {
+            btn.classList.add('copied');
+            btn.innerHTML = '&#10003; Copied!';
+            setTimeout(() => {
+              btn.classList.remove('copied');
+              btn.innerHTML = '&#128203; Copy to Clipboard';
+            }, 2000);
+          }).catch(() => {
+            // Fallback
+            const ta = document.createElement('textarea');
+            ta.value = fullText;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            btn.classList.add('copied');
+            btn.innerHTML = '&#10003; Copied!';
+            setTimeout(() => {
+              btn.classList.remove('copied');
+              btn.innerHTML = '&#128203; Copy to Clipboard';
+            }, 2000);
+          });
+        });
+
+        card.appendChild(header);
+        card.appendChild(body);
+        container.appendChild(card);
+      });
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    renderTemplates();
+
+    // ── Tyler Technologies templates ──
+    const tylerTemplates = [
+      {
+        num: 1,
+        title: "Platform Alliance Application Email",
+        subject: "Platform Alliance Application — Consumer App Developer Seeking Data Access",
+        body: `Dear Tyler Technologies Platform Alliance Team,
+
+I'm a developer and the founder of a small company called Arrio Technologies. I recently submitted an application through your Platform Alliance page and wanted to follow up with some additional context.
+
+I've built a consumer mobile app called SureVera that helps people check official health inspection grades for restaurants and hotels before they eat or stay. The app pulls from publicly available government data — Socrata open data portals, ArcGIS endpoints, and published government reports — and presents it in a simple, consumer-friendly format on their phone.
+
+So far, I've been able to cover 90+ US cities for restaurants and a few states for hotels by connecting to these public data sources. However, I've noticed that many of the health departments whose data consumers are asking for use Tyler's MyHealthDepartment platform.
+
+I'm reaching out to see if the Platform Alliance program offers a path for a developer like me to access the publicly available inspection data that health departments already display through MyHealthDepartment — ideally through an API or data feed.
+
+A few things about SureVera:
+- Covers 90+ US cities with 1M+ official government inspection records
+- Available on iOS and Android
+- Every listing credits the health department as the official data source
+- No personal data collected from users — fully anonymous
+- Infrastructure funded by a modest consumer subscription ($20/year)
+
+I'm not looking for anything proprietary or restricted — just the same data that's already publicly visible on MyHealthDepartment portals, in a format I can programmatically access.
+
+I'd really appreciate any guidance on whether this is something the Platform Alliance supports, or if there's a better path I should explore.
+
+Thank you for your time,
+[Your Name]
+Arrio Technologies LLC
+support@arriotech.com
+arriotech.com | surevera.app`
+      },
+      {
+        num: 2,
+        title: "Follow-Up (2 Weeks)",
+        subject: "Following Up — Platform Alliance Application (SureVera)",
+        body: `Hi,
+
+I submitted a Platform Alliance application and sent a follow-up email about two weeks ago regarding my app SureVera — a consumer tool that displays public health inspection grades for restaurants and hotels.
+
+I wanted to check in and see if there's any update, or if I should be reaching out to a different team within Tyler. I'm specifically interested in whether there's a way to access the publicly available inspection data that health departments publish through MyHealthDepartment — through an API, scheduled export, or similar.
+
+I'm happy to provide a demo of the app, answer any technical questions, or fill out any additional forms that would help move this forward.
+
+If the Platform Alliance isn't the right fit for what I'm looking for, I'd appreciate being pointed in the right direction.
+
+Thank you,
+[Your Name]
+Arrio Technologies LLC
+support@arriotech.com`
+      },
+      {
+        num: 3,
+        title: "Alternate Contact (if no Alliance response)",
+        subject: "Developer Inquiry — Accessing Public Health Inspection Data from MyHealthDepartment",
+        body: `Dear Tyler Technologies,
+
+I'm a developer who has built a consumer mobile app that surfaces public health inspection data for restaurants and hotels. Many health departments I'd like to include use Tyler's MyHealthDepartment platform to publish their inspection results.
+
+I tried reaching out through the Platform Alliance program but haven't heard back. I'm hoping someone can help me understand if there's a way for an independent developer to access the publicly available data that health departments already display through MyHealthDepartment — through an API, data feed, or export.
+
+For context, my app (SureVera) already covers 90+ US cities using data from Socrata, ArcGIS, and other government data sources. I'm looking to expand coverage to include MyHealthDepartment jurisdictions.
+
+I'm not asking for anything proprietary — just the public inspection results (establishment name, score, grade, date, violations) that are already displayed on your portal.
+
+Could someone point me to the right team or resource for this?
+
+Thank you,
+[Your Name]
+Arrio Technologies LLC
+support@arriotech.com`
+      },
+      {
+        num: 4,
+        title: "Meeting Request (after they respond)",
+        subject: "Re: Happy to Do a Quick Call / Demo",
+        body: `Hi [Contact Name],
+
+Thanks so much for getting back to me. I'd love to hop on a quick call — even 15 minutes would be great. I can:
+
+1. Show you the app so you can see how the data is presented to consumers
+2. Explain how I currently pull from other government data sources (Socrata, ArcGIS, etc.)
+3. Discuss what would work best on Tyler's side — I'm flexible on format and approach
+
+I'm available most days. A few times that work:
+- [Day], [Time] [Timezone]
+- [Day], [Time] [Timezone]
+- [Day], [Time] [Timezone]
+
+Happy to work around your schedule. Thanks again for your time.
+
+Best,
+[Your Name]
+Arrio Technologies LLC
+support@arriotech.com`
+      }
+    ];
+
+    // ── Render Tyler templates ──
+    function renderTylerTemplates() {
+      const container = document.getElementById('tylerTemplateContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      tylerTemplates.forEach((t, i) => {
+        const card = document.createElement('div');
+        card.className = 'template-card collapsed';
+        card.id = 'tyler-tpl-' + t.num;
+
+        const header = document.createElement('div');
+        header.className = 'template-header';
+        header.innerHTML = `
+          <div class="template-header-left">
+            <div class="template-num">${t.num}</div>
+            <span class="template-title">${escapeHtml(t.title)}</span>
+          </div>
+          <span class="template-chevron">&#9660;</span>
+        `;
+        header.addEventListener('click', () => {
+          card.classList.toggle('collapsed');
+        });
+
+        const body = document.createElement('div');
+        body.className = 'template-body';
+
+        let bodyHTML = '';
+        bodyHTML += `<div class="template-subject">Subject: ${escapeHtml(t.subject)}</div>`;
+        bodyHTML += `<div class="template-email">${escapeHtml(t.body)}</div>`;
+        if (t.note) {
+          bodyHTML += `<div class="template-note">&#9888;&#65039; ${escapeHtml(t.note)}</div>`;
+        }
+        bodyHTML += `<button class="copy-btn" data-tyler-idx="${i}">&#128203; Copy to Clipboard</button>`;
+
+        body.innerHTML = bodyHTML;
+
+        body.querySelector('.copy-btn').addEventListener('click', (e) => {
+          const btn = e.currentTarget;
+          const fullText = "Subject: " + t.subject + "\n\n" + t.body;
+          navigator.clipboard.writeText(fullText).then(() => {
+            btn.classList.add('copied');
+            btn.innerHTML = '&#10003; Copied!';
+            setTimeout(() => {
+              btn.classList.remove('copied');
+              btn.innerHTML = '&#128203; Copy to Clipboard';
+            }, 2000);
+          }).catch(() => {
+            const ta = document.createElement('textarea');
+            ta.value = fullText;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            btn.classList.add('copied');
+            btn.innerHTML = '&#10003; Copied!';
+            setTimeout(() => {
+              btn.classList.remove('copied');
+              btn.innerHTML = '&#128203; Copy to Clipboard';
+            }, 2000);
+          });
+        });
+
+        card.appendChild(header);
+        card.appendChild(body);
+        container.appendChild(card);
+      });
+    }
+
+    renderTylerTemplates();
+  </script>
+  <script src="dark-mode.js"></script>
+  <script src="toolkit-nav.js"></script>
+</body>
+</html>
