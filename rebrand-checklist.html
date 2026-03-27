@@ -1017,29 +1017,29 @@
       'app-screens:1:0': true,
       'app-screens:2:0': true,
       'app-screens:3:0': true, 'app-screens:3:1': true, 'app-screens:3:2': true, 'app-screens:3:3': true, 'app-screens:3:4': true, 'app-screens:3:5': true, 'app-screens:3:6': true,
-      // app-screens:3:7 = hotel FAQ entries (future)
+      'app-screens:3:7': true, // hotel FAQ entries added
       'app-screens:4:0': true, 'app-screens:4:1': true, 'app-screens:4:2': true, 'app-screens:4:3': true, 'app-screens:4:4': true,
-      // app-screens:4:5 = hotel onboarding slide (future)
+      'app-screens:4:5': true, // hotel onboarding slide added
       'app-screens:5:0': true, 'app-screens:5:1': true, 'app-screens:5:2': true,
       'app-screens:6:0': true, 'app-screens:6:1': true, 'app-screens:6:2': true,
-      // app-screens:6:3 = benefits text (future)
+      'app-screens:6:3': true, // benefits text updated for hotels
       'app-screens:7:0': true, 'app-screens:7:1': true, 'app-screens:7:2': true,
       'app-screens:8': true,
 
       // Phase 1d: Onboarding — done (except hotel slide)
       'app-onboarding:0': true, 'app-onboarding:1': true,
-      // app-onboarding:2 = hotel slide (future)
+      'app-onboarding:2': true, // hotel slide added
       'app-onboarding:3': true, 'app-onboarding:4': true,
 
-      // Phase 1e: Paywall — done (except hotel benefits text)
+      // Phase 1e: Paywall — all done
       'app-paywall:0': true,
-      // app-paywall:1 = benefits for both (future)
+      'app-paywall:1': true, // benefits updated for hotels
       'app-paywall:2': true,
 
       // Phase 1f: Help/FAQ — done (except hotel FAQ entries)
       'app-help:0': true,
-      // app-help:1 = hotel FAQ entries (future)
-      // app-help:2 = what does SureVera do (future)
+      'app-help:1': true, // hotel FAQ entries added
+      'app-help:2': true, // what does SureVera do updated
       'app-help:3': true, 'app-help:4': true,
 
       // Phase 1g: Native rebuild — prebuild done, EAS builds not yet
@@ -1053,8 +1053,8 @@
       'backend:2:0': true, 'backend:2:1': true, 'backend:2:2': true, 'backend:2:3': true,
       'backend:3': true, 'backend:4': true, 'backend:5': true, 'backend:6': true,
       'backend:7': true, 'backend:8': true, 'backend:9': true, 'backend:10': true, 'backend:11': true,
-      // backend:12 = public logo PNGs (need to copy new logos to backend public/)
-      // backend:13 = public header logo (need to copy new logos to backend public/)
+      'backend:12:0': true, 'backend:12:1': true, 'backend:12:2': true, 'backend:12:3': true, 'backend:12:4': true,
+      'backend:13:0': true, 'backend:13:1': true, 'backend:13:2': true,
 
       // Phase 3: Website — all done
       'website:0:0': true, 'website:0:1': true, 'website:0:2': true, 'website:0:3': true, 'website:0:4': true, 'website:0:5': true, 'website:0:6': true, 'website:0:7': true, 'website:0:8': true, 'website:0:9': true, 'website:0:10': true, 'website:0:11': true,
@@ -1077,20 +1077,20 @@
       // Phase 5: GitHub renames — not yet (user task)
       // Phase 6: Home redesign — not yet (future)
 
-      // Phase 7: Verification — codebase scrub done
+      // Phase 7: Verification — codebase scrub done, CLAUDE.md updated
       'verification:0:0': true, 'verification:0:1': true, 'verification:0:2': true, 'verification:0:3': true, 'verification:0:4': true,
-      // rest are manual verification tasks
+      'verification:9:0': true, 'verification:9:1': true, 'verification:9:2': true, // CLAUDE.md + memory updated
     };
 
     let checkedState = loadChecked();
     // Merge automated defaults (don't overwrite user's manual changes)
-    let defaultsApplied = localStorage.getItem(STORAGE_KEY + '_defaults_v2');
+    let defaultsApplied = localStorage.getItem(STORAGE_KEY + '_defaults_v3');
     if (!defaultsApplied) {
       Object.keys(AUTOMATED_DEFAULTS).forEach(k => {
         if (checkedState[k] === undefined) checkedState[k] = AUTOMATED_DEFAULTS[k];
       });
       saveChecked(checkedState);
-      localStorage.setItem(STORAGE_KEY + '_defaults_v2', 'true');
+      localStorage.setItem(STORAGE_KEY + '_defaults_v3', 'true');
     }
     let collapsedState = loadCollapsed();
 
