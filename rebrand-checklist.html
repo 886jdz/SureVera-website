@@ -444,7 +444,7 @@
         <div class="detail-row"><span class="detail-label">Tagline:</span><span class="detail-value"><b>Be Sure. Verify.</b></span></div>
         <div class="detail-row"><span class="detail-label">Domain:</span><span class="detail-value"><code>surevera.app</code></span></div>
         <div class="detail-row"><span class="detail-label">Redirect:</span><span class="detail-value"><code>sureveraapp.com</code> &rarr; <code>surevera.app</code></span></div>
-        <div class="detail-row"><span class="detail-label">Email:</span><span class="detail-value"><code>support@sureveraapp.com</code></span></div>
+        <div class="detail-row"><span class="detail-label">Email:</span><span class="detail-value"><code>support@arriotech.com</code></span></div>
         <div class="detail-row"><span class="detail-label">Deep links:</span><span class="detail-value"><code>surevera://</code></span></div>
         <div class="detail-row"><span class="detail-label">Railway URL:</span><span class="detail-value">Keep current (internal, users never see it)</span></div>
       </div>
@@ -498,15 +498,15 @@
             'Settings: Forward only (not masking)',
             'Save. Test by visiting <code>http://sureveraapp.com</code> in a browser \u2014 it should redirect to <code>https://surevera.app</code>.',
           ]},
-          { text: 'Set up email: support@sureveraapp.com', steps: [
+          { text: 'Set up email: support@arriotech.com', steps: [
             '<b>Option A \u2014 GoDaddy email forwarding (free):</b>',
             'Go to GoDaddy \u2192 My Products \u2192 sureveraapp.com \u2192 DNS \u2192 scroll to "Email Forwarding"',
             'Add: <code>support</code> \u2192 forward to your personal email',
-            'Test by sending an email to <code>support@sureveraapp.com</code>',
+            'Test by sending an email to <code>support@arriotech.com</code>',
             '<b>Option B \u2014 Google Workspace ($7/mo):</b>',
             'Go to workspace.google.com \u2192 sign up with sureveraapp.com',
             'Add MX records to GoDaddy DNS as Google instructs',
-            'This gives you a full inbox you can send FROM as support@sureveraapp.com',
+            'This gives you a full inbox you can send FROM as support@arriotech.com',
             '<b>Either way:</b> make sure you can both receive AND reply from this address before updating the app/website.',
           ]},
         ]
@@ -594,7 +594,7 @@
             '"About SureBite" \u2192 "About SureVera"',
             'Privacy policy URL: <code>surebiteapp.com</code> \u2192 <code>surevera.app</code>',
             'Terms of service URL: <code>surebiteapp.com</code> \u2192 <code>surevera.app</code>',
-            'Email: <code>support@surebiteapp.com</code> \u2192 <code>support@sureveraapp.com</code>',
+            'Email: <code>support@surebiteapp.com</code> \u2192 <code>support@arriotech.com</code>',
             'Website: <code>surebiteapp.com</code> \u2192 <code>surevera.app</code>',
             'Add hotel-specific FAQ entries',
           ]},
@@ -650,7 +650,7 @@
           'Add hotel-specific FAQ entries',
           'Update "What does SureVera do?" for both categories',
           'Update all URLs to surevera.app',
-          'Update email to support@sureveraapp.com',
+          'Update email to support@arriotech.com',
         ]
       },
       {
@@ -743,7 +743,7 @@
             'Run these sed commands (macOS syntax):',
             '<code>find . -name "*.html" -exec sed -i "" "s/SureBite/SureVera/g" {} +</code>',
             '<code>find . -name "*.html" -exec sed -i "" "s/surebiteapp\\.com/surevera.app/g" {} +</code>',
-            '<code>find . -name "*.html" -exec sed -i "" "s/support@surebiteapp\\.com/support@sureveraapp.com/g" {} +</code>',
+            '<code>find . -name "*.html" -exec sed -i "" "s/support@surebiteapp\\.com/support@arriotech.com/g" {} +</code>',
             '<code>find . -name "*.html" -exec sed -i "" "s/Be Sure Before You Bite/Be Sure. Verify./g" {} +</code>',
             '<code>find . -name "*.html" -exec sed -i "" "s/surebite-header/surevera-header/g" {} +</code>',
             '<code>find . -name "*.html" -exec sed -i "" "s/surebite-logo/surevera-logo/g" {} +</code>',
@@ -790,13 +790,13 @@
           { text: 'Verify privacy policy loads at new URL', steps: [
             'Open <code>https://surevera.app/privacy-policy.html</code>',
             'Verify all text says "SureVera" (not "SureBite")',
-            'Verify the contact email shows <code>support@sureveraapp.com</code>',
+            'Verify the contact email shows <code>support@arriotech.com</code>',
             'This URL is what Apple and Google check during app review',
           ]},
           { text: 'Verify terms of service loads at new URL', steps: [
             'Open <code>https://surevera.app/terms-of-service.html</code>',
             'Verify all text says "SureVera" and entity name "Arrio Technologies LLC" is correct',
-            'Verify the contact email shows <code>support@sureveraapp.com</code>',
+            'Verify the contact email shows <code>support@arriotech.com</code>',
           ]},
         ]
       },
@@ -971,9 +971,9 @@
             'Tap Hotels tab \u2192 search a city \u2192 see results with grades',
             'Tap a hotel \u2192 verify detail page',
             'Tap Favorites \u2192 verify saved items load',
-            'Tap Help \u2192 verify FAQ says "SureVera", links go to surevera.app, email is support@sureveraapp.com',
+            'Tap Help \u2192 verify FAQ says "SureVera", links go to surevera.app, email is support@arriotech.com',
             'Tap privacy policy link \u2192 opens <code>https://surevera.app/privacy-policy.html</code>',
-            'Tap contact email \u2192 opens compose to <code>support@sureveraapp.com</code>',
+            'Tap contact email \u2192 opens compose to <code>support@arriotech.com</code>',
             'Test dark mode toggle \u2192 verify logo looks correct in both themes',
           ]},
         ]
