@@ -999,6 +999,9 @@
       // Pre-requisites: logos done, screenshots/DNS/email still manual
       'prereqs:0:0': true, 'prereqs:0:1': true, 'prereqs:0:2': true, 'prereqs:0:3': true, 'prereqs:0:4': true, 'prereqs:0:5': true, 'prereqs:0:6': true,
 
+      // item 4: email — DONE (using support@arriotech.com)
+      'prereqs:4:0': true, 'prereqs:4:1': true, 'prereqs:4:2': true, 'prereqs:4:3': true, 'prereqs:4:4': true, 'prereqs:4:5': true, 'prereqs:4:6': true, 'prereqs:4:7': true, 'prereqs:4:8': true, 'prereqs:4:9': true,
+
       // Phase 1a: Config files — all done
       'app-config:0': true, 'app-config:1': true, 'app-config:2': true, 'app-config:3': true,
       'app-config:4:0': true, 'app-config:4:1': true, 'app-config:4:2': true, 'app-config:4:3': true, 'app-config:4:4': true,
@@ -1075,7 +1078,9 @@
       'arriotech:4:0': true, 'arriotech:4:1': true, 'arriotech:4:2': true, 'arriotech:4:3': true, 'arriotech:4:4': true,
 
       // Phase 5: GitHub renames — not yet (user task)
-      // Phase 6: Home redesign — not yet (future)
+
+      // Phase 6: Home redesign — headline done
+      'home-redesign:1:0': true, 'home-redesign:1:1': true, 'home-redesign:1:2': true,
 
       // Phase 7: Verification — codebase scrub done, CLAUDE.md updated
       'verification:0:0': true, 'verification:0:1': true, 'verification:0:2': true, 'verification:0:3': true, 'verification:0:4': true,
@@ -1084,13 +1089,13 @@
 
     let checkedState = loadChecked();
     // Merge automated defaults (don't overwrite user's manual changes)
-    let defaultsApplied = localStorage.getItem(STORAGE_KEY + '_defaults_v3');
+    let defaultsApplied = localStorage.getItem(STORAGE_KEY + '_defaults_v4');
     if (!defaultsApplied) {
       Object.keys(AUTOMATED_DEFAULTS).forEach(k => {
         if (checkedState[k] === undefined) checkedState[k] = AUTOMATED_DEFAULTS[k];
       });
       saveChecked(checkedState);
-      localStorage.setItem(STORAGE_KEY + '_defaults_v3', 'true');
+      localStorage.setItem(STORAGE_KEY + '_defaults_v4', 'true');
     }
     let collapsedState = loadCollapsed();
 
