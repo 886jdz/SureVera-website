@@ -1945,12 +1945,175 @@ Railway URL (\`surebite-api-production-fb8f.up.railway.app\`) intentionally unch
 - New file: rebrand-checklist.html
 - Memory: MEMORY.md updated with rebrand status`,
           createdAt: '2026-03-25T23:59:00.000Z'
+        },
+        {
+          id: 'seed-018',
+          date: '2026-03-26',
+          title: 'SureVera Rebrand Completion + Hotel Content + Website Launch + Legal Updates',
+          categories: ['Mobile App', 'Backend', 'Infrastructure', 'Toolkit', 'Business', 'UI/UX'],
+          summary: 'Completed SureVera rebrand across all platforms: new logos deployed, SureVera website live on GitHub Pages, privacy policy and terms updated for hotels, hotel content added to onboarding/paywall/FAQ, onboarding condensed from 7 to 4 slides, Arriotech.com updated, support email consolidated to support@arriotech.com.',
+          details: `## New SureVera Logos Deployed
+
+User created new SureVera brand identity:
+- Navy circle with white checkmark icon (app icon + splash)
+- "SureVera" wordmark in navy + light blue with "Be Sure. Verify." tagline
+- White-on-transparent header logo for dark backgrounds
+- Navy-on-transparent header logo for light backgrounds
+- 7 logo files total placed in mobile app \`assets/\`
+
+### Logo File Mapping
+| File | Usage |
+|---|---|
+| \`surevera-header-navy-logo.png\` | Paywall (light mode), website nav, legal pages |
+| \`surevera-header-white-logo.png\` | App header bars, toolkit toolbar |
+| \`surevera-white-logo.png\` | Nav header right icon (32x32) |
+| \`SureVera logo design in navy and white.png\` | App icon (1024\u00d71024) |
+| \`splashscreen-logo navy.png\` | JS splash screen (light mode) |
+| \`splashscreen-logo.png\` | JS splash screen (dark mode) |
+| \`applogo.png\` | Favicon, misc |
+
+### File Casing Fix
+- Logo files renamed to lowercase (\`SureVera-header-white-logo.png\` \u2192 \`surevera-header-white-logo.png\`) to match code references
+- macOS is case-insensitive but Linux/CI is not \u2014 lowercase prevents build failures
+
+### app.json Updated
+- \`icon\` and \`foregroundImage\` paths updated to new SureVera filenames
+- Native splash image removed from \`app.json\` (was causing double splash screen)
+- JS \`SplashScreen.tsx\` is now the sole splash handler
+
+## Double Splash Screen Fix
+- **Problem:** Native splash (from \`app.json splash.image\`) showed the logo, then JS \`SplashScreen\` component showed it again for 2 more seconds
+- **Fix:** Removed \`image\` from both \`splash\` and \`android.splash\` in \`app.json\`. Native splash now shows plain white, JS splash takes over immediately with the logo.
+- Ran \`npx expo prebuild --clean\` to regenerate fresh \`ios/\` folder without the old storyboard splash image
+
+## Firebase / google-services.json
+- Added new Android app \`com.h886jdz.surevera\` to existing Firebase project (\`surebite-61da9\`)
+- Downloaded new \`google-services.json\` with both old and new package entries
+- Firebase project ID stays \`surebite-61da9\` (internal, not user-facing)
+
+## SureVera Website Launched (surevera.app)
+- Created GitHub repo: \`886jdz/SureVera-website\`
+- Copied rebranded toolkit files, updated CNAME to \`surevera.app\`
+- Pushed to GitHub, enabled GitHub Pages
+- Site live at \`https://886jdz.github.io/SureVera-website/\`
+- Custom domain \`surevera.app\` pending GoDaddy DNS configuration
+
+### Website Changes
+- All 33 HTML files + 2 JS files already rebranded (done previous session)
+- New SureVera logos copied to website (header-navy, header-white, favicon, logo.png)
+- Old \`surebite-*.png\` files removed
+- **Dark mode removed entirely** from all pages \u2014 \`dark-mode.js\` deleted, script tags removed from all 28 HTML files. All pages are light mode only.
+
+## Privacy Policy + Terms of Service \u2014 Updated for Hotels
+
+Both legal pages updated to cover restaurants AND hotels throughout:
+
+### Privacy Policy (12 edits)
+- Introduction: "restaurants" \u2192 "restaurants and hotels"
+- Short version box: "nearby restaurants" \u2192 "nearby restaurants and hotels"
+- GPS, Favorites, Follows: all updated for both categories
+- Location usage: "our restaurant database" \u2192 "our database"
+- Push tokens: "restaurants you follow" \u2192 "establishments you follow"
+- Highlight box: "check health inspection grades for restaurants and hotels"
+
+### Terms of Service (15 edits)
+- Description: "health inspection data for restaurants and hotels"
+- Matching: "restaurants and hotels listed in public databases"
+- Notifications: "restaurant or hotel you follow"
+- Business Impact: "any restaurant, hotel, or other establishment"
+- User Decisions: "decision to eat or stay at any establishment"
+- Not a Substitute: "decisions about where to eat or stay"
+- All liability sections updated with "establishment" (broader legal protection)
+
+## Support Email Consolidated
+- Changed from \`support@sureveraapp.com\` to \`support@arriotech.com\` everywhere
+- Reason: \`support@arriotech.com\` already exists and works. No need to set up new email.
+- Updated in: HelpScreen.tsx (mobile app), 8 website HTML files, surebite-landing toolkit files, memory
+- \`dev-log.html\` historical entries left as-is
+
+## Arriotech.com Updated
+- Product card: SureBite \u2192 SureVera, link \u2192 \`surevera.app\`
+- Old \`surebite-icon.png\` and \`surebite-logo-full.png\` replaced with new SureVera versions
+- Pushed to GitHub Pages
+
+## Backend Public Logos Updated
+- Copied new SureVera logos to \`healthbite-api/public/\` (\`surevera-logo.png\`, \`surevera-header-white-logo.png\`)
+- Old \`surebite-logo.png\` and \`surebite-header-white-logo.png\` removed
+- Admin dashboard and login page will show new logos after deploy
+
+## Hotel Content Added to Mobile App
+
+### HelpScreen \u2014 2 New FAQ Entries
+- "Does SureVera cover hotels?" \u2014 lists FL (34 counties), NY (5 cities), GA (statewide), Arlington TX
+- "How are hotel scores calculated?" \u2014 explains violation weighting and grade scale
+
+### OnboardingScreen \u2014 Condensed from 7 to 4 Slides
+**Removed:**
+- CDC stat slide (already on paywall + dashboard)
+- Hotel-specific slide (folded into slide 1)
+- "Save What You Trust" favorites slide (users discover this naturally)
+
+**Final 4 slides:**
+1. **Be Sure. Verify.** \u2014 what the app does (restaurants + hotels in one slide)
+2. **Real Grades, Real Data** \u2014 official government sources, not reviews, 90+ cities
+3. **Your Privacy Matters** \u2014 trimmed to punchy "No name. No email..." list
+4. **About Our Data** \u2014 disclaimer (required)
+
+### PaywallScreen \u2014 Full Hotel Update
+- Stats strip: 48M foodborne illnesses/yr | 1 in 7 travelers hit bed bugs | 90+ cities covered
+- Source: "CDC, NPMA" (was just "CDC / foodsafety.gov")
+- Subhead: "Real health grades for restaurants and hotels"
+- Benefit 1: "Know a restaurant or hotel\u2019s safety record before you walk in"
+- Benefit 2: "Get alerted the moment a score drops"
+- Benefit 3: "Zero personal data \u2014 nothing sold to third parties" (lock icon)
+
+## Website CTA Updated
+- "Ready to eat smarter?" \u2192 "Don\u2019t eat or stay blindly."
+- "before your next meal" \u2192 "before your next meal or hotel stay"
+- Avoided repeating "Be Sure. Verify." tagline (already in hero)
+
+## CLAUDE.md Updated
+- Added brand identity block (SureVera, tagline, domain, email, LLC)
+- Added bundle ID note (com.h886jdz.surevera)
+- Updated LAN IP note for production Railway URL
+
+## Rebrand Checklist \u2014 Comprehensive Update
+- Verified and checked off all completed items across all 14 sections
+- Added email prereq (support@arriotech.com already working)
+- Added home screen headline (already updated to "Be Sure. Verify.")
+- Fixed sub-step key mismatches that left completed items unchecked
+- Bumped defaults version to force re-apply on next load
+- Synced checklist to live website
+
+## What\u2019s Still Remaining
+**User tasks (external services):**
+- GoDaddy DNS: 4 A records for surevera.app \u2192 GitHub Pages IPs
+- GoDaddy forwarding: sureveraapp.com \u2192 surevera.app
+- EAS builds: iOS + Android (blocked by Xcode simulator runtime)
+- Deep link testing (after EAS build)
+- GitHub repo renames: SureBite-app \u2192 SureVera-app, SureBite-api \u2192 SureVera-api, archive SureBite-website
+- RevenueCat: rename app + subscription group
+- App screenshots with new branding
+- Home screen redesign (separate task)
+- Website verification (HTTPS, redirects, legal pages)
+- End-to-end app test
+- Stripe CORS verification with new domain
+
+## Files Modified Today
+- Mobile app: 5 source files + app.json + google-services.json + 7 logo assets
+- Backend: 2 public logo files
+- SureVera website: 12 files + CNAME + 4 logo assets + deleted dark-mode.js
+- Arriotech website: index.html + 2 logo files
+- Toolkit (surebite-landing): 10 files
+- CLAUDE.md + memory files`,
+          createdAt: '2026-03-26T23:59:00.000Z'
         }
       ];
     }
 
     init();
   </script>
+  <script src="dark-mode.js"></script>
   <script src="toolkit-nav.js"></script>
 </body>
 </html>
