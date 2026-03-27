@@ -994,115 +994,103 @@
       localStorage.setItem(COLLAPSED_KEY, JSON.stringify(state));
     }
 
-    // Pre-checked items: completed by Claude during automated rebrand (2026-03-25)
+    // Pre-checked items: completed during rebrand (updated 2026-03-26)
     const AUTOMATED_DEFAULTS = {
-      // Phase 1a: Config files
-      'app-config:0': true,  // app.json name
-      'app-config:1': true,  // app.json scheme
-      'app-config:2': true,  // app.json bundleIdentifier
-      'app-config:3': true,  // app.json android package
-      // app-config:4 = icon+splash paths (needs new logos)
-      // app-config:5 = google-services.json (needs Firebase)
-      'app-config:6': true,  // api.ts keep Railway URL
+      // Pre-requisites: logos done, screenshots/DNS/email still manual
+      'prereqs:0:0': true, 'prereqs:0:1': true, 'prereqs:0:2': true, 'prereqs:0:3': true, 'prereqs:0:4': true, 'prereqs:0:5': true, 'prereqs:0:6': true,
 
-      // Phase 1c: Screen text updates — RootNavigator
-      'app-screens:0:0': true, // logo import header-white
-      'app-screens:0:1': true, // logo import white
-      'app-screens:0:2': true, // deep link prefix
-      'app-screens:0:3': true, // deep link comment
-      'app-screens:0:4': true, // disclaimer text
+      // Phase 1a: Config files — all done
+      'app-config:0': true, 'app-config:1': true, 'app-config:2': true, 'app-config:3': true,
+      'app-config:4:0': true, 'app-config:4:1': true, 'app-config:4:2': true, 'app-config:4:3': true, 'app-config:4:4': true,
+      'app-config:5:0': true, 'app-config:5:1': true, 'app-config:5:2': true, 'app-config:5:3': true, 'app-config:5:4': true, 'app-config:5:5': true, 'app-config:5:6': true, 'app-config:5:7': true, 'app-config:5:8': true, 'app-config:5:9': true, 'app-config:5:10': true, 'app-config:5:11': true,
+      'app-config:6': true,
 
-      // DashboardScreen
-      'app-screens:1:0': true, // headline
+      // Phase 1b: Logo assets — all done
+      'app-logos:0:0': true, 'app-logos:0:1': true, 'app-logos:0:2': true,
+      'app-logos:1:0': true, 'app-logos:1:1': true, 'app-logos:1:2': true,
+      'app-logos:2:0': true, 'app-logos:2:1': true, 'app-logos:2:2': true,
+      'app-logos:3:0': true, 'app-logos:3:1': true, 'app-logos:3:2': true,
+      'app-logos:4:0': true, 'app-logos:4:1': true, 'app-logos:4:2': true,
 
-      // HomeScreen
-      'app-screens:2:0': true, // coverage text
-
-      // HelpScreen
-      'app-screens:3:0': true, // FAQ answers
-      'app-screens:3:1': true, // "Does SureVera collect"
-      'app-screens:3:2': true, // "About SureVera"
-      'app-screens:3:3': true, // privacy URL
-      'app-screens:3:4': true, // terms URL
-      'app-screens:3:5': true, // email
-      'app-screens:3:6': true, // website
+      // Phase 1c: Screen text updates — all done
+      'app-screens:0:0': true, 'app-screens:0:1': true, 'app-screens:0:2': true, 'app-screens:0:3': true, 'app-screens:0:4': true,
+      'app-screens:1:0': true,
+      'app-screens:2:0': true,
+      'app-screens:3:0': true, 'app-screens:3:1': true, 'app-screens:3:2': true, 'app-screens:3:3': true, 'app-screens:3:4': true, 'app-screens:3:5': true, 'app-screens:3:6': true,
       // app-screens:3:7 = hotel FAQ entries (future)
-
-      // OnboardingScreen
-      'app-screens:4:0': true, // tagline
-      'app-screens:4:1': true, // body text rewritten
-      'app-screens:4:2': true, // SureBite → SureVera
-      'app-screens:4:3': true, // SureBite doesn't
-      'app-screens:4:4': true, // not SureVera's opinion
+      'app-screens:4:0': true, 'app-screens:4:1': true, 'app-screens:4:2': true, 'app-screens:4:3': true, 'app-screens:4:4': true,
       // app-screens:4:5 = hotel onboarding slide (future)
-
-      // ScoreExplainerScreen
-      'app-screens:5:0': true, // displays
-      'app-screens:5:1': true, // covers
-      'app-screens:5:2': true, // not responsible
-
-      // PaywallScreen
-      'app-screens:6:0': true, // navy logo import
-      'app-screens:6:1': true, // white logo import
-      'app-screens:6:2': true, // tagline
+      'app-screens:5:0': true, 'app-screens:5:1': true, 'app-screens:5:2': true,
+      'app-screens:6:0': true, 'app-screens:6:1': true, 'app-screens:6:2': true,
       // app-screens:6:3 = benefits text (future)
+      'app-screens:7:0': true, 'app-screens:7:1': true, 'app-screens:7:2': true,
+      'app-screens:8': true,
 
-      // RestaurantDetailScreen
-      'app-screens:7:0': true, // share text
-      'app-screens:7:1': true, // attribution
-      'app-screens:7:2': true, // limitation text
-
-      // backend.ts
-      'app-screens:8': true, // comment
-
-      // Phase 1d: Onboarding overhaul
-      'app-onboarding:0': true, // slide 1 tagline
-      'app-onboarding:1': true, // slide 2 restaurants
+      // Phase 1d: Onboarding — done (except hotel slide)
+      'app-onboarding:0': true, 'app-onboarding:1': true,
       // app-onboarding:2 = hotel slide (future)
-      'app-onboarding:3': true, // slide 4 privacy
-      'app-onboarding:4': true, // slide 5 disclaimer
+      'app-onboarding:3': true, 'app-onboarding:4': true,
 
-      // Phase 1e: Paywall
-      'app-paywall:0': true,  // tagline
+      // Phase 1e: Paywall — done (except hotel benefits text)
+      'app-paywall:0': true,
       // app-paywall:1 = benefits for both (future)
-      'app-paywall:2': true,  // keep CDC+NPMA
+      'app-paywall:2': true,
 
-      // Phase 1f: Help/FAQ
-      'app-help:0': true,  // all SureBite → SureVera
+      // Phase 1f: Help/FAQ — done (except hotel FAQ entries)
+      'app-help:0': true,
       // app-help:1 = hotel FAQ entries (future)
       // app-help:2 = what does SureVera do (future)
-      'app-help:3': true,  // URLs updated
-      'app-help:4': true,  // email updated
+      'app-help:3': true, 'app-help:4': true,
 
-      // Phase 2: Backend
-      'backend:0': true,  // nearbyRestaurants.ts
-      'backend:1': true,  // bellCountyParser.ts User-Agent
-      'backend:2:0': true, // CORS origin
-      'backend:2:1': true, // success URL
-      'backend:2:2': true, // cancel URL
-      'backend:2:3': true, // comment
-      'backend:3': true,  // dashboard comment
-      'backend:4': true,  // dashboard text
-      'backend:5': true,  // dashboard layout logo
-      'backend:6': true,  // login page logo
-      'backend:7': true,  // webhooks comment (Railway URL kept)
-      'backend:8': true,  // city-requests comment
-      'backend:9': true,  // notify-city-launch push text
-      'backend:10': true, // audit-all comment
-      'backend:11': true, // admin refresh route comments reviewed (Railway URLs kept)
-      // backend:12 = public logo PNGs (needs new logos)
-      // backend:13 = public header logo (needs new logos)
+      // Phase 1g: Native rebuild — prebuild done, EAS builds not yet
+      'app-native:0:0': true, 'app-native:0:1': true, 'app-native:0:2': true, 'app-native:0:3': true, 'app-native:0:4': true,
+      // app-native:1 = EAS iOS build (not yet)
+      // app-native:2 = EAS Android build (not yet)
+      // app-native:3 = test deep links (not yet)
+
+      // Phase 2: Backend — all done
+      'backend:0': true, 'backend:1': true,
+      'backend:2:0': true, 'backend:2:1': true, 'backend:2:2': true, 'backend:2:3': true,
+      'backend:3': true, 'backend:4': true, 'backend:5': true, 'backend:6': true,
+      'backend:7': true, 'backend:8': true, 'backend:9': true, 'backend:10': true, 'backend:11': true,
+      // backend:12 = public logo PNGs (need to copy new logos to backend public/)
+      // backend:13 = public header logo (need to copy new logos to backend public/)
+
+      // Phase 3: Website — all done
+      'website:0:0': true, 'website:0:1': true, 'website:0:2': true, 'website:0:3': true, 'website:0:4': true, 'website:0:5': true, 'website:0:6': true, 'website:0:7': true, 'website:0:8': true, 'website:0:9': true, 'website:0:10': true, 'website:0:11': true,
+      'website:1:0': true, 'website:1:1': true, 'website:1:2': true, 'website:1:3': true, 'website:1:4': true, 'website:1:5': true, 'website:1:6': true, 'website:1:7': true, 'website:1:8': true, 'website:1:9': true, 'website:1:10': true,
+      'website:2:0': true, 'website:2:1': true, 'website:2:2': true, 'website:2:3': true, 'website:2:4': true, 'website:2:5': true, 'website:2:6': true,
+      'website:3:0': true, 'website:3:1': true, 'website:3:2': true, 'website:3:3': true, 'website:3:4': true, 'website:3:5': true,
+      'website:4:0': true, 'website:4:1': true,
+      // website:5 = verify HTTPS (manual)
+      // website:6 = verify redirect (manual)
+      // website:7 = verify privacy policy (manual)
+      // website:8 = verify terms (manual)
+
+      // Phase 4: Arriotech — all done
+      'arriotech:0:0': true, 'arriotech:0:1': true, 'arriotech:0:2': true, 'arriotech:0:3': true, 'arriotech:0:4': true,
+      'arriotech:1:0': true, 'arriotech:1:1': true, 'arriotech:1:2': true,
+      'arriotech:2:0': true, 'arriotech:2:1': true, 'arriotech:2:2': true, 'arriotech:2:3': true,
+      'arriotech:3:0': true, 'arriotech:3:1': true, 'arriotech:3:2': true, 'arriotech:3:3': true,
+      'arriotech:4:0': true, 'arriotech:4:1': true, 'arriotech:4:2': true, 'arriotech:4:3': true, 'arriotech:4:4': true,
+
+      // Phase 5: GitHub renames — not yet (user task)
+      // Phase 6: Home redesign — not yet (future)
+
+      // Phase 7: Verification — codebase scrub done
+      'verification:0:0': true, 'verification:0:1': true, 'verification:0:2': true, 'verification:0:3': true, 'verification:0:4': true,
+      // rest are manual verification tasks
     };
 
     let checkedState = loadChecked();
     // Merge automated defaults (don't overwrite user's manual changes)
-    let defaultsApplied = localStorage.getItem(STORAGE_KEY + '_defaults_v1');
+    let defaultsApplied = localStorage.getItem(STORAGE_KEY + '_defaults_v2');
     if (!defaultsApplied) {
       Object.keys(AUTOMATED_DEFAULTS).forEach(k => {
         if (checkedState[k] === undefined) checkedState[k] = AUTOMATED_DEFAULTS[k];
       });
       saveChecked(checkedState);
-      localStorage.setItem(STORAGE_KEY + '_defaults_v1', 'true');
+      localStorage.setItem(STORAGE_KEY + '_defaults_v2', 'true');
     }
     let collapsedState = loadCollapsed();
 
@@ -1326,6 +1314,7 @@
 
     render();
   </script>
+  <script src="dark-mode.js"></script>
   <script src="toolkit-nav.js"></script>
 </body>
 </html>
