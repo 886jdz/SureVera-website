@@ -2107,6 +2107,192 @@ Both legal pages updated to cover restaurants AND hotels throughout:
 - Toolkit (surebite-landing): 10 files
 - CLAUDE.md + memory files`,
           createdAt: '2026-03-26T23:59:00.000Z'
+        },
+        {
+          id: 'seed-019',
+          date: '2026-03-28',
+          title: 'Tyler Tech Research + Louisiana Provider + Navigation Restructure + Hotel Matching Overhaul',
+          categories: ['Backend', 'Mobile App', 'Data Quality', 'Infrastructure', 'New Feature', 'UI/UX', 'Bug Fix'],
+          summary: 'Researched Firecrawl and Tyler Tech APIs (found 6 working undocumented endpoints), built full Louisiana statewide food+lodging provider, restructured app from 5 tabs to 3 with restaurant/hotel toggle, overhauled hotel name matching with stop words and city-token exclusion, fixed coverage API to filter by type, fixed multiple OOM crashes in Louisiana refresh.',
+          details: `## Tyler Technologies API Research
+
+### Firecrawl Evaluation
+Researched https://firecrawl.dev as a potential scraping solution for Tyler Tech portals. **Verdict: not the right tool.** Firecrawl is designed for scraping many unknown websites quickly, but for a single known portal with predictable structure, a custom approach is better (cheaper, more reliable, more controllable).
+
+### Tyler Tech Undocumented API Discovery
+Discovered that Tyler Tech\u2019s legacy \`healthinspections.us\` portals have an exposed, undocumented REST API:
+\`\`\`
+GET /API/index.cfm/facilities/{page}     \u2014 5 facilities per page
+GET /API/index.cfm/inspectionsData/{id}  \u2014 full inspection history
+\`\`\`
+
+**6 portals confirmed working:**
+| Portal | Coverage | Status |
+|---|---|---|
+| NJ statewide | Youth camps/frozen desserts only (NOT restaurants) | Not viable |
+| Louisiana statewide | 28,500+ facilities \u2014 food + hotels | **Built as provider** |
+| Abilene, TX | ~445 facilities, no scores | Not worth it |
+| Columbia, MO | ~1,429 facilities, no scores | Not worth it |
+| Madison/Anderson, IN | ~570 facilities, no scores | Not worth it |
+| TriCounty, UT | ~430 facilities, stale data | Not worth it |
+
+**Key findings:**
+- None of these portals have official numeric scores \u2014 all are violation-list-only systems
+- The newer \`myhealthdepartment.com\` platform blocks automated access (403)
+- The API response format is standardized: \`name\`, \`mapAddress\`, \`columns\`, \`id\` fields
+- Louisiana was the only portal worth building \u2014 large enough to matter, and scores can be synthesized from violation severity (same approach as FL DBPR and SC DHEC)
+
+## Louisiana Statewide Provider \u2014 Full Implementation
+
+### Architecture
+- Single refresh endpoint handles BOTH food and lodging in one pass
+- Tyler Tech API paginated at 5 facilities/page (~5,700+ pages)
+- Stream-processing: fetch pages \u2192 filter by parish \u2192 fetch details \u2192 classify \u2192 write. Never accumulates all facilities in memory.
+- Parish pre-filter: only fetches inspection details for facilities in 15 registered parishes (skips ~60% of facilities in unregistered rural parishes)
+
+### Refresh Endpoint: \`POST /api/admin/louisiana-refresh\`
+- Authenticates via IMPORT_SECRET, 20-hour cache guard
+- Paginates through facility pages (10 concurrent)
+- Pre-filters by name (excludes SCHOOL, DAYCARE, HOSPITAL, etc.)
+- Pre-filters by parish (only 15 registered parishes)
+- Fetches inspection details (5 concurrent) for remaining candidates
+- Classifies each as food or lodging by permit name keywords:
+  - Food: RESTAURANT, BAR, CAFE, GRILL, PIZZA, DELI, BAKERY, etc.
+  - Lodging: HOTEL, MOTEL, INN, LODGE, RESORT, SUITE, etc.
+  - Food takes priority if both match
+- Synthesizes score from violations: 100 - Critical*3 - NonCritical*1 (corrected: -1/-0.5), Repeat extra -1, floor 0
+- Builds violation notes from code descriptions + corrected/repeat status
+- Writes to jurisdictionCache by parish: \`la-{slug}\` for food, \`la-{slug}-lodging\` for lodging
+
+### Coverage: 15 Parishes (Food + Lodging)
+Orleans (New Orleans), Jefferson (Metairie/Kenner), East Baton Rouge (Baton Rouge), Caddo (Shreveport), Calcasieu (Lake Charles), Lafayette, Ouachita (Monroe), Rapides (Alexandria), Tangipahoa (Hammond), St. Tammany (Covington/Mandeville/Slidell), Terrebonne (Houma), Lafourche (Thibodaux), Bossier (Bossier City), Livingston (Denham Springs), Ascension (Gonzales)
+
+### 18 Coverage Area Entries
+5 lodging coverage areas (New Orleans, Baton Rouge, Shreveport, Lafayette, Lake Charles) + 13 food coverage areas for major cities.
+
+### OOM Fix (3 iterations)
+1. **First crash:** \`Cannot read properties of null (reading 'name')\` \u2014 API returned null facility entries. Fixed with null safety checks and \`data.filter(d => d != null)\`.
+2. **Second crash:** Silent OOM \u2014 accumulating all ~20,000+ candidate facilities in memory before processing. Fixed by rewriting to stream-process: fetch batch \u2192 filter \u2192 fetch details \u2192 classify \u2192 discard batch.
+3. **Third crash:** Still OOMing \u2014 too many detail fetches for unneeded parishes. Fixed by adding parish pre-filter (only 15 registered parishes) and reducing concurrency from 15/10 to 10/5.
+
+### Provider Type + Registry
+- Added \`LouisianaProvider\` type to \`types.ts\`
+- 15 food + 15 lodging = 30 registry entries in \`registry.ts\`
+- \`scoreIsEstimated\` flag set for all \`la-\` providers in \`nearbyRestaurants.ts\` (both primary and secondary paths)
+- Wired into \`index.ts\` using cron-populated-cache pattern
+
+## Navigation Restructure \u2014 5 Tabs \u2192 3 Tabs
+
+### Before: Home | Restaurants | Hotels | Favorites | Help
+- Home tab was a dead-end dashboard with "Bite" and "Stay" cards
+- Restaurants and Hotels were separate tabs wrapping the same HomeScreen
+- 5 tabs cluttered the bottom bar
+
+### After: Home | Favorites | Help
+- Single Home tab with restaurant/hotel **toggle** at the top (segmented control)
+- Toggle persists choice in AsyncStorage (\`search_mode_v1\`)
+- Switching modes clears results, city selection, and query
+- Home tab icon changed from house to search magnifier
+- Removed: DashboardScreen, DashboardStackNavigator, RestaurantsStackNavigator, HotelsStackNavigator, RestaurantsLogoHeader, HotelsLogoHeader
+- Added: single HomeStackNavigator with HomeScreen directly
+- Deep links updated: \`Home\` stack instead of \`Restaurants\`
+- Removed imports: DashboardScreen, RestaurantsScreen, HotelsScreen
+
+### Toggle UI
+- Pill-shaped segmented control with restaurant/bed icons
+- Active segment uses accent color with white text
+- Only renders when no external \`mode\` prop (backward compat)
+- \`handleModeSwitch\` clears all search state on toggle
+
+## Coverage API \u2014 Filter by Type
+
+### Backend (\`coverage/route.ts\`)
+- Added \`?type=hotel\` query parameter
+- Filters \`COVERAGE_AREAS\` by \`category: "lodging"\` vs \`"food"\`
+- Strips "(Lodging)" suffix from display names in API response
+- Default (no param) returns food cities only
+
+### Mobile API (\`backend.ts\`)
+- \`fetchCoverageAreas()\` now accepts optional \`"hotel"\` parameter
+
+### HomeScreen \u2014 Separate Coverage State
+- **Problem:** Single \`coverageAreas\` state was shared between modes. Toggling to Hotels showed stale restaurant cities due to cache race conditions.
+- **Fix:** Split into \`foodCoverageAreas\` and \`hotelCoverageAreas\` state. Both fetched in parallel on mount. Derived \`coverageAreas\` const switches based on \`isHotel\`. Toggling is instant \u2014 no re-fetch needed.
+- Cache key bumped to v2 to invalidate stale data
+
+### Supported Cities Modal
+- Title changes based on mode: "Supported Cities \u2014 Restaurants" or "Supported Cities \u2014 Hotels"
+
+## Hotel Name Matching Overhaul
+
+### Problem
+Hotel matches were all coming back as \`borderline\` (0.28\u20130.52) instead of \`confident\` (\u22650.60). The home screen only shows grades for confident matches, so all hotels showed "No Record" even when inspection data existed.
+
+Root cause: hotel names are short/generic (e.g., "Home2 Suites") while inspection records have long corporate names ("HOME2 SUITES BY HILTON TAMPA DOWNTOWN CHANNEL DISTRICT"). Jaccard similarity was low because of all the extra tokens.
+
+### Fix 1: Strip Hotel Parent Brand Suffixes
+Added regex to \`normalizeName()\` that strips "BY HILTON", "BY MARRIOTT", "BY WYNDHAM", "BY HYATT", "BY IHG", "BY CHOICE", "BY RADISSON", "BY ACCOR", "BY CARLSON", "BY BEST WESTERN" from names before tokenizing.
+
+### Fix 2: Hotel/Lodging Stop Words
+Added to the stop word list:
+- **Hotel type descriptors:** HOTEL, HOTELS, MOTEL, MOTELS, SUITES, SUITE, RESORT, RESORTS, INN, INNS, LODGE, LODGING, HOSTEL
+- **Location descriptors:** DOWNTOWN, MIDTOWN, UPTOWN, AIRPORT, CONVENTION, DISTRICT
+
+These appear in inspection records but rarely in OSM names. Removing them from both sides lets the brand tokens drive the match.
+
+### Fix 3: Dynamic City-Token Exclusion
+When \`confirmedCity\` is known (e.g., "TAMPA"), the Jaccard calculation now excludes city-name tokens from the inspection side (only when the token doesn\u2019t also appear in the OSM name). This prevents city names embedded in inspection records from diluting match scores.
+
+**Example walkthrough:**
+- OSM: "Home2 Suites" \u2192 tokens: ["HOME2"]
+- Inspection: "HOME2 SUITES BY HILTON TAMPA DOWNTOWN CHANNEL DISTRICT" \u2192 strip "BY HILTON" \u2192 stop SUITES, DOWNTOWN, DISTRICT \u2192 tokens: ["HOME2", "TAMPA", "CHANNEL"]
+- City exclude: TAMPA removed \u2192 effective inspSize = 2
+- Jaccard: 1/2 = 0.50, containsBoost: +0.15, score data: +0.02 = **0.67 (confident!)**
+
+### Fix 4: Reverted Threshold Hack
+Initially lowered confident threshold to 0.35 for hotels as a quick fix. Reverted back to 0.60 for both restaurants and hotels \u2014 the matching improvements make it unnecessary.
+
+## Hotel Detail Screen Fixes
+
+### Grade Flickering Fix
+- **Problem:** Hotels showed grades on home screen but "not found" on detail screen. The detail endpoint was defaulting to food providers and couldn\u2019t find hotel inspection records.
+- **Fix:** Detail endpoint (\`restaurants/details/route.ts\`) now reads \`?type=hotel\` param and passes \`category: "lodging"\` to \`getInspectionsForCoords\`.
+- Mobile API (\`backend.ts\`): \`fetchRestaurantDetails\` now accepts \`type\` and \`matchedInspectionName\` params (matchedInspectionName was being passed but silently dropped before \u2014 not in the function signature).
+- Detail screen reads \`isHotel\` from nav params, passes \`type: "hotel"\` to API.
+- HomeScreen passes \`isHotel\` flag in navigation params when pressing a hotel card.
+
+### "Not Found" Text
+- Changed "This restaurant wasn\u2019t found" to "This hotel wasn\u2019t found" when in hotel mode.
+
+## Performance
+
+### FlatList Optimization
+- Reduced \`initialNumToRender\` from 15 to 10
+- Reduced \`maxToRenderPerBatch\` from 10 to 8
+- Reduced \`windowSize\` from 5 to 3
+- Addresses VirtualizedList slow update warning with large hotel result sets (235 Tampa hotels)
+
+## Website Updates
+- CTA heading: "Don\u2019t eat or stay blindly."
+- "Why SureVera?" section: added NPMA hotel bed bug stat alongside CDC food stat
+- Features heading: "Everything you need to eat and stay safely"
+- Feature cards: "Search Restaurants & Hotels", favorites/alerts mention hotels
+- Hero + meta descriptions updated for restaurants and hotels
+
+## What\u2019s Still Remaining
+- Louisiana refresh needs successful completion (OOM fixed, needs re-run)
+- Georgia lodging refresh needs to run
+- GoDaddy DNS for surevera.app
+- EAS builds (iOS + Android)
+- GitHub repo renames
+- App screenshots with new branding
+- Home screen redesign (separate task)
+
+## Files Modified
+- Mobile app: HomeScreen.tsx (toggle + coverage split), RootNavigator.tsx (3 tabs), RestaurantDetailScreen.tsx (hotel mode), backend.ts (type params), PaywallScreen.tsx (hotel stats), OnboardingScreen.tsx (4 slides)
+- Backend: louisiana-refresh/route.ts (new), coverage/route.ts (type filter), details/route.ts (hotel category), nearbyRestaurants.ts (estimated flag + threshold), matchInspection.ts (hotel stop words + city exclusion), registry.ts (30 LA entries), coverage.ts (18 LA + 5 lodging areas), types.ts (LouisianaProvider), index.ts (LA handler)
+- Website: index.html (CTA, Why SureVera, features, meta)`,
+          createdAt: '2026-03-28T23:59:00.000Z'
         }
       ];
     }
